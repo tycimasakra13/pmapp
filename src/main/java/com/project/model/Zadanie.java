@@ -1,6 +1,8 @@
 package com.project.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -19,9 +21,11 @@ public class Zadanie {
     private Integer kolejnosc;
     @Column(nullable = false, length = 50)
     private String nazwa;
-    @Column(name = "data_dostarczenia", nullable = false)
-    private LocalDateTime dataDostarczenia;
-    @ManyToOne
+    @CreationTimestamp
+    @Column(name = "data_dodania", nullable = false)
+    private LocalDateTime dataDodania;
+    @JsonIgnore
+    @ManyToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "projekt_id")
     private Projekt projekt;
 
@@ -57,12 +61,12 @@ public class Zadanie {
         this.nazwa = nazwa;
     }
 
-    public LocalDateTime getDataDostarczenia() {
-        return dataDostarczenia;
+    public LocalDateTime getDataDodania() {
+        return dataDodania;
     }
 
-    public void setDataDostarczenia(LocalDateTime dataDostarczenia) {
-        this.dataDostarczenia = dataDostarczenia;
+    public void setDataDodania(LocalDateTime dataDodania) {
+        this.dataDodania = dataDodania;
     }
 
     public Projekt getProjekt() {

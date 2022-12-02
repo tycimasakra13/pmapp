@@ -2,10 +2,12 @@ package com.project.services;
 
 import com.project.model.Student;
 import com.project.repositories.StudentRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Optional;
 
 @Service
 public class StudentServiceImpl implements StudentService {
@@ -16,15 +18,23 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public List<Student> getStudents() {
-        List<Student> list = new ArrayList<>();
-        repository.findAll().forEach(list::add);
-        return list;
+    public Page<Student> getStudents(Pageable pageable) {
+        return repository.findAll(pageable);
     }
 
     @Override
-    public Student getStudentById(Integer id) {
-        return repository.findById(id).get();
+    public Page<Student> getStudentByNrIndeksu(String nrIndeksu, Pageable pageable) {
+        return repository.findByNrIndeksuStartsWith(nrIndeksu, pageable);
+    }
+
+    @Override
+    public Page<Student> getStudentByNazwiskoStartsWithIgnoreCase(String nazwisko, Pageable pageable) {
+        return repository.findByNazwiskoStartsWithIgnoreCase(nazwisko, pageable);
+    }
+
+    @Override
+    public Optional<Student> getStudentById(Integer id) {
+        return repository.findById(id);
     }
 
     @Override
@@ -33,6 +43,7 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
+    @Transactional
     public void updateStudent(Integer id, Student student) {
         Student studentFromDb = repository.findById(id).get();
 
@@ -46,6 +57,7 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
+    @Transactional
     public void deleteStudent(Integer studentId) {
         repository.deleteById(studentId);
     }

@@ -2,55 +2,66 @@ package com.project.controllers;
 
 import com.project.model.Student;
 import com.project.services.StudentService;
-import org.springframework.http.HttpHeaders;
+import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.util.List;
+import java.net.URI;
 
 @RestController
 @RequestMapping("/api/student")
 public class StudentController {
-    StudentService studentService;
+    private final StudentService studentService;
 
+    @Autowired
     public StudentController(StudentService studentService) {
         this.studentService = studentService;
     }
 
-    //The function receives a GET request, processes it and gives back a list of Student as a response.
-    @GetMapping
-    public ResponseEntity<List<Student>> getAllStudents() {
-        List<Student> students = studentService.getStudents();
-        return new ResponseEntity<>(students, HttpStatus.OK);
+    @GetMapping("/{studentId}")
+    ResponseEntity<Student> getStudent(@PathVariable Integer studentId) {
+        return ResponseEntity.of(studentService.getStudentById(studentId));
     }
 
-    //The function receives a GET request, processes it, and gives back a list of Student as a response.
-    @GetMapping({"/{studentId}"})
-    public ResponseEntity<Student> getStudent(@PathVariable Integer studentId) {
-        return new ResponseEntity<>(studentService.getStudentById(studentId), HttpStatus.OK);
-    }
-
-    //The function receives a POST request, processes it, creates a new Student and saves it to the database, and returns a resource link to the created student.
     @PostMapping
-    public ResponseEntity<Student> saveStudent(@RequestBody Student student) {
-        Student student1 = studentService.insert(student);
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add("student", "/api/student/" + student1.getStudentId().toString());
-        return new ResponseEntity<>(student1, httpHeaders, HttpStatus.CREATED);
+    ResponseEntity<Void> createStudent(@Valid @RequestBody Student student) {
+        Student createdStudent = studentService.insert(student);
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{studentId}").buildAndExpand(createdStudent.getStudentId()).toUri();
+        return ResponseEntity.created(location).build();
     }
 
-    //The function receives a PUT request, updates the Student with the specified Id and returns the updated Student
-    @PutMapping({"/{studentId}"})
-    public ResponseEntity<Student> updateStudent(@PathVariable("studentId") Integer studentId, @RequestBody Student student) {
-        studentService.updateStudent(studentId, student);
-        return new ResponseEntity<>(studentService.getStudentById(studentId), HttpStatus.OK);
+    @PutMapping("/{studentId}")
+    public ResponseEntity<Void> updateStudent(@Valid @RequestBody Student student,
+                                              @PathVariable Integer studentId) {
+        return studentService.getStudentById(studentId)
+                .map(p -> {
+                    studentService.updateStudent(studentId, student);
+                    return new ResponseEntity<Void>(HttpStatus.OK);
+                })
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    //The function receives a DELETE request, deletes the Student with the specified Id.
-    @DeleteMapping({"/{studentId}"})
-    public ResponseEntity<Student> deleteStudent(@PathVariable("studentId") Integer studentId) {
-        studentService.deleteStudent(studentId);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    @DeleteMapping("/{studentId}")
+    public ResponseEntity<Void> deleteStudent(@PathVariable Integer studentId) {
+        return studentService.getStudentById(studentId).map(p -> {
+            studentService.deleteStudent(studentId);
+            return new ResponseEntity<Void>(HttpStatus.OK);
+        }).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @GetMapping
+    Page<Student> getStudenty(Pageable pageable) {
+        return studentService.getStudents(pageable);
+    }
+
+    @GetMapping(params = "nazwisko")
+    Page<Student> getStudentyByNazwwisko(@RequestParam String nazwisko, Pageable pageable) {
+        return studentService.getStudentByNazwiskoStartsWithIgnoreCase(nazwisko, pageable);
     }
 }

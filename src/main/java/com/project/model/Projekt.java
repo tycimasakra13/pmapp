@@ -1,5 +1,6 @@
 package com.project.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -25,11 +26,12 @@ public class Projekt {
     @UpdateTimestamp
     @Column(name = "dataczas_modyfikacji", nullable = false)
     private LocalDateTime dataCzasModyfikacji;
+    @JsonIgnore
     @ManyToMany
     @JoinTable(name = "projekt_student", joinColumns = {@JoinColumn(name = "projekt_id")},
             inverseJoinColumns = {@JoinColumn(name = "student_id")})
     private Set<Student> studenci;
-    @OneToMany(mappedBy = "projekt")
+    @OneToMany(mappedBy = "projekt", cascade = CascadeType.REMOVE)
     private List<Zadanie> zadania;
 
     public Projekt() {

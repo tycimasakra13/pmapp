@@ -2,55 +2,67 @@ package com.project.controllers;
 
 import com.project.model.Projekt;
 import com.project.services.ProjektService;
-import org.springframework.http.HttpHeaders;
+import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.util.List;
+import java.net.URI;
 
 @RestController
 @RequestMapping("/api/projekt")
 public class ProjektController {
-    ProjektService projektService;
+    private final ProjektService projektService;
 
+    @Autowired
     public ProjektController(ProjektService projektService) {
         this.projektService = projektService;
     }
 
-    //The function receives a GET request, processes it and gives back a list of Projekt as a response.
-    @GetMapping
-    public ResponseEntity<List<Projekt>> getAllProjekts() {
-        List<Projekt> projekts = projektService.getProjekts();
-        return new ResponseEntity<>(projekts, HttpStatus.OK);
+    @GetMapping("/{projektId}")
+    ResponseEntity<Projekt> getProjekt(@PathVariable Integer projektId) {
+        return ResponseEntity.of(projektService.getProjektById(projektId));
     }
 
-    //The function receives a GET request, processes it, and gives back a list of Projekt as a response.
-    @GetMapping({"/{projektId}"})
-    public ResponseEntity<Projekt> getProjekt(@PathVariable Integer projektId) {
-        return new ResponseEntity<>(projektService.getProjektById(projektId), HttpStatus.OK);
-    }
-
-    //The function receives a POST request, processes it, creates a new Projekt and saves it to the database, and returns a resource link to the created projekt.
     @PostMapping
-    public ResponseEntity<Projekt> saveProjekt(@RequestBody Projekt projekt) {
-        Projekt projekt1 = projektService.insert(projekt);
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add("projekt", "/api/projekt/" + projekt1.getProjektId().toString());
-        return new ResponseEntity<>(projekt1, httpHeaders, HttpStatus.CREATED);
+    ResponseEntity<Void> createProjekt(@Valid @RequestBody Projekt projekt) {
+        Projekt createdProjekt = projektService.insert(projekt);
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{projektId}").buildAndExpand(createdProjekt.getProjektId()).toUri();
+        return ResponseEntity.created(location).build();
     }
 
-    //The function receives a PUT request, updates the Projekt with the specified Id and returns the updated Projekt
-    @PutMapping({"/{projektId}"})
-    public ResponseEntity<Projekt> updateProjekt(@PathVariable("projektId") Integer projektId, @RequestBody Projekt projekt) {
-        projektService.updateProjekt(projektId, projekt);
-        return new ResponseEntity<>(projektService.getProjektById(projektId), HttpStatus.OK);
+    // z linkiem location w nagłówku
+    @PutMapping("/{projektId}")
+    public ResponseEntity<Void> updateProjekt(@Valid @RequestBody Projekt projekt,
+                                              @PathVariable Integer projektId) {
+        return projektService.getProjektById(projektId)
+                .map(p -> {
+                    projektService.updateProjekt(projektId, projekt);
+                    return new ResponseEntity<Void>(HttpStatus.OK);
+                })
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    //The function receives a DELETE request, deletes the Projekt with the specified Id.
-    @DeleteMapping({"/{projektId}"})
-    public ResponseEntity<Projekt> deleteProjekt(@PathVariable("projektId") Integer projektId) {
-        projektService.deleteProjekt(projektId);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    @DeleteMapping("/{projektId}")
+    public ResponseEntity<Void> deleteProjekt(@PathVariable Integer projektId) {
+        return projektService.getProjektById(projektId).map(p -> {
+            projektService.deleteProjekt(projektId);
+            return new ResponseEntity<Void>(HttpStatus.OK);
+        }).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @GetMapping
+    Page<Projekt> getProjekty(Pageable pageable) {
+        return projektService.getProjekts(pageable);
+    }
+
+    @GetMapping(params = "nazwa")
+    Page<Projekt> getProjektyByNazwa(@RequestParam String nazwa, Pageable pageable) {
+        return projektService.searchByNazwa(nazwa, pageable);
     }
 }

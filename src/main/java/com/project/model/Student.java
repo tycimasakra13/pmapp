@@ -1,5 +1,6 @@
 package com.project.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.util.Set;
@@ -21,7 +22,8 @@ public class Student {
     private String email;
     @Column(nullable = false)
     private Boolean stacjonarny;
-    @ManyToMany(mappedBy = "studenci")
+    @JsonIgnore
+    @ManyToMany(mappedBy = "studenci", cascade = CascadeType.REMOVE)
     private Set<Projekt> projekty;
 
     public Student() {

@@ -2,10 +2,12 @@ package com.project.services;
 
 import com.project.model.Projekt;
 import com.project.repositories.ProjectRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ProjektServiceImpl implements ProjektService {
@@ -16,15 +18,13 @@ public class ProjektServiceImpl implements ProjektService {
     }
 
     @Override
-    public List<Projekt> getProjekts() {
-        List<Projekt> list = new ArrayList<>();
-        repository.findAll().forEach(list::add);
-        return list;
+    public Page<Projekt> getProjekts(Pageable pageable) {
+        return repository.findAll(pageable);
     }
 
     @Override
-    public Projekt getProjektById(Integer id) {
-        return repository.findById(id).get();
+    public Optional<Projekt> getProjektById(Integer id) {
+        return repository.findById(id);
     }
 
     @Override
@@ -33,6 +33,7 @@ public class ProjektServiceImpl implements ProjektService {
     }
 
     @Override
+    @Transactional
     public void updateProjekt(Integer id, Projekt projekt) {
         Projekt projektFromDb = repository.findById(id).get();
 
@@ -43,7 +44,13 @@ public class ProjektServiceImpl implements ProjektService {
     }
 
     @Override
+    @Transactional
     public void deleteProjekt(Integer projektId) {
         repository.deleteById(projektId);
+    }
+
+    @Override
+    public Page<Projekt> searchByNazwa(String nazwa, Pageable pageable) {
+        return repository.findByNazwaContainingIgnoreCase(nazwa, pageable);
     }
 }
