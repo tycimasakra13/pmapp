@@ -1,7 +1,10 @@
 # APLIKACJA WEBOWA DO ZARZĄDZANIA PROJEKTAMI
 
 ## Dane testowego użytkownika
-login: abc hasło: 123
+login: user hasło: password
+## Dane administratora
+login: admin hasło: admin
+
 ## Dla bazy danych
 Konsola bazy jest dostępna pod ścieżką /h2/ 
 
@@ -11,5 +14,3 @@ login: sa hasło: puste
 
 ## REST API
 API jest wystawione pod adresem /api/projekt /api/student /api/zadanie
-
-## Jeśli chcecie coś robić na danych w bazie to korzystajcie z serwisów.

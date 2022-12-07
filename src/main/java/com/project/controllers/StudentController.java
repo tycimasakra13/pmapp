@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -37,6 +38,7 @@ public class StudentController {
     }
 
     @PutMapping("/{studentId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> updateStudent(@Valid @RequestBody Student student,
                                               @PathVariable Integer studentId) {
         return studentService.getStudentById(studentId)
@@ -48,6 +50,7 @@ public class StudentController {
     }
 
     @DeleteMapping("/{studentId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteStudent(@PathVariable Integer studentId) {
         return studentService.getStudentById(studentId).map(p -> {
             studentService.deleteStudent(studentId);

@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -36,8 +37,8 @@ public class ProjektController {
         return ResponseEntity.created(location).build();
     }
 
-    // z linkiem location w nagłówku
     @PutMapping("/{projektId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> updateProjekt(@Valid @RequestBody Projekt projekt,
                                               @PathVariable Integer projektId) {
         return projektService.getProjektById(projektId)
@@ -49,6 +50,7 @@ public class ProjektController {
     }
 
     @DeleteMapping("/{projektId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteProjekt(@PathVariable Integer projektId) {
         return projektService.getProjektById(projektId).map(p -> {
             projektService.deleteProjekt(projektId);

@@ -27,12 +27,18 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
+    testCompileOnly 'org.junit.jupiter:junit-jupiter-api'
+    testCompileOnly 'org.junit.jupiter:junit-jupiter-engine'
+    testCompileOnly 'org.junit.jupiter:junit-jupiter-params'
+    testCompileOnly 'org.junit.platform:junit-platform-launcher'
+    testCompileOnly 'org.junit.platform:junit-platform-runner'
+    testRuntimeOnly 'org.junit.platform:junit-platform-commons:1.9.0'
 //    runtimeOnly 'org.postgresql:postgresql'
     runtimeOnly 'com.h2database:h2'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
 }
 
-tasks.named('test') {
+test {
     useJUnitPlatform()
 }
