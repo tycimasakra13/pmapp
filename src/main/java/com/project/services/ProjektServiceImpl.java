@@ -2,6 +2,7 @@ package com.project.services;
 
 import com.project.model.Projekt;
 import com.project.repositories.ProjectRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -11,8 +12,8 @@ import java.util.Optional;
 
 @Service
 public class ProjektServiceImpl implements ProjektService {
-    ProjectRepository repository;
-
+    public ProjectRepository repository;
+    @Autowired
     public ProjektServiceImpl(ProjectRepository projectRepository) {
         this.repository = projectRepository;
     }
