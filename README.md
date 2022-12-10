@@ -14,3 +14,4 @@ login: sa hasło: puste
 
 ## REST API
 API jest wystawione pod adresem /api/projekt /api/student /api/zadanie
+Zarządanie plikami jest pod api/downloadFile/(nazwaPliku) i api/uploadFile

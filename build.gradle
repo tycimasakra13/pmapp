@@ -28,6 +28,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
     implementation 'org.springframework.boot:spring-boot-starter-aop'
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     testCompileOnly 'org.junit.jupiter:junit-jupiter-api'
     testCompileOnly 'org.junit.jupiter:junit-jupiter-engine'
     testCompileOnly 'org.junit.jupiter:junit-jupiter-params'
