@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "zadanie")
@@ -28,6 +29,17 @@ public class Zadanie {
     @ManyToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "projekt_id")
     private Projekt projekt;
+
+    @ElementCollection
+    private List<File> pliki;
+
+    public List<File> getPliki() {
+        return pliki;
+    }
+
+    public void setPliki(List<File> pliki) {
+        this.pliki = pliki;
+    }
 
     public Integer getZadanieId() {
         return zadanieId;

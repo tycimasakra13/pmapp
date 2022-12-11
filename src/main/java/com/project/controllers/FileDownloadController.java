@@ -1,11 +1,12 @@
 package com.project.controllers;
 
-import java.io.IOException;
-
+import com.project.model.File;
+import com.project.model.Projekt;
+import com.project.model.Zadanie;
 import com.project.services.FileStorageService;
+import com.project.services.ProjektService;
+import com.project.services.ZadanieService;
 import jakarta.servlet.http.HttpServletRequest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -16,17 +17,20 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
+import java.util.Optional;
+
 @RestController
 @RequestMapping("/api")
 public class FileDownloadController {
-
-    private static final Logger logger = LoggerFactory.getLogger(FileDownloadController.class);
-
     @Autowired
     private FileStorageService fileStorageService;
+    @Autowired
+    private ProjektService projektService;
+    @Autowired
+    private ZadanieService zadanieService;
 
-    @GetMapping("/downloadFile/{fileName:.+}")
-    public ResponseEntity<Resource>downloadFile(@PathVariable String fileName, HttpServletRequest request) {
+    public ResponseEntity<Resource> downloadFile(String fileName, HttpServletRequest request) {
         // Load file as Resource
         Resource resource = fileStorageService.loadFileAsResource(fileName);
 
@@ -35,7 +39,7 @@ public class FileDownloadController {
         try {
             contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
         } catch (IOException ex) {
-            logger.info("Could not determine file type.");
+            return ResponseEntity.noContent().build();
         }
 
         // Fallback to the default content type if type could not be determined
@@ -47,5 +51,37 @@ public class FileDownloadController {
                 .contentType(MediaType.parseMediaType(contentType))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
                 .body(resource);
+    }
+
+    @GetMapping("/zadanie/{zadanieId}/{fileName:.+}")
+    public ResponseEntity<Resource> getZadanieFile(@PathVariable String fileName, @PathVariable Integer zadanieId, HttpServletRequest request) {
+        Optional<Zadanie> zadanie = zadanieService.getZadanieById(zadanieId);
+        if (zadanie.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        File fl = zadanie.get().getPliki().stream().filter(f -> f.getName().equals(fileName)).findAny().orElse(null);
+
+        if (fl != null) {
+            return downloadFile(fl.getName(), request);
+        } else {
+            return ResponseEntity.noContent().build();
+        }
+    }
+
+    @GetMapping("/projekt/{projektId}/{fileName:.+}")
+    public ResponseEntity<Resource> getProjektFile(@PathVariable String fileName, @PathVariable Integer projektId, HttpServletRequest request) {
+        Optional<Projekt> projekt = projektService.getProjektById(projektId);
+        if (projekt.isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        File fl = projekt.get().getPliki().stream().filter(f -> f.getName().equals(fileName)).findAny().orElse(null);
+
+        if (fl != null) {
+            return downloadFile(fl.getName(), request);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 }

@@ -33,8 +33,18 @@ public class Projekt {
     private Set<Student> studenci;
     @OneToMany(mappedBy = "projekt", cascade = CascadeType.REMOVE)
     private List<Zadanie> zadania;
+    @ElementCollection
+    private List<File> pliki;
 
     public Projekt() {
+    }
+
+    public List<File> getPliki() {
+        return pliki;
+    }
+
+    public void setPliki(List<File> pliki) {
+        this.pliki = pliki;
     }
 
     public List<Zadanie> getZadania() {
