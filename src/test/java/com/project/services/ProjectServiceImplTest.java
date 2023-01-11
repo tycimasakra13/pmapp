@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class ProjektServiceImplTest {
+class ProjectServiceImplTest {
 
     @BeforeEach
     void setUp() {
@@ -17,11 +17,11 @@ class ProjektServiceImplTest {
     }
 
     @Test
-    void getProjekts() {
+    void getProjects() {
     }
 
     @Test
-    void getProjektById() {
+    void getProjectById() {
     }
 
     @Test
@@ -29,10 +29,10 @@ class ProjektServiceImplTest {
     }
 
     @Test
-    void updateProjekt() {
+    void updateProject() {
     }
 
     @Test
-    void deleteProjekt() {
+    void deleteProject() {
     }
 }

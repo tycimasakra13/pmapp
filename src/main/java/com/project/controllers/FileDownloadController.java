@@ -1,11 +1,9 @@
 package com.project.controllers;
 
 import com.project.model.File;
-import com.project.model.Projekt;
-import com.project.model.Zadanie;
+import com.project.model.Project;
+import com.project.model.Task;
 import com.project.services.FileStorageService;
-import com.project.services.ProjektService;
-import com.project.services.ZadanieService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -19,6 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 import java.util.Optional;
+import com.project.services.TaskService;
+import com.project.services.ProjectService;
 
 @RestController
 @RequestMapping("/api")
@@ -26,9 +26,9 @@ public class FileDownloadController {
     @Autowired
     private FileStorageService fileStorageService;
     @Autowired
-    private ProjektService projektService;
+    private ProjectService projektService;
     @Autowired
-    private ZadanieService zadanieService;
+    private TaskService zadanieService;
 
     public ResponseEntity<Resource> downloadFile(String fileName, HttpServletRequest request) {
         // Load file as Resource
@@ -55,12 +55,12 @@ public class FileDownloadController {
 
     @GetMapping("/zadanie/{zadanieId}/{fileName:.+}")
     public ResponseEntity<Resource> getZadanieFile(@PathVariable String fileName, @PathVariable Integer zadanieId, HttpServletRequest request) {
-        Optional<Zadanie> zadanie = zadanieService.getZadanieById(zadanieId);
+        Optional<Task> zadanie = zadanieService.getTaskById(zadanieId);
         if (zadanie.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
 
-        File fl = zadanie.get().getPliki().stream().filter(f -> f.getName().equals(fileName)).findAny().orElse(null);
+        File fl = zadanie.get().getFiles().stream().filter(f -> f.getName().equals(fileName)).findAny().orElse(null);
 
         if (fl != null) {
             return downloadFile(fl.getName(), request);
@@ -71,12 +71,12 @@ public class FileDownloadController {
 
     @GetMapping("/projekt/{projektId}/{fileName:.+}")
     public ResponseEntity<Resource> getProjektFile(@PathVariable String fileName, @PathVariable Integer projektId, HttpServletRequest request) {
-        Optional<Projekt> projekt = projektService.getProjektById(projektId);
+        Optional<Project> projekt = projektService.getProjectById(projektId);
         if (projekt.isEmpty()) {
             return ResponseEntity.badRequest().build();
         }
 
-        File fl = projekt.get().getPliki().stream().filter(f -> f.getName().equals(fileName)).findAny().orElse(null);
+        File fl = projekt.get().getFiles().stream().filter(f -> f.getName().equals(fileName)).findAny().orElse(null);
 
         if (fl != null) {
             return downloadFile(fl.getName(), request);

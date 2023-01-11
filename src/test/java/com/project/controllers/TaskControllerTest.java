@@ -1,7 +1,9 @@
 package com.project.controllers;
 
-import com.project.model.Projekt;
-import com.project.services.ProjektServiceImpl;
+import com.project.model.Project;
+import com.project.model.Task;
+import com.project.services.ProjectServiceImpl;
+import com.project.services.TaskServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
@@ -29,59 +31,59 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(SpringExtension.class)
-@WebMvcTest(controllers = ProjektController.class)
-class ProjektControllerTest {
+@WebMvcTest(controllers = ProjectController.class)
+class TaskControllerTest {
 
     @MockBean
-    private ProjektServiceImpl projektService;
+    private TaskServiceImpl taskService;
     @Autowired
     private MockMvc mvc;
 
     @Test
-    public void getAllProjekts() throws Exception {
-        Projekt projekt = new Projekt();
-        projekt.setProjektId(1);
-        projekt.setNazwa("abc");
-        List<Projekt> list = new ArrayList<>();
-        list.add(projekt);
-        list.add(projekt);
-        list.add(projekt);
+    public void getAllTasks() throws Exception {
+        Task task = new Task();
+        task.setTaskId(1);
+        task.setName("abc");
+        List<Task> list = new ArrayList<>();
+        list.add(task);
+        list.add(task);
+        list.add(task);
 
-        when(projektService.getProjekts(PageRequest.of(0, 20))).thenReturn(new PageImpl<>(list));
-        mvc.perform(MockMvcRequestBuilders.get("/api/projekt")
+        when(taskService.getTasks(PageRequest.of(0, 20))).thenReturn(new PageImpl<>(list));
+        mvc.perform(MockMvcRequestBuilders.get("/api/zadanie")
                         .with(user("user").password("password"))
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].projektId").exists())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.content[1].projektId").exists());
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].zadanieId").exists())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content[1].zadanieId").exists());
     }
 
     @Test
-    public void getProjektById() throws Exception {
-        Projekt projekt = new Projekt();
-        projekt.setProjektId(1);
-        projekt.setNazwa("abc");
+    public void getTaskById() throws Exception {
+        Task task = new Task();
+        task.setTaskId(1);
+        task.setName("abc");
 
-        when(projektService.getProjektById(1)).thenReturn(Optional.of(projekt));
-        mvc.perform(MockMvcRequestBuilders.get("/api/projekt/1")
+        when(taskService.getTaskById(1)).thenReturn(Optional.of(task));
+        mvc.perform(MockMvcRequestBuilders.get("/api/zadanie/1")
                         .with(user("user").password("password"))
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.projektId").value(1));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.zadanieId").value(1));
     }
 
     @Test
-    public void getProjektByName() throws Exception {
-        Projekt projekt = new Projekt();
-        projekt.setProjektId(1);
-        projekt.setNazwa("abc");
-        List<Projekt> list = new ArrayList<>();
-        list.add(projekt);
-        when(projektService.searchByNazwa("ab", PageRequest.of(0, 20)))
+    public void getProjectTasksById() throws Exception {
+        Task task = new Task();
+        task.setTaskId(1);
+        task.setName("abc");
+        List<Task> list = new ArrayList<>();
+        list.add(task);
+        when(taskService.getProjectTasks(1, PageRequest.of(0, 20)))
                 .thenReturn(new PageImpl<>(list));
-        mvc.perform(MockMvcRequestBuilders.get("/api/projekt?nazwa=ab")
+        mvc.perform(MockMvcRequestBuilders.get("/api/zadanie/1")
                         .with(user("user").password("password"))
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -90,13 +92,13 @@ class ProjektControllerTest {
     }
 
     @Test
-    public void deleteProjektbyId() throws Exception {
-        Projekt projekt = new Projekt();
-        projekt.setProjektId(1);
-        projekt.setNazwa("abc");
+    public void deleteTaskById() throws Exception {
+        Task task = new Task();
+        task.setTaskId(1);
+        task.setName("abc");
 
-        when(projektService.getProjektById(1)).thenReturn(Optional.of(projekt));
-        mvc.perform(MockMvcRequestBuilders.delete("/api/projekt/1")
+        when(taskService.getTaskById(1)).thenReturn(Optional.of(task));
+        mvc.perform(MockMvcRequestBuilders.delete("/api/zadanie/1")
                         .with(user("user").password("password").roles("USER"))
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())

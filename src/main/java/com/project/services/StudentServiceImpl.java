@@ -23,13 +23,13 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public Page<Student> getStudentByNrIndeksu(String nrIndeksu, Pageable pageable) {
-        return repository.findByNrIndeksuStartsWith(nrIndeksu, pageable);
+    public Page<Student> getStudentByIndexNumber(String indexNumber, Pageable pageable) {
+        return repository.findByIndexNumberStartsWith(indexNumber, pageable);
     }
 
     @Override
-    public Page<Student> getStudentByNazwiskoStartsWithIgnoreCase(String nazwisko, Pageable pageable) {
-        return repository.findByNazwiskoStartsWithIgnoreCase(nazwisko, pageable);
+    public Page<Student> getStudentByNameCaseIgnore(String sName, Pageable pageable) {
+        return repository.findBySNameCaseIgnore(sName, pageable);
     }
 
     @Override
@@ -48,10 +48,10 @@ public class StudentServiceImpl implements StudentService {
         Student studentFromDb = repository.findById(id).get();
 
         studentFromDb.setEmail(student.getEmail());
-        studentFromDb.setImie(student.getImie());
-        studentFromDb.setNazwisko(student.getNazwisko());
-        studentFromDb.setNrIndeksu(student.getNrIndeksu());
-        studentFromDb.setStacjonarny(student.getStacjonarny());
+        studentFromDb.setName(student.getName());
+        studentFromDb.setsName(student.getsName());
+        studentFromDb.setIndexNumber(student.getIndexNumber());
+        studentFromDb.setFullTime(student.getFullTime());
 
         repository.save(studentFromDb);
     }

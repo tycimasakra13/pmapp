@@ -1,6 +1,6 @@
 package com.project.repositories;
 
-import com.project.model.Zadanie;
+import com.project.model.Task;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,10 +11,10 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface ZadanieRepository extends JpaRepository<Zadanie, Integer> {
+public interface TaskRepository extends JpaRepository<Task, Integer> {
     @Query("SELECT z FROM Zadanie z WHERE z.projekt.projektId = :projektId")
-    Page<Zadanie> findZadaniaProjektu(@Param("projektId") Integer projektId, Pageable pageable);
+    Page<Task> findProjectTasks(@Param("projektId") Integer projectId, Pageable pageable);
 
     @Query("SELECT z FROM Zadanie z WHERE z.projekt.projektId = :projektId")
-    List<Zadanie> findZadaniaProjektu(@Param("projektId") Integer projektId);
+    List<Task> findProjectTasks(@Param("projektId") Integer projektId);
 }

@@ -59,12 +59,12 @@ public class StudentController {
     }
 
     @GetMapping
-    Page<Student> getStudenty(Pageable pageable) {
+    Page<Student> getStudents(Pageable pageable) {
         return studentService.getStudents(pageable);
     }
 
     @GetMapping(params = "nazwisko")
-    Page<Student> getStudentyByNazwwisko(@RequestParam String nazwisko, Pageable pageable) {
-        return studentService.getStudentByNazwiskoStartsWithIgnoreCase(nazwisko, pageable);
+    Page<Student> getStudentsByName(@RequestParam String name, Pageable pageable) {
+        return studentService.getStudentByNameCaseIgnore(name, pageable);
     }
 }

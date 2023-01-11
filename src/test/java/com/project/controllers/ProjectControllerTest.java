@@ -1,9 +1,7 @@
 package com.project.controllers;
 
-import com.project.model.Projekt;
-import com.project.model.Zadanie;
-import com.project.services.ProjektServiceImpl;
-import com.project.services.ZadanieServiceImpl;
+import com.project.model.Project;
+import com.project.services.ProjectServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
@@ -31,59 +29,59 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(SpringExtension.class)
-@WebMvcTest(controllers = ProjektController.class)
-class ZadanieControllerTest {
+@WebMvcTest(controllers = ProjectController.class)
+class ProjectControllerTest {
 
     @MockBean
-    private ZadanieServiceImpl zadanieService;
+    private ProjectServiceImpl projectService;
     @Autowired
     private MockMvc mvc;
 
     @Test
-    public void getAllZadania() throws Exception {
-        Zadanie zadanie = new Zadanie();
-        zadanie.setZadanieId(1);
-        zadanie.setNazwa("abc");
-        List<Zadanie> list = new ArrayList<>();
-        list.add(zadanie);
-        list.add(zadanie);
-        list.add(zadanie);
+    public void getAllProjekts() throws Exception {
+        Project project = new Project();
+        project.setProjectId(1);
+        project.setName("abc");
+        List<Project> list = new ArrayList<>();
+        list.add(project);
+        list.add(project);
+        list.add(project);
 
-        when(zadanieService.getZadanies(PageRequest.of(0, 20))).thenReturn(new PageImpl<>(list));
-        mvc.perform(MockMvcRequestBuilders.get("/api/zadanie")
+        when(projectService.getProjects(PageRequest.of(0, 20))).thenReturn(new PageImpl<>(list));
+        mvc.perform(MockMvcRequestBuilders.get("/api/projekt")
                         .with(user("user").password("password"))
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].zadanieId").exists())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.content[1].zadanieId").exists());
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].projektId").exists())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content[1].projektId").exists());
     }
 
     @Test
-    public void getZadanieById() throws Exception {
-        Zadanie zadanie = new Zadanie();
-        zadanie.setZadanieId(1);
-        zadanie.setNazwa("abc");
+    public void getProjectById() throws Exception {
+        Project project = new Project();
+        project.setProjectId(1);
+        project.setName("abc");
 
-        when(zadanieService.getZadanieById(1)).thenReturn(Optional.of(zadanie));
-        mvc.perform(MockMvcRequestBuilders.get("/api/zadanie/1")
+        when(projectService.getProjectById(1)).thenReturn(Optional.of(project));
+        mvc.perform(MockMvcRequestBuilders.get("/api/projekt/1")
                         .with(user("user").password("password"))
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.zadanieId").value(1));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.projektId").value(1));
     }
 
     @Test
-    public void getZadaniaProjektuById() throws Exception {
-        Zadanie zadanie = new Zadanie();
-        zadanie.setZadanieId(1);
-        zadanie.setNazwa("abc");
-        List<Zadanie> list = new ArrayList<>();
-        list.add(zadanie);
-        when(zadanieService.getZadaniaProjektu(1, PageRequest.of(0, 20)))
+    public void getProjectByName() throws Exception {
+        Project project = new Project();
+        project.setProjectId(1);
+        project.setName("abc");
+        List<Project> list = new ArrayList<>();
+        list.add(project);
+        when(projectService.searchByName("ab", PageRequest.of(0, 20)))
                 .thenReturn(new PageImpl<>(list));
-        mvc.perform(MockMvcRequestBuilders.get("/api/zadanie/1")
+        mvc.perform(MockMvcRequestBuilders.get("/api/projekt?nazwa=ab")
                         .with(user("user").password("password"))
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -92,13 +90,13 @@ class ZadanieControllerTest {
     }
 
     @Test
-    public void deleteZadaniebyId() throws Exception {
-        Zadanie zadanie = new Zadanie();
-        zadanie.setZadanieId(1);
-        zadanie.setNazwa("abc");
+    public void deleteProjectById() throws Exception {
+        Project project = new Project();
+        project.setProjectId(1);
+        project.setName("abc");
 
-        when(zadanieService.getZadanieById(1)).thenReturn(Optional.of(zadanie));
-        mvc.perform(MockMvcRequestBuilders.delete("/api/zadanie/1")
+        when(projectService.getProjectById(1)).thenReturn(Optional.of(project));
+        mvc.perform(MockMvcRequestBuilders.delete("/api/projekt/1")
                         .with(user("user").password("password").roles("USER"))
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())

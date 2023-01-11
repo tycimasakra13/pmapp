@@ -9,9 +9,9 @@ import java.util.Optional;
 public interface StudentService {
     Page<Student> getStudents(Pageable pageable);
 
-    Page<Student> getStudentByNrIndeksu(String nrIndeksu, Pageable pageable);
+    Page<Student> getStudentByIndexNumber(String indexNumber, Pageable pageable);
 
-    Page<Student> getStudentByNazwiskoStartsWithIgnoreCase(String nazwisko, Pageable pageable);
+    Page<Student> getStudentByNameCaseIgnore(String sName, Pageable pageable);
 
     Optional<Student> getStudentById(Integer id);
 

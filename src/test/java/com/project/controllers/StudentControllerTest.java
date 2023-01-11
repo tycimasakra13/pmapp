@@ -1,8 +1,8 @@
 package com.project.controllers;
 
-import com.project.model.Projekt;
+import com.project.model.Project;
 import com.project.model.Student;
-import com.project.services.ProjektServiceImpl;
+import com.project.services.ProjectServiceImpl;
 import com.project.services.StudentService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,8 +38,8 @@ public class StudentControllerTest {
     public void getAllStudents() throws Exception {
         Student student = new Student();
         student.setStudentId(1);
-        student.setNazwisko("abc");
-        student.setImie("abc");
+        student.setsName("abc");
+        student.setName("abc");
         List<Student> list = new ArrayList<>();
         list.add(student);
         list.add(student);
@@ -58,8 +58,8 @@ public class StudentControllerTest {
     public void getStudentById() throws Exception {
         Student student = new Student();
         student.setStudentId(1);
-        student.setNazwisko("abc");
-        student.setImie("abc");
+        student.setsName("abc");
+        student.setName("abc");
 
         when(studentService.getStudentById(1)).thenReturn(Optional.of(student));
         mvc.perform(MockMvcRequestBuilders.get("/api/student/1")
@@ -71,14 +71,14 @@ public class StudentControllerTest {
     }
 
     @Test
-    public void getStudentByNazwisko() throws Exception {
+    public void getStudentBySName() throws Exception {
         Student student = new Student();
         student.setStudentId(1);
-        student.setNazwisko("abc");
-        student.setImie("abc");
+        student.setsName("abc");
+        student.setName("abc");
         List<Student> list = new ArrayList<>();
         list.add(student);
-        when(studentService.getStudentByNazwiskoStartsWithIgnoreCase("abc", PageRequest.of(0, 20)))
+        when(studentService.getStudentByNameCaseIgnore("abc", PageRequest.of(0, 20)))
                 .thenReturn(new PageImpl<>(list));
         mvc.perform(MockMvcRequestBuilders.get("/api/student?nazwisko=abc")
                         .with(user("user").password("password"))
@@ -89,11 +89,11 @@ public class StudentControllerTest {
     }
 
     @Test
-    public void deleteStudentbyId() throws Exception {
+    public void deleteStudentById() throws Exception {
         Student student = new Student();
         student.setStudentId(1);
-        student.setNazwisko("abc");
-        student.setImie("abc");
+        student.setsName("abc");
+        student.setName("abc");
 
         when(studentService.getStudentById(1)).thenReturn(Optional.of(student));
         mvc.perform(MockMvcRequestBuilders.delete("/api/student/1")

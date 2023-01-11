@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class ZadanieServiceImplTest {
+class TaskServiceImplTest {
 
     @BeforeEach
     void setUp() {
@@ -17,11 +17,11 @@ class ZadanieServiceImplTest {
     }
 
     @Test
-    void getZadanies() {
+    void getTasks() {
     }
 
     @Test
-    void getZadanieById() {
+    void getTaskById() {
     }
 
     @Test
@@ -29,10 +29,10 @@ class ZadanieServiceImplTest {
     }
 
     @Test
-    void updateZadanie() {
+    void updateTask() {
     }
 
     @Test
-    void deleteZadanie() {
+    void deleteTask() {
     }
 }

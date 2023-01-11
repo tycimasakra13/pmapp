@@ -25,27 +25,27 @@ class StudentTest {
     }
 
     @Test
-    void getImie() {
+    void getName() {
     }
 
     @Test
-    void setImie() {
+    void setName() {
     }
 
     @Test
-    void getNazwisko() {
+    void getSName() {
     }
 
     @Test
-    void setNazwisko() {
+    void setSName() {
     }
 
     @Test
-    void getNrIndeksu() {
+    void getIndexNumber() {
     }
 
     @Test
-    void setNrIndeksu() {
+    void setIndexNumber() {
     }
 
     @Test
@@ -57,18 +57,18 @@ class StudentTest {
     }
 
     @Test
-    void getStacjonarny() {
+    void getFullTime() {
     }
 
     @Test
-    void setStacjonarny() {
+    void setFullTime() {
     }
 
     @Test
-    void getProjekty() {
+    void getProjects() {
     }
 
     @Test
-    void setProjekty() {
+    void setProjects() {
     }
 }

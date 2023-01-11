@@ -13,36 +13,36 @@ public class Student {
     @Column(name = "student_id")
     private Integer studentId;
     @Column(nullable = false, length = 50)
-    private String imie;
+    private String name;
     @Column(nullable = false, length = 100)
-    private String nazwisko;
+    private String sName;
     @Column(nullable = false, length = 20)
-    private String nrIndeksu;
+    private String indexNumber;
     @Column(nullable = true, length = 50)
     private String email;
     @Column(nullable = false)
-    private Boolean stacjonarny;
+    private Boolean fullTime;
     @JsonIgnore
     @ManyToMany(mappedBy = "studenci", cascade = CascadeType.REMOVE)
-    private Set<Projekt> projekty;
+    private Set<Project> projects;
 
     public Student() {
     }
 
-    public Student(String imie, String nazwisko, String nrIndeksu, Boolean stacjonarny) {
-        this.imie = imie;
-        this.nazwisko = nazwisko;
-        this.nrIndeksu = nrIndeksu;
-        this.stacjonarny = stacjonarny;
+    public Student(String name, String sName, String indexNumber, Boolean fullTime) {
+        this.name = name;
+        this.sName = sName;
+        this.indexNumber = indexNumber;
+        this.fullTime = fullTime;
     }
 
-    public Student(String imie, String nazwisko, String nrIndeksu, String email,
-                   Boolean stacjonarny) {
-        this.imie = imie;
-        this.nazwisko = nazwisko;
-        this.nrIndeksu = nrIndeksu;
+    public Student(String name, String sName, String indexNumber, String email,
+                   Boolean fullTime) {
+        this.name = name;
+        this.sName = sName;
+        this.indexNumber = indexNumber;
         this.email = email;
-        this.stacjonarny = stacjonarny;
+        this.fullTime = fullTime;
     }
 
     public Integer getStudentId() {
@@ -53,28 +53,28 @@ public class Student {
         this.studentId = studentId;
     }
 
-    public String getImie() {
-        return imie;
+    public String getName() {
+        return name;
     }
 
-    public void setImie(String imie) {
-        this.imie = imie;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getNazwisko() {
-        return nazwisko;
+    public String getsName() {
+        return sName;
     }
 
-    public void setNazwisko(String nazwisko) {
-        this.nazwisko = nazwisko;
+    public void setsName(String sName) {
+        this.sName = sName;
     }
 
-    public String getNrIndeksu() {
-        return nrIndeksu;
+    public String getIndexNumber() {
+        return indexNumber;
     }
 
-    public void setNrIndeksu(String nrIndeksu) {
-        this.nrIndeksu = nrIndeksu;
+    public void setIndexNumber(String indexNumber) {
+        this.indexNumber = indexNumber;
     }
 
     public String getEmail() {
@@ -85,19 +85,19 @@ public class Student {
         this.email = email;
     }
 
-    public Boolean getStacjonarny() {
-        return stacjonarny;
+    public Boolean getFullTime() {
+        return fullTime;
     }
 
-    public void setStacjonarny(Boolean stacjonarny) {
-        this.stacjonarny = stacjonarny;
+    public void setFullTime(Boolean fullTime) {
+        this.fullTime = fullTime;
     }
 
-    public Set<Projekt> getProjekty() {
-        return projekty;
+    public Set<Project> getProjects() {
+        return projects;
     }
 
-    public void setProjekty(Set<Projekt> projekty) {
-        this.projekty = projekty;
+    public void setProjects(Set<Project> projects) {
+        this.projects = projects;
     }
 }

@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class ZadanieTest {
+class ProjectTest {
 
     @BeforeEach
     void setUp() {
@@ -17,50 +17,58 @@ class ZadanieTest {
     }
 
     @Test
-    void getZadanieId() {
+    void getTasks() {
     }
 
     @Test
-    void setZadanieId() {
+    void setTasks() {
     }
 
     @Test
-    void getOpis() {
+    void getProjectId() {
     }
 
     @Test
-    void setOpis() {
+    void setProjectId() {
     }
 
     @Test
-    void getKolejnosc() {
+    void getName() {
     }
 
     @Test
-    void setKolejnosc() {
+    void setName() {
     }
 
     @Test
-    void getNazwa() {
+    void getDescription() {
     }
 
     @Test
-    void setNazwa() {
+    void setDescription() {
     }
 
     @Test
-    void getDataDostarczenia() {
+    void getCreateDateTime() {
     }
 
     @Test
-    void setDataDostarczenia() {
+    void setCreateDateTime() {
     }
 
     @Test
-    void getProjekt() {
+    void getModificationDateTime() {
     }
 
     @Test
-    void setProjekt() {
+    void setModificationDateTime() {
+    }
+
+    @Test
+    void getStudenci() {
+    }
+
+    @Test
+    void setStudenci() {
     }
 }

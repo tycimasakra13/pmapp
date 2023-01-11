@@ -1,12 +1,10 @@
 package com.project.controllers;
 
 import com.project.model.File;
-import com.project.model.Projekt;
-import com.project.model.Zadanie;
+import com.project.model.Project;
+import com.project.model.Task;
 import com.project.payload.Response;
 import com.project.services.FileStorageService;
-import com.project.services.ProjektService;
-import com.project.services.ZadanieService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +15,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import com.project.services.TaskService;
+import com.project.services.ProjectService;
 
 @RestController
 @RequestMapping("/api")
@@ -25,32 +25,32 @@ public class FileUploadController {
     @Autowired
     private FileStorageService fileStorageService;
     @Autowired
-    private ProjektService projektService;
+    private ProjectService projectService;
     @Autowired
-    private ZadanieService zadanieService;
+    private TaskService taskService;
 
-    private ResponseEntity<Response> upload(MultipartFile file, Integer id, Optional<ProjektService> projektService, Optional<ZadanieService> zadanieService) {
+    private ResponseEntity<Response> upload(MultipartFile file, Integer id, Optional<ProjectService> projectService, Optional<TaskService> taskService) {
         String type = "";
         String entityId = "";
-        if (projektService.isPresent()) {
+        if (projectService.isPresent()) {
             type = "projekt";
-            Optional<Projekt> projekt = projektService.get().getProjektById(id);
-            if (projekt.isEmpty()) {
+            Optional<Project> project = projectService.get().getProjectById(id);
+            if (project.isEmpty()) {
                 return ResponseEntity.badRequest().build();
             } else {
-                entityId = projekt.get().getProjektId().toString();
-                projekt.get().getPliki().add(new File(file.getOriginalFilename()));
-                projektService.get().updateProjekt(projekt.get().getProjektId(), projekt.get());
+                entityId = project.get().getProjectId().toString();
+                project.get().getFiles().add(new File(file.getOriginalFilename()));
+                projectService.get().updateProject(project.get().getProjectId(), project.get());
             }
-        } else if (zadanieService.isPresent()) {
+        } else if (taskService.isPresent()) {
             type = "zadanie";
-            Optional<Zadanie> zadanie = zadanieService.get().getZadanieById(id);
-            if (zadanie.isEmpty()) {
+            Optional<Task> task = taskService.get().getTaskById(id);
+            if (task.isEmpty()) {
                 return ResponseEntity.badRequest().build();
             } else {
-                entityId = zadanie.get().getZadanieId().toString();
-                zadanie.get().getPliki().add(new File(file.getOriginalFilename()));
-                zadanieService.get().updateZadanie(zadanie.get().getZadanieId(), zadanie.get());
+                entityId = task.get().getTaskId().toString();
+                task.get().getFiles().add(new File(file.getOriginalFilename()));
+                taskService.get().updateTask(task.get().getTaskId(), task.get());
             }
         } else {
             throw new RuntimeException("Cannot create file unassigned to project or task");
@@ -67,26 +67,26 @@ public class FileUploadController {
     }
 
     @PostMapping("/zadanie/uploadFile/{zadanieId}")
-    public ResponseEntity<Response> uploadtoZadanie(@RequestParam("file") MultipartFile file, @PathVariable Integer zadanieId) {
-        return this.upload(file, zadanieId, Optional.empty(), Optional.ofNullable(zadanieService));
+    public ResponseEntity<Response> uploadToTask(@RequestParam("file") MultipartFile file, @PathVariable Integer taskId) {
+        return this.upload(file, taskId, Optional.empty(), Optional.ofNullable(taskService));
     }
 
     @PostMapping("/zadanie/uploadMultipleFiles/{zadanieId}")
-    public List<ResponseEntity<Response>> uploadMultipletoZadanie(@RequestParam("files") MultipartFile[] files, @PathVariable Integer zadanieId) {
+    public List<ResponseEntity<Response>> uploadMultipleToTask(@RequestParam("files") MultipartFile[] files, @PathVariable Integer taskId) {
         return Arrays.stream(files)
-                .map(file -> this.uploadtoZadanie(file, zadanieId))
+                .map(file -> this.uploadToTask(file, taskId))
                 .collect(Collectors.toList());
     }
 
     @PostMapping("/projekt/uploadFile/{projektId}")
-    public ResponseEntity<Response> uploadtoProjekt(@RequestParam("file") MultipartFile file, @PathVariable Integer projektId) {
-        return this.upload(file, projektId, Optional.ofNullable(projektService), Optional.empty());
+    public ResponseEntity<Response> uploadToProject(@RequestParam("file") MultipartFile file, @PathVariable Integer projectId) {
+        return this.upload(file, projectId, Optional.ofNullable(projectService), Optional.empty());
     }
 
     @PostMapping("/projekt/uploadMultipleFiles/{projektId}")
-    public List<ResponseEntity<Response>> uploadMultipletoProjekt(@RequestParam("files") MultipartFile[] files, @PathVariable Integer projektId) {
+    public List<ResponseEntity<Response>> uploadMultipleToProject(@RequestParam("files") MultipartFile[] files, @PathVariable Integer projectId) {
         return Arrays.stream(files)
-                .map(file -> this.uploadtoProjekt(file, projektId))
+                .map(file -> this.uploadToProject(file, projectId))
                 .collect(Collectors.toList());
     }
 }
