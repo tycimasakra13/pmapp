@@ -1,0 +1,57 @@
+.header {
+    overflow: hidden;
+    padding: 10px;
+}
+
+.header .projectTitle {
+    width: 5%;
+    float: left;
+}
+
+.header .projectTitle img {
+    width: 100%;
+}
+
+.header .menuNavigator {
+    width: 80%;
+    float: left;
+}
+
+.header .menuNavigator ul {
+    list-style-type: none;
+}
+
+.header .menuNavigator ul li {
+    float: left;
+    padding: 0 15px;
+}
+
+.header .userProfile{
+    width: 10%;
+    float: left;
+}
+
+.content {
+    text-align: center;
+}
+
+.content form {
+    padding: 10px;
+}
+
+.footer{
+    position: absolute;
+    bottom: 0;
+    width: 90%;
+    background: black;
+    color: whitesmoke;
+    padding: 10px;
+}
+
+.footer span {
+    padding: 0 100px;
+}
+
+.footer span:last-child {
+    float: right;
+}

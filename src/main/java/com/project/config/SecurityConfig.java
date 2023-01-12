@@ -16,6 +16,11 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http.
+                headers().
+                frameOptions().
+                sameOrigin();
+        
         http
                 .csrf().disable()
                 .authorizeRequests()
@@ -43,5 +48,15 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+    }
+    
+    protected void configure(final HttpSecurity http) throws Exception {
+        http
+                .formLogin()
+                .loginPage("/login.html")
+                .failureUrl("/login_error.html")
+                .and()
+                .logout()
+                .logoutSuccessUrl("/index.html");
     }
 }
