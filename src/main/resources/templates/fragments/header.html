@@ -4,12 +4,13 @@
             </div>
             <div class="menuNavigator">
                 <ul>
-                    <li>Projects</li>
-                    <li>Tasks</li>
-                    <li>Studends</li>
+                    <li><a href="project?pageNumber=1&pageSize=2">Projects</a></li>
+                    <li><a href="/api/zadanie">Tasks</a></li>
+                    <li><a href="/api/student">Studends</a></li>
                 </ul>
             </div>
             <div class="userProfile">
-                <span id="userName">User Name</span>
+                <span th:text="${userName}"></span>
+                <a href="/logout">Logout</a>
             </div>
  

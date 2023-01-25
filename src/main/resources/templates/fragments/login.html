@@ -1,0 +1,14 @@
+
+        <div class="loginForm">
+            <h1>Insert credentials to login</h1>
+                
+            <form th:action="@{/login}" th:object="${loginData}" method="POST">
+                <label for="userName">Username</label>:
+                <input type="text" th:field="*{userName}"/>
+                <label for="password">Password</label>:
+                <input type="text" th:field="*{password}"/>
+                <button type="submit">Login</button>
+            </form>
+            
+            <p th:if="${loginError}" class="error" th:text="${msg}"></p>
+        </div>

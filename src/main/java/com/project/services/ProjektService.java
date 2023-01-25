@@ -8,7 +8,9 @@ import java.util.Optional;
 
 public interface ProjektService {
     Page<Projekt> getProjekts(Pageable pageable);
-
+            
+    Page<Projekt> getPaginatedProjects(Integer pageNumber, Integer pageSize);
+    
     Optional<Projekt> getProjektById(Integer id);
 
     Projekt insert(Projekt projekt);
