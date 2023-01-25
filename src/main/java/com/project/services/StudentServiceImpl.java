@@ -1,5 +1,6 @@
 package com.project.services;
 
+import com.project.model.Projekt;
 import com.project.model.Student;
 import com.project.repositories.StudentRepository;
 import org.springframework.data.domain.Page;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+import org.springframework.data.domain.PageRequest;
 
 @Service
 public class StudentServiceImpl implements StudentService {
@@ -19,6 +21,12 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public Page<Student> getStudents(Pageable pageable) {
+        return repository.findAll(pageable);
+    }
+    
+    @Override
+    public Page<Student> getPaginatedStudents(Integer pageNumber, Integer pageSize) {
+        final Pageable pageable = PageRequest.of(pageNumber - 1, pageSize);
         return repository.findAll(pageable);
     }
 
