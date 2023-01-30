@@ -9,11 +9,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 
@@ -37,7 +37,7 @@ public class ProjektController {
     
     private Integer setPageSize(Integer pageSize) {
         if(pageSize == null || pageSize == 0){
-            pageSize = 10;
+            pageSize = 2;
         }
         
         return pageSize;
@@ -65,6 +65,26 @@ public class ProjektController {
         return "projekt.html";
     }
     
+    @PostMapping("/project")
+    public String searchProject(@Valid @ModelAttribute("formData") Projekt formData,
+                               Model model, Pageable pageable) {
+
+        System.out.println("response " + formData.getNazwa());
+        Integer pageNumber = 1;
+        Integer pageSize = 2;
+        Page<Projekt> totalProjects = projektService.searchByNazwa(formData.getNazwa(), pageNumber, pageSize);
+        Integer totalPages = totalProjects.getTotalPages();
+        
+        model.addAttribute("formData", new Projekt());
+        model.addAttribute("projects",totalProjects);
+        model.addAttribute("totalPages", totalPages);
+        model.addAttribute("mode","projectListViewPaginated");
+        
+        return "projekt.html";
+        
+    }
+    
+    //add new project
     @GetMapping("/addProject")
     public String getAddProjectForm(Model model) {
         model.addAttribute("saveData", new Projekt());
@@ -72,6 +92,25 @@ public class ProjektController {
         return "projekt.html";
     }
     
+    @PostMapping("/addProject")
+    public String addProject(@Valid @ModelAttribute Projekt saveData, Model model, Pageable pageable) {
+        
+        String statusCode = createProjekt(saveData).getStatusCode().toString();
+   
+        System.out.println(statusCode);
+        model.addAttribute("statusMsg", statusCode);
+        return "projekt.html";
+    }
+     
+    ResponseEntity<Void> createProjekt(Projekt projekt) {
+        Projekt createdProjekt = projektService.insert(projekt);
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{projektId}").buildAndExpand(createdProjekt.getProjektId()).toUri();
+        return ResponseEntity.created(location).build();
+    }
+    //end of add new project
+    
+    //edit project
     @GetMapping("/editProjekt")
     public String getEditProjektForm(@RequestParam(value="projectID") Integer projectID, Model model) {
         Projekt selectedProject = projektService.getProjektById(projectID).get();
@@ -87,69 +126,43 @@ public class ProjektController {
         return "projekt.html";
     }
     
-    @PostMapping("/searchProject")
-    public String searchProject(@Valid @ModelAttribute("formData") Projekt formData,
-                               Model model, Pageable pageable) {
-
-        System.out.println("response " + formData.getNazwa());
-        Page<Projekt> totalProjects = projektService.searchByNazwa(formData.getNazwa(), pageable);
-        Integer totalPages = totalProjects.getTotalPages();
-        
-        model.addAttribute("formData", new Projekt());
-        model.addAttribute("projects",totalProjects);
-        model.addAttribute("totalPages", totalPages);
-        model.addAttribute("mode","projectListViewPaginated");
-        
-        return "projekt.html";
-        
-    }
-    
     @PostMapping("/updateProject")
     public String updateProject(@Valid @ModelAttribute Projekt updateData, Model model, Pageable pageable) {
-        
-        ResponseEntity<Void> updateProj = projektService.getProjektById(updateData.getProjektId())
+        String statusCode = updateProjekt(updateData, updateData.getProjektId()).getStatusCode().toString();
+       
+        System.out.println(statusCode);
+        model.addAttribute("statusMsg", statusCode);
+        return "projekt.html";
+    }
+   
+    public ResponseEntity<Void> updateProjekt(@Valid @RequestBody Projekt projekt,
+                                              @PathVariable Integer projektId) {
+        return projektService.getProjektById(projektId)
                 .map(p -> {
-                    projektService.updateProjekt(updateData.getProjektId(), updateData);
+                    projektService.updateProjekt(projektId, projekt);
                     return new ResponseEntity<Void>(HttpStatus.OK);
                 })
                 .orElseGet(() -> ResponseEntity.notFound().build());
-        String statusCode = updateProj.getStatusCode().toString();
+    }
+    //end of udpate project
+    
+    //delete project
+    @GetMapping("/deleteProject")
+    public String deleteProject(@RequestParam(value="projectID") Integer projektId, Model model) {        
+        String statusCode = deleteProjekt(projektId).getStatusCode().toString();
+        
         System.out.println(statusCode);
         model.addAttribute("statusMsg", statusCode);
         return "projekt.html";
     }
     
-    @GetMapping("/deleteProject")
-    public String deleteProject(@RequestParam(value="projectID") Integer projektId, Model model) {
-        ResponseEntity<Void> deleteProj = projektService.getProjektById(projektId).map(p -> {
+    public ResponseEntity<Void> deleteProjekt(@PathVariable Integer projektId) {
+        return projektService.getProjektById(projektId).map(p -> {
             projektService.deleteProjekt(projektId);
             return new ResponseEntity<Void>(HttpStatus.OK);
         }).orElseGet(() -> ResponseEntity.notFound().build());
-        
-        
-        String statusCode = deleteProj.getStatusCode().toString();
-        System.out.println(statusCode);
-        model.addAttribute("statusMsg", statusCode);
-        return "projekt.html";
     }
-    
-    @PostMapping("/addProject")
-    public String addProject(@Valid @ModelAttribute Projekt saveData, Model model, Pageable pageable) {
-        
-        String statusCode = createProjekt(saveData).getStatusCode().toString();
-   
-        System.out.println(statusCode);
-        model.addAttribute("statusMsg", statusCode);
-        return "projekt.html";
-    }
-    
-       
-    ResponseEntity<Void> createProjekt(Projekt projekt) {
-        Projekt createdProjekt = projektService.insert(projekt);
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-                .path("/{projektId}").buildAndExpand(createdProjekt.getProjektId()).toUri();
-        return ResponseEntity.created(location).build();
-    }
+    //end of delete project
 }
 
 //    private String currentUserName(Authentication authentication) {

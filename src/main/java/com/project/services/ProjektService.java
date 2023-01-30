@@ -19,5 +19,5 @@ public interface ProjektService {
 
     void deleteProjekt(Integer projektId);
 
-    Page<Projekt> searchByNazwa(String nazwa, Pageable pageable);
+    Page<Projekt> searchByNazwa(String nazwa, Integer pageNumber, Integer pageSize);
 }

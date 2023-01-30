@@ -58,7 +58,8 @@ public class ProjektServiceImpl implements ProjektService {
     }
 
     @Override
-    public Page<Projekt> searchByNazwa(String nazwa, Pageable pageable) {
+    public Page<Projekt> searchByNazwa(String nazwa, Integer pageNumber, Integer pageSize) {
+        final Pageable pageable = PageRequest.of(pageNumber - 1, pageSize);
         return repository.findByNazwaContainingIgnoreCase(nazwa, pageable);
     }
 }

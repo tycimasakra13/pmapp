@@ -15,7 +15,7 @@
                 <div class="toolbar">
                     <span><a th:href="@{/addProject}">Add Project</a></span>
                     <div class="searchBox">
-                        <form th:action="@{/searchProject}" th:object="${formData}" method="POST">
+                        <form th:action="@{/project?pageNumber=1&pageSize=2}" th:object="${formData}" method="POST">
                             <input type="text" th:field="*{nazwa}"/>
                             <button type="submit">Search</button>
                         </form>                  
