@@ -8,6 +8,8 @@ import java.util.Optional;
 
 public interface ZadanieService {
     Page<Zadanie> getZadanies(Pageable pageable);
+    
+    Page<Zadanie> getPaginatedTasks(Integer pageNumber, Integer pageSize);
 
     Page<Zadanie> getZadaniaProjektu(Integer projektId, Pageable pageable);
 

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+import org.springframework.data.domain.PageRequest;
 
 @Service
 public class ZadanieServiceImpl implements ZadanieService {
@@ -19,6 +20,12 @@ public class ZadanieServiceImpl implements ZadanieService {
 
     @Override
     public Page<Zadanie> getZadanies(Pageable pageable) {
+        return repository.findAll(pageable);
+    }
+    
+    @Override
+    public Page<Zadanie> getPaginatedTasks(Integer pageNumber, Integer pageSize) {
+        final Pageable pageable = PageRequest.of(pageNumber - 1, pageSize);
         return repository.findAll(pageable);
     }
 
