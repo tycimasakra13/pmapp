@@ -3,9 +3,43 @@
     <head>
         <title>Project Manager</title>
         <meta charset="UTF-8">
-        <link href = "css/styles.css" rel = "stylesheet"/>
+        <link href = "css/styles.css" rel = "stylesheet" initial-scale=1/>
+      
+        <style>
+            .menuNavigator{
+  overflow: hidden;
+  background-color: #333;
+}
+.menuNavigator a {
+  float: left;
+  display: block;
+  color: #f2f2f2;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+.menuNavigator a:hover {
+  background-color: #ddd;
+  color: black;
+  
+  
+  .footer {
+  background-color: #f1f1f1;
+  padding: 10px;
+}
+}
+* {
+  box-sizing: border-box;
+}
+
+        </style>
+       
     </head>
-    <body>
+    <body style="background-color:#F0F8FF;">
+   
+        <div class="menuNavigator"></div>
+         
         <div class="header" th:insert="fragments/header.html"></div>
         <div class="content" th:insert="fragments/login.html"></div>
         <div class="footer" th:insert="fragments/footer.html"></div>

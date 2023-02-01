@@ -3,12 +3,20 @@
             <h1>Insert credentials to login</h1>
                 
             <form th:action="@{/login}" th:object="${loginData}" method="POST">
-                <label for="userName">Username</label>:
-                <input type="text" th:field="*{userName}"/>
-                <label for="password">Password</label>:
-                <input type="text" th:field="*{password}"/>
+               <div class="row">
+                <label for="userName">Username</label>
+               </div>
+                <div
+                <input type="text" th:field="*{userName}" placeholder="Your name.."/>
+                </div>              
+                 <div class="row">
+                <label for="password">Password</label>
+                 </div>
+                <input type="text" th:field="*{password}" placeholder="Your password.."/>
+                 <div class="row">             
                 <button type="submit">Login</button>
+                 </div>             
             </form>
             
-            <p th:if="${loginError}" class="error" th:text="${msg}"></p>
+            <p th:if="${loginError}" class="error" th:text="${msg}" ></p>
         </div>
