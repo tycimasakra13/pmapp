@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Entity
@@ -12,22 +13,25 @@ import java.util.List;
 public class Zadanie {
     @Id
     @GeneratedValue
-    @Column(name = "zadanie_id")
+    @Column(name = "zadanie_id", nullable = false)
     private Integer zadanieId;
 
-    @Column(length = 1000)
+    @Column(length = 1000, nullable = false)
     private String opis;
 
     @Column
     private Integer kolejnosc;
+    
     @Column(nullable = false, length = 50)
     private String nazwa;
+    
     @CreationTimestamp
     @Column(name = "data_dodania", nullable = false)
     private LocalDateTime dataDodania;
+    
     @JsonIgnore
     @ManyToOne(cascade = CascadeType.REMOVE)
-    @JoinColumn(name = "projekt_id")
+    @JoinColumn(name = "projekt_id", nullable = false)
     private Projekt projekt;
 
     @ElementCollection
@@ -73,8 +77,8 @@ public class Zadanie {
         this.nazwa = nazwa;
     }
 
-    public LocalDateTime getDataDodania() {
-        return dataDodania;
+    public String getDataDodania() {
+        return dataDodania.format(DateTimeFormatter.ISO_DATE);
     }
 
     public void setDataDodania(LocalDateTime dataDodania) {

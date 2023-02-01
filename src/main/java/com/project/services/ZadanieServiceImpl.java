@@ -52,6 +52,7 @@ public class ZadanieServiceImpl implements ZadanieService {
         zadanieFromDb.setNazwa(zadanie.getNazwa());
         zadanieFromDb.setOpis(zadanie.getOpis());
         zadanieFromDb.setKolejnosc(zadanie.getKolejnosc());
+        zadanieFromDb.setProjekt(zadanie.getProjekt());
 
         repository.save(zadanieFromDb);
     }
@@ -60,5 +61,11 @@ public class ZadanieServiceImpl implements ZadanieService {
     @Transactional
     public void deleteZadanie(Integer zadanieId) {
         repository.deleteById(zadanieId);
+    }
+    
+    @Override
+    public Page<Zadanie> searchByNazwa(String nazwa, Integer pageNumber, Integer pageSize) {
+        final Pageable pageable = PageRequest.of(pageNumber - 1, pageSize);
+        return repository.findByNazwaContainingIgnoreCase(nazwa, pageable);
     }
 }
