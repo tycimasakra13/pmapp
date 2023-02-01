@@ -5,8 +5,6 @@
         <meta charset="UTF-8">
         <link href="css/styles.css" rel="stylesheet" type="text/css"/>
         <script src="js/main.js" type="text/javascript"></script>
-
-
 </head>
     <body>
         <div class="header" th:insert="fragments/header.html"></div>
@@ -15,32 +13,32 @@
                 <div class="toolbar">
                     <span><a th:href="@{/addStudent}">Add Student</a></span>
                     <div class="searchBox">
-                        <form th:action="@{/searchStudent}" th:object="${formData}" method="POST">
-                            <input type="text" th:field="*{nazwisko}"/>
+                        <form th:action="@{/student?pageNumber=1&pageSize=2}" th:object="${formData}" method="POST">
+                            <input type="text" th:field="*{nazwisko}" placeholder="Search by surname"/>
                             <button type="submit">Search</button>
-                        </form>                  
+                        </form>
                     </div>
                 </div>
                 <table>
                     <tr>
                         <th>Student ID</th>
-                        <th>imie</th>
-                        <th>nazwisko</th>
-                        <th>nrIndeksu</th>
-                        <th>email</th>
-                        <th>stacjonarny</th>
-                        <th></th>
-                        <th></th>
+                        <th>Name</th>
+                        <th>Surname</th>
+                        <th>Index number</th>
+                        <th>E-mail</th>
+                        <th>Full time</th>
+<!--                        <th>Tasks</th>-->
+                        <th>Edit</th>
+                        <th>Delete</th>
                     </tr>
                     <tr th:each="student : ${students}">
+                        <td th:text="${student.studentId}"></td>
                         <td th:text="${student.imie}"></td>
                         <td th:text="${student.nazwisko}"></td>
                         <td th:text="${student.nrIndeksu}"></td>
                         <td th:text="${student.email}"></td>
                         <td th:text="${student.stacjonarny}"></td>
-                        
-<!--                        <td th:if="${userRole == 'ADMIN'}"><a th:href="@{'/editStudent?studentId=' + ${student.studentId}}">Edit</a></td>
-                        <td th:if="${userRole == 'ADMIN'}"><a th:href="@{'/deleteStudent?studentId=' + ${student.studentId}}">Delete</a></td>-->
+<!--                        <td><a th:href="@{'/task?pageNumber=1&pageSize=2&studentId=' + ${student.studentId}}">Projects</a></td>-->
                         <td><a th:href="@{'/editStudent?studentId=' + ${student.studentId}}">Edit</a></td>
                         <td><a th:href="@{'/deleteStudent?studentId=' + ${student.studentId}}">Delete</a></td>
                     </tr>
@@ -53,24 +51,44 @@
             </div>
             <div th:if="${mode == 'studentAdd'}">
                 <form th:action="@{/addStudent}" th:object="${saveData}" method="POST">
+                    <label for="imie">Name</label>:
                     <input type="text" th:field="*{imie}"/>
+                    <label for="nazwisko">Surname</label>:
                     <input type="text" th:field="*{nazwisko}"/>
+                    <label for="nrIndeksu">Index number</label>:
                     <input type="text" th:field="*{nrIndeksu}"/>
+                    <label for="email">E-mail</label>:
                     <input type="text" th:field="*{email}"/>
-                    <input type="text" th:field="*{stacjonarny}"/>  
+                    <label for="stacjonarny">Full time</label>:
+                    <select th:field="*{stacjonarny}">
+                        <option value="0">False</option>
+                        <option value="1">True</option>
+                    </select>
                     <button type="submit">Save</button>
                 </form>
             </div>
             <div th:if="${mode == 'studentEdit'}">
                 <form th:action="@{/updateStudent}" th:object="${updateData}" method="POST">
-                    <input type="text" th:field="*{studentId}"/>
+                    <input type="hidden" th:field="*{studentId}"/>
+                    <label for="imie">Name</label>:
                     <input type="text" th:field="*{imie}"/>
+                    <label for="nazwisko">Surname</label>:
                     <input type="text" th:field="*{nazwisko}"/>
+                    <label for="nrIndeksu">Index number</label>:
                     <input type="text" th:field="*{nrIndeksu}"/>
+                    <label for="email">E-mail</label>:
                     <input type="text" th:field="*{email}"/>
-                    <input type="text" th:field="*{stacjonarny}"/>  
+                    <label for="stacjonarny">Full time</label>:
+                    <select th:field="*{stacjonarny}" />
+                        <option value="0" th:selected="(*{stacjonarny} == false)">False</option>
+                        <option value="1" th:selected="(*{stacjonarny} == true)">True</option>
+                    </select>
                     <button type="submit">Update</button>
                 </form>
+            </div>
+            <div th:if="${msgError}" class="error">
+                <p th:text="${msg}"></p>
+                <a th:href="${formUrl}">Try again</a>
             </div>
         </div>
         <div class="footer" th:insert="fragments/footer.html"></div>

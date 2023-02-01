@@ -1,6 +1,5 @@
 package com.project.controllers;
 
-import com.project.model.Projekt;
 import com.project.model.Student;
 import com.project.model.User;
 import com.project.services.StudentService;
@@ -105,12 +104,15 @@ public class StudentController {
         return "student.html";
     }
     
-    @PostMapping("/searchStudent")
+    @PostMapping("/student")
     public String searchStudent(@Valid @ModelAttribute("formData") Student formData,
                                Model model, Pageable pageable) {
-
+        
+        Integer pageNumber = setPageNumber(0);
+        Integer pageSize = setPageSize(0);
+        
         System.out.println("response " + formData.getNazwisko());
-        Page<Student> totalStudents = studentService.getStudentByNazwiskoStartsWithIgnoreCase(formData.getNazwisko(), pageable);
+        Page<Student> totalStudents = studentService.getStudentByNazwiskoStartsWithIgnoreCase(formData.getNazwisko(), pageNumber, pageSize);
         Integer totalPages = totalStudents.getTotalPages();
         
         model.addAttribute("formData", new Student());
@@ -119,7 +121,6 @@ public class StudentController {
         model.addAttribute("mode","studentListViewPaginated");
         
         return "student.html";
-        
     }
     
     @PostMapping("/updateStudent")
