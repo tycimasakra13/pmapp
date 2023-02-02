@@ -31,8 +31,10 @@ public class Projekt {
     @JoinTable(name = "projekt_student", joinColumns = {@JoinColumn(name = "projekt_id")},
             inverseJoinColumns = {@JoinColumn(name = "student_id")})
     private Set<Student> studenci;
+    
     @OneToMany(mappedBy = "projekt", cascade = CascadeType.REMOVE)
     private List<Zadanie> zadania;
+     
     @ElementCollection
     private List<File> pliki;
 

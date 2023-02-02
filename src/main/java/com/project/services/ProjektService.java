@@ -1,6 +1,8 @@
 package com.project.services;
 
 import com.project.model.Projekt;
+import java.util.List;
+import java.util.Map;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -20,4 +22,6 @@ public interface ProjektService {
     void deleteProjekt(Integer projektId);
 
     Page<Projekt> searchByNazwa(String nazwa, Integer pageNumber, Integer pageSize);
+    
+    List<Map<Integer, String>> getProjectsForSelect();
 }

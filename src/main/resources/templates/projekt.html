@@ -16,7 +16,7 @@
                     <span><a th:href="@{/addProject}">Add Project</a></span>
                     <div class="searchBox">
                         <form th:action="@{/project?pageNumber=1&pageSize=2}" th:object="${formData}" method="POST">
-                            <input type="text" th:field="*{nazwa}"/>
+                            <input type="text" th:field="*{nazwa}" placeholder="Search by surname"/>
                             <button type="submit">Search</button>
                         </form>                  
                     </div>
@@ -28,6 +28,7 @@
                         <th>Opis</th>
                         <th>Create date</th>
                         <th>Modification date</th>
+                        <th>Tasks</th>
                         <th></th>
                         <th></th>
                     </tr>
@@ -37,18 +38,24 @@
                         <td th:text="${project.opis}"></td>
                         <td th:text="${project.dataCzasUtworzenia}"></td>
                         <td th:text="${project.dataCzasModyfikacji}"></td>
+                        <td th:if="${project.zadania != null}">
+                            <a th:href="'/task?projectID=' + ${project.projektId}">Tasks</a>
+                        </td>
+                        <td th:if="${project.zadania == null}"></td>
 
                         <!---
                         studenci
                         zadania
                         pliki--->
                         
-                        <td th:if="${userRole == 'ADMIN'}"><a th:href="@{'/editProjekt?projectID=' + ${project.projektId}}">Edit</a></td>
-                        <td th:if="${userRole == 'ADMIN'}"><a th:href="@{'/deleteProject?projectID=' + ${project.projektId}}">Delete</a></td>
+<!--                        <td th:if="${userRole == 'ADMIN'}"><a th:href="@{'/editProjekt?projectID=' + ${project.projektId}}">Edit</a></td>
+                        <td th:if="${userRole == 'ADMIN'}"><a th:href="@{'/deleteProject?projectID=' + ${project.projektId}}">Delete</a></td>-->
+                        <td><a th:href="@{'/editProjekt?projectID=' + ${project.projektId}}">Edit</a></td>
+                        <td><a th:href="@{'/deleteProject?projectID=' + ${project.projektId}}">Delete</a></td>
                     </tr>
                 </table>
                 <div>
-                    <span th:each="i: ${#numbers.sequence(1, totalPages)}">
+                    <span th:each="i: ${#numbers.sequence(totalPages == 0 ? 0 : 1, totalPages)}">
                         <a th:href="@{'/project?pageNumber=' + ${i} + '&pageSize=2'}">[[${i}]]</a>
                     </span>
                 </div>

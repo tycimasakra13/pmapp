@@ -30,8 +30,15 @@ public class ZadanieServiceImpl implements ZadanieService {
     }
 
     @Override
-    public Page<Zadanie> getZadaniaProjektu(Integer projektId, Pageable pageable) {
+    public Page<Zadanie> getZadaniaProjektu(Integer projektId, Integer pageNumber, Integer pageSize) {
+        final Pageable pageable = PageRequest.of(pageNumber - 1, pageSize);
         return repository.findZadaniaProjektu(projektId, pageable);
+    }
+    
+    @Override
+    public Page<Zadanie> getZadaniaStudenta(Integer studentId, Integer pageNumber, Integer pageSize) {
+        final Pageable pageable = PageRequest.of(pageNumber - 1, pageSize);
+        return repository.findZadaniaStudenta(studentId, pageable);
     }
 
     @Override
@@ -53,6 +60,7 @@ public class ZadanieServiceImpl implements ZadanieService {
         zadanieFromDb.setOpis(zadanie.getOpis());
         zadanieFromDb.setKolejnosc(zadanie.getKolejnosc());
         zadanieFromDb.setProjekt(zadanie.getProjekt());
+        zadanieFromDb.setStudent(zadanie.getStudent());
 
         repository.save(zadanieFromDb);
     }
@@ -61,6 +69,17 @@ public class ZadanieServiceImpl implements ZadanieService {
     @Transactional
     public void deleteZadanie(Integer zadanieId) {
         repository.deleteById(zadanieId);
+    }
+    
+    @Override
+    @Transactional
+    public void removeAssignStudent(Integer studentId, Pageable pageable) {
+        //repository.deleteById(stutendId);
+        Page<Zadanie> zadanieFromDb = repository.findZadaniaStudenta(studentId, pageable);
+        zadanieFromDb.getContent().forEach((zadanie) -> {
+            zadanie.setStudent(null);
+            repository.save(zadanie);
+        });
     }
     
     @Override

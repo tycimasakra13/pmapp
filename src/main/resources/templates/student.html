@@ -27,7 +27,7 @@
                         <th>Index number</th>
                         <th>E-mail</th>
                         <th>Full time</th>
-<!--                        <th>Tasks</th>-->
+                        <th>Tasks</th>
                         <th>Edit</th>
                         <th>Delete</th>
                     </tr>
@@ -38,13 +38,16 @@
                         <td th:text="${student.nrIndeksu}"></td>
                         <td th:text="${student.email}"></td>
                         <td th:text="${student.stacjonarny}"></td>
-<!--                        <td><a th:href="@{'/task?pageNumber=1&pageSize=2&studentId=' + ${student.studentId}}">Projects</a></td>-->
+                        <td th:if="${student.zadania != null}">
+                            <a th:href="'/task?studentId=' + ${student.studentId}">Tasks</a>
+                        </td>
+                        <td th:if="${student.zadania == null}"></td>
                         <td><a th:href="@{'/editStudent?studentId=' + ${student.studentId}}">Edit</a></td>
                         <td><a th:href="@{'/deleteStudent?studentId=' + ${student.studentId}}">Delete</a></td>
                     </tr>
                 </table>
                 <div>
-                    <span th:each="i: ${#numbers.sequence(1, totalPages)}">
+                    <span th:each="i: ${#numbers.sequence(totalPages == 0 ? 0 : 1, totalPages)}">
                         <a th:href="@{'/student?pageNumber=' + ${i} + '&pageSize=2'}">[[${i}]]</a>
                     </span>
                 </div>

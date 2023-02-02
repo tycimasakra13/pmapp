@@ -51,17 +51,25 @@ public class StudentController {
     
     @GetMapping("/student")
     public String getPaginatedStudents( 
-            @RequestParam(value="pageNumber") Integer pageNumber,
-            @RequestParam(value="pageSize") Integer pageSize,
+            @RequestParam(required = false, value="pageNumber") Integer pageNumber,
+            @RequestParam(required = false, value="pageSize") Integer pageSize,
+            @RequestParam(required = false, value="studentId") Integer studentId,
             Model model, Pageable pageable, User user) {
         pageNumber = setPageNumber(pageNumber);
         pageSize = setPageSize(pageSize);
-        Page<Student> allStudents = studentService.getPaginatedStudents(pageNumber, pageSize);
-        Integer totalPages = allStudents.getTotalPages();
-
-
+        
+        Student selectedStudent = null;// = new Optional<Student>();
+        Page<Student> allStudents = null;// = studentService.getPaginatedStudents(pageNumber, pageSize);
+        Integer totalPages = 1;//allStudents.getTotalPages();
+        System.out.println("studentId" + studentId);
+        if(studentId != null) {
+            selectedStudent = studentService.getStudentById(studentId).get();
+        } else {
+            allStudents = studentService.getPaginatedStudents(pageNumber, pageSize);
+            totalPages = allStudents.getTotalPages();
+        }
         model.addAttribute("formData", new Student());
-        model.addAttribute("students",allStudents);
+        model.addAttribute("students",allStudents == null ? selectedStudent : allStudents);
         model.addAttribute("mode","studentListViewPaginated");
         model.addAttribute("totalPages", totalPages);
    
@@ -108,8 +116,8 @@ public class StudentController {
     public String searchStudent(@Valid @ModelAttribute("formData") Student formData,
                                Model model, Pageable pageable) {
         
-        Integer pageNumber = setPageNumber(0);
-        Integer pageSize = setPageSize(0);
+        Integer pageNumber = 1;//setPageNumber(1);
+        Integer pageSize = 2;//setPageSize(0);
         
         System.out.println("response " + formData.getNazwisko());
         Page<Student> totalStudents = studentService.getStudentByNazwiskoStartsWithIgnoreCase(formData.getNazwisko(), pageNumber, pageSize);
@@ -139,9 +147,9 @@ public class StudentController {
     }
     
     @GetMapping("/deleteStudent")
-    public String deleteStudent(@RequestParam(value="studentId") Integer studentId, Model model) {
+    public String deleteStudent(@RequestParam(value="studentId") Integer studentId, Model model, Pageable pageable) {
         ResponseEntity<Void> deleteStud = studentService.getStudentById(studentId).map(p -> {
-            studentService.deleteStudent(studentId);
+            studentService.deleteStudent(studentId, pageable);
             return new ResponseEntity<Void>(HttpStatus.OK);
         }).orElseGet(() -> ResponseEntity.notFound().build());
         

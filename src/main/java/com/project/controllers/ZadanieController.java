@@ -1,9 +1,11 @@
 package com.project.controllers;
 
 import com.project.model.Projekt;
+import com.project.model.Student;
 import com.project.model.User;
 import com.project.model.Zadanie;
 import com.project.services.ProjektService;
+import com.project.services.StudentService;
 import com.project.services.ZadanieService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,11 +28,15 @@ import org.springframework.ui.Model;
 public class ZadanieController {
     private final ZadanieService zadanieService;
     private final ProjektService projektService;
+    private final StudentService studentService;
   
     @Autowired
-    public ZadanieController(ZadanieService zadanieService, ProjektService projektService) {
+    public ZadanieController(ZadanieService zadanieService, 
+            ProjektService projektService,
+            StudentService studentService) {
         this.zadanieService = zadanieService;
         this.projektService = projektService;
+        this.studentService = studentService;
     }
     
     private Integer setPageNumber(Integer pageNumber) {
@@ -43,7 +49,7 @@ public class ZadanieController {
     
     private Integer setPageSize(Integer pageSize) {
         if(pageSize == null || pageSize == 0){
-            pageSize = 10;
+            pageSize = 3;
         }
         
         return pageSize;
@@ -58,21 +64,48 @@ public class ZadanieController {
         
         return projectsLists;
     }
+    
+    private Map<Integer, String> studentsForSelect(Pageable pageable) {
+        
+        Map<Integer, String> studentsLists = new HashMap<>();
+        Page<Student> students = studentService.getStudents(pageable);
+        students.forEach((student) -> {
+            studentsLists.put(student.getStudentId(), student.getImie() + " " + student.getNazwisko());
+        });
+        
+        return studentsLists;
+    }
 
     @GetMapping("/task")
     public String getPaginatedTasks(@ModelAttribute("loggedUser") User lUser, 
-            @RequestParam(value="pageNumber") Integer pageNumber,
-            @RequestParam(value="pageSize") Integer pageSize,
+            @RequestParam(required = false, value="pageNumber") Integer pageNumber,
+            @RequestParam(required = false, value="pageSize") Integer pageSize,
+            @RequestParam(required = false, value="studentId") Integer studentId,
+            @RequestParam(required = false, value="projectID") Integer projectID,
             Model model, Pageable pageable, User user) {
+        
         pageNumber = setPageNumber(pageNumber);
         pageSize = setPageSize(pageSize);
-        Page<Zadanie> totalTasks = zadanieService.getPaginatedTasks(pageNumber, pageSize);
-        Integer totalPages = totalTasks.getTotalPages();
-
+        System.out.println("pageNumber" + pageNumber);
+        System.out.println("pageSize" + pageSize);
+        
+        Page<Zadanie> tasksList = null;//zadanieService.getPaginatedTasks(pageNumber, pageSize);
+        
+        System.out.println("studentId" + studentId);
+        if(studentId != null) {
+            tasksList = zadanieService.getZadaniaStudenta(studentId, pageNumber, pageSize);
+        } else if(projectID != null) { 
+            tasksList = zadanieService.getZadaniaProjektu(projectID, pageNumber, pageSize);
+        } else {
+            tasksList = zadanieService.getPaginatedTasks(pageNumber, pageSize);
+        }
+        
+        Integer totalPages = tasksList.getTotalPages();
+        
         String userRole = lUser.getRole();
         String userName = lUser.getUserName();
         model.addAttribute("formData", new Zadanie());
-        model.addAttribute("tasks",totalTasks);
+        model.addAttribute("tasks",tasksList);
         model.addAttribute("mode","taskListViewPaginated");
         model.addAttribute("userRole", userRole);
         model.addAttribute("userName", userName);
@@ -80,6 +113,18 @@ public class ZadanieController {
    
         return "task.html";
     }
+    /*
+    @GetMapping("/student")
+    public String getPaginatedStudents( 
+        
+  \\
+        model.addAttribute("formData", new Student());
+        model.addAttribute("students",allStudents == null ? selectedStudent : allStudents);
+        model.addAttribute("mode","studentListViewPaginated");
+        model.addAttribute("totalPages", totalPages);
+   
+        return "student.html";
+    }*/
     
     @PostMapping("/task")
     public String searchTask(@Valid @ModelAttribute("formData") Zadanie formData,
@@ -100,9 +145,10 @@ public class ZadanieController {
     @GetMapping("/addTask")
     public String getAddTaskForm(Model model, Pageable pageable) {
         Zadanie task = new Zadanie();
-        
+
         model.addAttribute("saveData", task);
         model.addAttribute("projects", projectsForSelect(pageable));
+        model.addAttribute("students", studentsForSelect(pageable));
         model.addAttribute("mode","taskAdd");
         return "task.html";
     }
@@ -113,6 +159,7 @@ public class ZadanieController {
         
         model.addAttribute("updateData", selectedTask);
         model.addAttribute("projects", projectsForSelect(pageable));
+        model.addAttribute("students", studentsForSelect(pageable));
         model.addAttribute("mode","taskEdit");
  
         return "task.html";

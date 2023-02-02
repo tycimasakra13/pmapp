@@ -26,6 +26,7 @@
                         <th>Name</th>
                         <th>Create Date</th>
                         <th>Project ID</th>
+                        <th>Assigned Student</th>
                         <th>Edit</th>
                         <th>Delete</th>
                     </tr>
@@ -35,12 +36,20 @@
                         <td th:text="${task.nazwa}"></td>
                         <td th:text="${task.dataDodania}"></td>
                         <td th:text="${task.projekt.getProjektId()}"></td>
+                        <td th:if="${task.student != null}">
+                            <a th:href="'/student?studentId=' + ${task.student.getStudentId()}">
+                                <span th:text="(${task.student.getImie()} + ' ' + ${task.student.getNazwisko()})"></span>
+                            </a>
+                        </td> 
+                        <td th:if="${task.student == null}">NOT ASSIGNED</td> 
+ 
+
                         <td><a th:href="@{'/editTask?taskId=' + ${task.zadanieId}}">Edit</a></td>
                         <td><a th:href="@{'/deleteTask?taskId=' + ${task.zadanieId}}">Delete</a></td>
                     </tr>
                 </table>
                 <div>
-                    <span th:each="i: ${#numbers.sequence(1, totalPages)}">
+                    <span th:each="i: ${#numbers.sequence(totalPages == 0 ? 0 : 1, totalPages)}">
                         <a th:href="@{'/task?pageNumber=' + ${i} + '&pageSize=2'}">[[${i}]]</a>
                     </span>
                 </div>
@@ -55,7 +64,11 @@
                     <select th:field="*{projekt}">
                         <option value="0">select project</option>
                         <option th:each="project : ${projects}" th:value="${project.key}" th:text="${project.value}"></option>
-                        </option>
+                    </select>
+                    <label for="student">Assign student</label>:
+                    <select th:field="*{student}">
+                        <option value="0">select student</option>
+                        <option th:each="student : ${students}" th:value="${student.key}" th:text="${student.value}"></option>
                     </select>
                     <button type="submit">Add</button>
                 </form>
@@ -69,10 +82,15 @@
                     <input type="text" th:field="*{nazwa}"/>
                     <label for="projekt">Project</label>:
                     <select th:field="*{projekt}"/>
-                        <option value="0">select project</option>
-                        <ption th:value="${selectedProject}" text="test"></option>
                         <option th:each="project : ${projects}" th:value="${project.key}" th:text="${project.value}"
-                            th:selected="(${project.key} == *{projekt.projektId})"></option>
+                            th:selected="(${project.key} == *{projekt.projektId})">
+                        </option>
+                    </select>
+                    <label for="student">Assigned student</label>:
+                    <select th:field="*{student}"/>
+                        <option value="0">select student</option>
+                        <option th:each="student : ${students}" th:value="${student.key}" th:text="${student.value}"
+                            th:selected="(${student.key} == (*{student} == null ? 0 : *{student.studentId}))">
                         </option>
                     </select>
                     <button type="submit">Update</button>

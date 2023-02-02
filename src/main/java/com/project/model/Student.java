@@ -2,6 +2,7 @@ package com.project.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import java.util.List;
 
 import java.util.Set;
 
@@ -28,9 +29,20 @@ public class Student {
     @Column(nullable = false)
     private Boolean stacjonarny;
     
+    @OneToMany(mappedBy = "student")
+    private List<Zadanie> zadania;
+    
     @JsonIgnore
     @ManyToMany(mappedBy = "studenci", cascade = CascadeType.REMOVE)
     private Set<Projekt> projekty;
+
+    public List<Zadanie> getZadania() {
+        return zadania;
+    }
+
+    public void setZadania(List<Zadanie> zadania) {
+        this.zadania = zadania;
+    }
 
     public Student() {
     }
