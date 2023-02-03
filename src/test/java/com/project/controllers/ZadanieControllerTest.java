@@ -1,17 +1,12 @@
 package com.project.controllers;
 
-import com.project.model.Projekt;
 import com.project.model.Zadanie;
-import com.project.services.ProjektServiceImpl;
 import com.project.services.ZadanieServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
@@ -24,14 +19,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(SpringExtension.class)
-@WebMvcTest(controllers = ZadanieController.class)
+@WebMvcTest(controllers = ProjektController.class)
 class ZadanieControllerTest {
 
     @MockBean
@@ -76,25 +70,19 @@ class ZadanieControllerTest {
 
     @Test
     public void getZadaniaProjektuById() throws Exception {
-        Projekt projekt = new Projekt();
-        projekt.setProjektId(1);
-        projekt.setNazwa("abc");
         Zadanie zadanie = new Zadanie();
         zadanie.setZadanieId(1);
         zadanie.setNazwa("abc");
-        zadanie.setProjekt(projekt);
         List<Zadanie> list = new ArrayList<>();
         list.add(zadanie);
-        list.add(zadanie);
-        when(zadanieService.getZadaniaProjektu(1, PageRequest.of(0, 20)))
+        when(zadanieService.getZadaniaProjektu(1, 0, 20))
                 .thenReturn(new PageImpl<>(list));
-        mvc.perform(MockMvcRequestBuilders.get("/api/zadanie?projektId=1")
+        mvc.perform(MockMvcRequestBuilders.get("/api/zadanie/1")
                         .with(user("user").password("password"))
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].zadanieId").exists())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.content[1].zadanieId").exists());
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].projektId").value(1));
     }
 
     @Test
