@@ -3,6 +3,7 @@ package com.project.controllers;
 import com.project.model.Student;
 import com.project.model.User;
 import com.project.services.StudentService;
+import com.project.services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 
@@ -26,6 +28,9 @@ public class StudentController {
     public StudentController(StudentService studentService) {
         this.studentService = studentService;
     }
+    
+    @Autowired
+    private UserService userService;
     
     private Integer setPageNumber(Integer pageNumber) {
         if(pageNumber == null || pageNumber == 0) {
@@ -43,26 +48,37 @@ public class StudentController {
         return pageSize;
     }
     
-    @GetMapping("/")
-    public String getStudents(Model model, Pageable pageable) {
-        model.addAttribute("students", studentService.getStudents(pageable));
-        return "student.html";
-    }
+//    @GetMapping("/")
+//    public String getStudents(Model model, Pageable pageable) {
+//        model.addAttribute("students", studentService.getStudents(pageable));
+//        return "student.html";
+//    }
     
     @GetMapping("/student")
     public String getPaginatedStudents( 
-            @RequestParam(value="pageNumber") Integer pageNumber,
-            @RequestParam(value="pageSize") Integer pageSize,
-            Model model, Pageable pageable, User user) {
+            @RequestParam(required = false, value="pageNumber") Integer pageNumber,
+            @RequestParam(required = false, value="pageSize") Integer pageSize,
+            @RequestParam(required = false, value="studentId") Integer studentId,
+            Model model, Authentication authentication) {
         pageNumber = setPageNumber(pageNumber);
         pageSize = setPageSize(pageSize);
-        Page<Student> allStudents = studentService.getPaginatedStudents(pageNumber, pageSize);
-        Integer totalPages = allStudents.getTotalPages();
-
-
+        
+        Student selectedStudent = null;// = new Optional<Student>();
+        Page<Student> allStudents = null;// = studentService.getPaginatedStudents(pageNumber, pageSize);
+        Integer totalPages = 1;//allStudents.getTotalPages();
+        System.out.println("studentId" + studentId);
+        String userRole = userService.getCurrentUserRole(authentication);
+        
+        if(studentId != null) {
+            selectedStudent = studentService.getStudentById(studentId).get();
+        } else {
+            allStudents = studentService.getPaginatedStudents(pageNumber, pageSize);
+            totalPages = allStudents.getTotalPages();
+        }
         model.addAttribute("formData", new Student());
-        model.addAttribute("students",allStudents);
+        model.addAttribute("students",allStudents == null ? selectedStudent : allStudents);
         model.addAttribute("mode","studentListViewPaginated");
+        model.addAttribute("userRole",userRole);
         model.addAttribute("totalPages", totalPages);
    
         return "student.html";
@@ -82,7 +98,8 @@ public class StudentController {
    
         System.out.println(statusCode);
         model.addAttribute("statusMsg", statusCode);
-        return "student.html";
+
+        return "redirect:/student?pageNumber=1&pageSize=2";
     }
     
     @GetMapping("/editStudent")
@@ -106,18 +123,19 @@ public class StudentController {
     
     @PostMapping("/student")
     public String searchStudent(@Valid @ModelAttribute("formData") Student formData,
-                               Model model, Pageable pageable) {
+                               Model model, Authentication authentication) {
         
-        Integer pageNumber = setPageNumber(0);
-        Integer pageSize = setPageSize(0);
+        Integer pageNumber = 1;//setPageNumber(1);
+        Integer pageSize = 2;//setPageSize(0);
         
         System.out.println("response " + formData.getNazwisko());
         Page<Student> totalStudents = studentService.getStudentByNazwiskoStartsWithIgnoreCase(formData.getNazwisko(), pageNumber, pageSize);
         Integer totalPages = totalStudents.getTotalPages();
-        
+        String userRole = userService.getCurrentUserRole(authentication);
         model.addAttribute("formData", new Student());
         model.addAttribute("students",totalStudents);
         model.addAttribute("totalPages", totalPages);
+        model.addAttribute("userRole",userRole);
         model.addAttribute("mode","studentListViewPaginated");
         
         return "student.html";
@@ -135,13 +153,13 @@ public class StudentController {
         String statusCode = updateStud.getStatusCode().toString();
         System.out.println(statusCode);
         model.addAttribute("statusMsg", statusCode);
-        return "student.html";
+        return "redirect:/student?pageNumber=1&pageSize=2";
     }
     
     @GetMapping("/deleteStudent")
-    public String deleteStudent(@RequestParam(value="studentId") Integer studentId, Model model) {
+    public String deleteStudent(@RequestParam(value="studentId") Integer studentId, Model model, Pageable pageable) {
         ResponseEntity<Void> deleteStud = studentService.getStudentById(studentId).map(p -> {
-            studentService.deleteStudent(studentId);
+            studentService.deleteStudent(studentId, pageable);
             return new ResponseEntity<Void>(HttpStatus.OK);
         }).orElseGet(() -> ResponseEntity.notFound().build());
         
@@ -149,7 +167,7 @@ public class StudentController {
         String statusCode = deleteStud.getStatusCode().toString();
         System.out.println(statusCode);
         model.addAttribute("statusMsg", statusCode);
-        return "student.html";
+        return "redirect:/student?pageNumber=1&pageSize=2";
     }
 
     ResponseEntity<Void> createStudent(@Valid @RequestBody Student student) {

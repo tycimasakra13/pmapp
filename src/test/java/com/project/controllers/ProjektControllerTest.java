@@ -79,7 +79,7 @@ class ProjektControllerTest {
         projekt.setNazwa("abc");
         List<Projekt> list = new ArrayList<>();
         list.add(projekt);
-        when(projektService.searchByNazwa("ab", PageRequest.of(0, 20)))
+        when(projektService.searchByNazwa("ab", 0, 20))
                 .thenReturn(new PageImpl<>(list));
         mvc.perform(MockMvcRequestBuilders.get("/api/projekt?nazwa=ab")
                         .with(user("user").password("password"))

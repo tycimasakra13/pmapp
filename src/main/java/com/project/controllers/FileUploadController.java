@@ -6,6 +6,7 @@ import com.project.model.Zadanie;
 import com.project.payload.Response;
 import com.project.services.FileStorageService;
 import com.project.services.ProjektService;
+import com.project.services.UserService;
 import com.project.services.ZadanieService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -17,9 +18,17 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 
-@RestController
-@RequestMapping("/api")
+@Controller
+@RequestMapping("")
 public class FileUploadController {
 
     @Autowired
@@ -28,7 +37,9 @@ public class FileUploadController {
     private ProjektService projektService;
     @Autowired
     private ZadanieService zadanieService;
-
+    @Autowired
+    private UserService userService;
+    
     private ResponseEntity<Response> upload(MultipartFile file, Integer id, Optional<ProjektService> projektService, Optional<ZadanieService> zadanieService) {
         String type = "";
         String entityId = "";
@@ -65,28 +76,114 @@ public class FileUploadController {
 
         return ResponseEntity.ok().body(new Response(fileName, fileDownloadUri, file.getContentType(), file.getSize()));
     }
+    
+    
+    @GetMapping("/files")
+    public String getFilesList(@RequestParam("serviceType") String serviceType,
+            @RequestParam("id") Integer id, Pageable pageable,
+            Model model, Authentication authentication) {
+        System.out.println("agesize:" + pageable.getPageSize());
+        //final Pageable pageable = PageRequest.of(pageNumber - 1, pageSize);
+        String path = fileStorageService.getDirectoryPath(serviceType, id);
+        List<String> fileSet = fileStorageService.loadFiles(path);
+ 
+        Page<String> listFiles = new PageImpl<>(fileSet,PageRequest.of(1, 5),fileSet.size());
+        
+        String msg = "Files not found.";
+        String userRole = userService.getCurrentUserRole(authentication);
+        model.addAttribute("formData", new File());
+        model.addAttribute("userRole",userRole);
+        model.addAttribute("files",listFiles);
+        model.addAttribute("mode", "filesView");
+        model.addAttribute("totalPages", listFiles.getTotalPages());
+        model.addAttribute("id", id);
+        model.addAttribute("msgInfo", listFiles.isEmpty());
+        model.addAttribute("msg", msg);
+        model.addAttribute("serviceType",serviceType);
 
-    @PostMapping("/zadanie/uploadFile/{zadanieId}")
+        return "file.html";
+    }
+    
+    //add new project
+    @GetMapping("/addFile")
+    public String getAddFileForm(Model model, @RequestParam("id") Integer id,
+            @RequestParam("serviceType") String serviceType) {
+        model.addAttribute("id", id);
+        model.addAttribute("mode","fileAdd");
+        model.addAttribute("serviceType",serviceType);
+        return "file.html";
+    }
+    
+    @PostMapping("/addFile")
+    public String uploadFiles(@RequestParam("file") MultipartFile[] files,
+            @RequestParam("id") Integer id,
+            @RequestParam("serviceType") String serviceType,
+            Model model, Pageable pageable) {
+
+        String statusCodeMsg = "";
+        
+        switch(serviceType) {
+            case "project":
+                uploadMultipletoProjekt(files, id).forEach((status)->{
+                    final HttpStatusCode statusCode = status.getStatusCode();
+                    if(statusCode.isError()) {
+                        System.out.println(statusCode.toString());
+                    }
+                });
+                break;
+            case "task":
+                uploadMultipletoZadanie(files, id).forEach((status) -> {
+                    final HttpStatusCode statusCode = status.getStatusCode();
+                    if(statusCode.isError()) {
+                        System.out.println(statusCode.toString());
+                    }
+                });
+                break;
+            default:
+                statusCodeMsg = "unknown service type";
+                break;
+        }
+   
+        System.out.println(statusCodeMsg);
+        model.addAttribute("statusMsg", statusCodeMsg);
+        return "redirect:/files?id=" + id + "&serviceType=" + serviceType;
+    
+    }
+    
+    @GetMapping("/deleteFile")
+    public String deleteSelectedFiled(@RequestParam("id") Integer id,
+            @RequestParam("serviceType") String serviceType,
+            @RequestParam("fileName") String fileName) {
+        
+        String path = fileStorageService.getDirectoryPath(serviceType, id) + fileName;
+        System.out.println(path);
+        deleteSelectedFile(path);
+        return "redirect:/files?id=" + id + "&serviceType=" + serviceType;
+    }
+    
     public ResponseEntity<Response> uploadtoZadanie(@RequestParam("file") MultipartFile file, @PathVariable Integer zadanieId) {
         return this.upload(file, zadanieId, Optional.empty(), Optional.ofNullable(zadanieService));
     }
 
-    @PostMapping("/zadanie/uploadMultipleFiles/{zadanieId}")
     public List<ResponseEntity<Response>> uploadMultipletoZadanie(@RequestParam("files") MultipartFile[] files, @PathVariable Integer zadanieId) {
         return Arrays.stream(files)
                 .map(file -> this.uploadtoZadanie(file, zadanieId))
                 .collect(Collectors.toList());
     }
 
-    @PostMapping("/projekt/uploadFile/{projektId}")
     public ResponseEntity<Response> uploadtoProjekt(@RequestParam("file") MultipartFile file, @PathVariable Integer projektId) {
         return this.upload(file, projektId, Optional.ofNullable(projektService), Optional.empty());
     }
 
-    @PostMapping("/projekt/uploadMultipleFiles/{projektId}")
     public List<ResponseEntity<Response>> uploadMultipletoProjekt(@RequestParam("files") MultipartFile[] files, @PathVariable Integer projektId) {
         return Arrays.stream(files)
                 .map(file -> this.uploadtoProjekt(file, projektId))
                 .collect(Collectors.toList());
     }
+    
+    public void deleteSelectedFile(String path) {
+        fileStorageService.deleteFile(path);
+    }
+    
+    
 }

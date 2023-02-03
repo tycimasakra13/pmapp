@@ -13,9 +13,11 @@ import org.springframework.data.domain.PageRequest;
 @Service
 public class StudentServiceImpl implements StudentService {
     StudentRepository repository;
+    ZadanieService zadanieService;
 
-    public StudentServiceImpl(StudentRepository studentRepository) {
+    public StudentServiceImpl(StudentRepository studentRepository, ZadanieService zadanieService) {
         this.repository = studentRepository;
+        this.zadanieService = zadanieService;
     }
 
     @Override
@@ -66,7 +68,8 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     @Transactional
-    public void deleteStudent(Integer studentId) {
+    public void deleteStudent(Integer studentId, Pageable pageable) {
+        zadanieService.removeAssignStudent(studentId, pageable);
         repository.deleteById(studentId);
     }
 }

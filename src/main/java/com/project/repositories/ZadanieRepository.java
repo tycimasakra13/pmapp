@@ -1,6 +1,5 @@
 package com.project.repositories;
 
-import com.project.model.Projekt;
 import com.project.model.Zadanie;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,6 +17,9 @@ public interface ZadanieRepository extends JpaRepository<Zadanie, Integer> {
 
     @Query("SELECT z FROM Zadanie z WHERE z.projekt.projektId = :projektId")
     List<Zadanie> findZadaniaProjektu(@Param("projektId") Integer projektId);
+    
+    @Query("SELECT z FROM Zadanie z WHERE z.student.studentId = :studentId")
+    Page<Zadanie> findZadaniaStudenta(@Param("studentId") Integer studentId, Pageable pageable);
     
     Page<Zadanie> findByNazwaContainingIgnoreCase(String nazwa, Pageable pageable);
 }
