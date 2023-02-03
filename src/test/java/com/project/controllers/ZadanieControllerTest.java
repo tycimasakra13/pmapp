@@ -86,7 +86,7 @@ class ZadanieControllerTest {
         List<Zadanie> list = new ArrayList<>();
         list.add(zadanie);
         list.add(zadanie);
-        when(zadanieService.getZadaniaProjektu(1, PageRequest.of(0, 20)))
+        when(zadanieService.getZadaniaProjektu(1, 0, 20))
                 .thenReturn(new PageImpl<>(list));
         mvc.perform(MockMvcRequestBuilders.get("/api/zadanie?projektId=1")
                         .with(user("user").password("password"))
