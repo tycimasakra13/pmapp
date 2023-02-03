@@ -43,7 +43,7 @@ class ZadanieControllerTest {
         list.add(zadanie);
         list.add(zadanie);
 
-        when(zadanieService.getZadanies(PageRequest.of(0, 20))).thenReturn(new PageImpl<>(list));
+        when(zadanieService.getZadaniaProjektu(1, 0, 20)).thenReturn(new PageImpl<>(list));
         mvc.perform(MockMvcRequestBuilders.get("/api/zadanie")
                         .with(user("user").password("password"))
                         .accept(MediaType.APPLICATION_JSON))
