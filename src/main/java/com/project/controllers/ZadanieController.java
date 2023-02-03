@@ -1,5 +1,7 @@
 package com.project.controllers;
 
+import com.project.config.FileStorageProperties;
+import com.project.config.PeagableConfig;
 import com.project.model.Projekt;
 import com.project.model.Student;
 import com.project.model.Zadanie;
@@ -17,6 +19,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import org.springframework.http.HttpStatusCode;

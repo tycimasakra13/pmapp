@@ -1,6 +1,7 @@
 package com.project.services;
 
 import com.project.model.Projekt;
+import com.project.model.Zadanie;
 import com.project.repositories.ProjectRepository;
 import java.util.List;
 import java.util.Map;

@@ -3,12 +3,13 @@
     <head>
         <title>Project Manager</title>
         <meta charset="UTF-8">
-        <link href="css/styles.css" rel="stylesheet" type="text/css"/>
-        <script src="js/main.js" type="text/javascript"></script>
+        <link href = "css/styles.css" rel = "stylesheet"/>
+
     </head>
     <body>
         <div class="header" th:insert="fragments/header.html"></div>
         <div class="content">
+             <div class="menuNavigator"></div>
             <div class="loginForm">
                 <h1>Insert credentials to login</h1>     
                 <div th:if="${param.error}"> 

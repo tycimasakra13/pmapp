@@ -1,5 +1,6 @@
 package com.project.controllers;
 
+import com.project.model.File;
 import com.project.model.Projekt;
 import com.project.model.User;
 import com.project.services.ProjektService;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
