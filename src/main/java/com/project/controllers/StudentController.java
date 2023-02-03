@@ -1,7 +1,6 @@
 package com.project.controllers;
 
 import com.project.model.Student;
-import com.project.model.User;
 import com.project.services.StudentService;
 import com.project.services.UserService;
 import jakarta.validation.Valid;
@@ -42,7 +41,7 @@ public class StudentController {
     
     private Integer setPageSize(Integer pageSize) {
         if(pageSize == null || pageSize == 0){
-            pageSize = 10;
+            pageSize = 5;
         }
         
         return pageSize;
@@ -66,7 +65,7 @@ public class StudentController {
         Student selectedStudent = null;// = new Optional<Student>();
         Page<Student> allStudents = null;// = studentService.getPaginatedStudents(pageNumber, pageSize);
         Integer totalPages = 1;//allStudents.getTotalPages();
-        System.out.println("studentId" + studentId);
+  
         String userRole = userService.getCurrentUserRole(authentication);
         
         if(studentId != null) {
@@ -96,10 +95,9 @@ public class StudentController {
         
         String statusCode = createStudent(saveData).getStatusCode().toString();
    
-        System.out.println(statusCode);
         model.addAttribute("statusMsg", statusCode);
 
-        return "redirect:/student?pageNumber=1&pageSize=2";
+        return "redirect:/student?pageNumber=1&pageSize=5";
     }
     
     @GetMapping("/editStudent")
@@ -126,9 +124,8 @@ public class StudentController {
                                Model model, Authentication authentication) {
         
         Integer pageNumber = 1;//setPageNumber(1);
-        Integer pageSize = 2;//setPageSize(0);
+        Integer pageSize = 5;//setPageSize(0);
         
-        System.out.println("response " + formData.getNazwisko());
         Page<Student> totalStudents = studentService.getStudentByNazwiskoStartsWithIgnoreCase(formData.getNazwisko(), pageNumber, pageSize);
         Integer totalPages = totalStudents.getTotalPages();
         String userRole = userService.getCurrentUserRole(authentication);
@@ -151,9 +148,9 @@ public class StudentController {
                 })
                 .orElseGet(() -> ResponseEntity.notFound().build());
         String statusCode = updateStud.getStatusCode().toString();
-        System.out.println(statusCode);
+        
         model.addAttribute("statusMsg", statusCode);
-        return "redirect:/student?pageNumber=1&pageSize=2";
+        return "redirect:/student?pageNumber=1&pageSize=5";
     }
     
     @GetMapping("/deleteStudent")
@@ -165,9 +162,8 @@ public class StudentController {
         
         
         String statusCode = deleteStud.getStatusCode().toString();
-        System.out.println(statusCode);
         model.addAttribute("statusMsg", statusCode);
-        return "redirect:/student?pageNumber=1&pageSize=2";
+        return "redirect:/student?pageNumber=1&pageSize=5";
     }
 
     ResponseEntity<Void> createStudent(@Valid @RequestBody Student student) {

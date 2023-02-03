@@ -32,6 +32,11 @@ public class User implements UserDetails {
 
     public User() {}
     
+    public User(String username, String password) {
+        this.username = username;
+        this.password = password;
+    }
+    
     @Override 
     public Collection<? extends GrantedAuthority> getAuthorities() { 
        return List.of(() -> "read"); 
@@ -86,7 +91,7 @@ public class User implements UserDetails {
    
     @Override
    public boolean isAccountNonLocked() { 
-      return false; 
+      return true; 
    } 
    @Override public boolean isCredentialsNonExpired() { 
       return true; 

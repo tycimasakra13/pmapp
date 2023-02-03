@@ -23,11 +23,10 @@ public class FileDownloadController {
     public ResponseEntity<Resource> downloadFile(String path, String fileName, HttpServletRequest request) {
         // Load file as Resource
         Resource resource = fileStorageService.loadFileAsResource(path, fileName);
-        System.out.println("resource" + resource.getFilename());
+
         // Try to determine file's content type
         String contentType = null;
         try {
-            System.out.println("resource2" + resource.getFile().getAbsolutePath());
             contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
         } catch (IOException ex) {
             return ResponseEntity.noContent().build();
@@ -37,7 +36,7 @@ public class FileDownloadController {
         if (contentType == null) {
             contentType = "application/octet-stream";
         }
-        System.out.println("contentType: " + contentType);
+
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(contentType))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")

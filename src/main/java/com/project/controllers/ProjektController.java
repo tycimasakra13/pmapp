@@ -1,6 +1,5 @@
 package com.project.controllers;
 
-import com.project.model.File;
 import com.project.model.Projekt;
 import com.project.model.User;
 import com.project.services.ProjektService;
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
-import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,7 +22,6 @@ import org.springframework.ui.Model;
 @RequestMapping("")
 public class ProjektController {
     private final ProjektService projektService;
-    private String userName;
     private String userRole;
 
     @Autowired
@@ -46,7 +43,7 @@ public class ProjektController {
     
     private Integer setPageSize(Integer pageSize) {
         if(pageSize == null || pageSize == 0){
-            pageSize = 2;
+            pageSize = 5;
         }
         
         return pageSize;
@@ -78,7 +75,7 @@ public class ProjektController {
                                Model model, Pageable pageable, Authentication authentication) {
 
         Integer pageNumber = 1;
-        Integer pageSize = 2;
+        Integer pageSize = 5;
         Page<Projekt> totalProjects = projektService.searchByNazwa(formData.getNazwa(), pageNumber, pageSize);
         Integer totalPages = totalProjects.getTotalPages();
         
@@ -106,9 +103,8 @@ public class ProjektController {
         
         String statusCode = createProjekt(saveData).getStatusCode().toString();
    
-        System.out.println(statusCode);
         model.addAttribute("statusMsg", statusCode);
-        return "redirect:/project?pageNumber=1&pageSize=2";
+        return "redirect:/project?pageNumber=1&pageSize=5";
     }
      
     ResponseEntity<Void> createProjekt(Projekt projekt) {
@@ -139,9 +135,8 @@ public class ProjektController {
     public String updateProject(@Valid @ModelAttribute Projekt updateData, Model model, Pageable pageable) {
         String statusCode = updateProjekt(updateData, updateData.getProjektId()).getStatusCode().toString();
        
-        System.out.println(statusCode);
         model.addAttribute("statusMsg", statusCode);
-        return "redirect:/project?pageNumber=1&pageSize=2";
+        return "redirect:/project?pageNumber=1&pageSize=5";
     }
    
     public ResponseEntity<Void> updateProjekt(@Valid @RequestBody Projekt projekt,
@@ -160,9 +155,8 @@ public class ProjektController {
     public String deleteProject(@RequestParam(value="projectID") Integer projektId, Model model) {        
         String statusCode = deleteProjekt(projektId).getStatusCode().toString();
         
-        System.out.println(statusCode);
         model.addAttribute("statusMsg", statusCode);
-        return "redirect:/project?pageNumber=1&pageSize=2";
+        return "redirect:/project?pageNumber=1&pageSize=5";
     }
     
     public ResponseEntity<Void> deleteProjekt(@PathVariable Integer projektId) {

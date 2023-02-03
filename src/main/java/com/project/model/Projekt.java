@@ -6,6 +6,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Set;
 
@@ -81,16 +82,16 @@ public class Projekt {
         this.opis = opis;
     }
 
-    public LocalDateTime getDataCzasUtworzenia() {
-        return dataCzasUtworzenia;
+    public String getDataCzasUtworzenia() {
+        return dataCzasUtworzenia.format(DateTimeFormatter.ISO_DATE);
     }
 
     public void setDataCzasUtworzenia(LocalDateTime dataCzasUtworzenia) {
         this.dataCzasUtworzenia = dataCzasUtworzenia;
     }
 
-    public LocalDateTime getDataCzasModyfikacji() {
-        return dataCzasModyfikacji;
+    public String getDataCzasModyfikacji() {
+        return dataCzasModyfikacji.format(DateTimeFormatter.ISO_DATE);
     }
 
     public void setDataCzasModyfikacji(LocalDateTime dataCzasModyfikacji) {

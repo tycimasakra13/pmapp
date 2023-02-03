@@ -2,7 +2,9 @@ package com.project.bootstrap;
 
 import com.project.model.User;
 import com.project.repositories.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 
@@ -13,6 +15,9 @@ public class UserLoader implements CommandLineRunner {
     public UserLoader(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
+    
+    @Autowired
+    PasswordEncoder passwordEncoder;
     
     @Override
     public void run(String... args) throws Exception {
@@ -28,8 +33,12 @@ public class UserLoader implements CommandLineRunner {
     
     private void insertNewUser(String role) {
         User user = new User();
+    String encodedPassword = passwordEncoder.encode(role.toLowerCase());
+
+    
+    
         user.setUsername(role.toLowerCase());
-        user.setPassword(role.toLowerCase());
+        user.setPassword(encodedPassword);
         user.setRole(role);
   
         userRepository.save(user);

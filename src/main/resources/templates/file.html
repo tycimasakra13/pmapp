@@ -20,7 +20,7 @@
                         <th>Download</th>
                         <th>Delete</th>
                     </tr>
-                    <tr th:each="file : ${files}">
+                    <tr th:each="file : ${files.pageList}">
                         <td th:text="${file}"></td>
                         <td th:text="${id}"></td>
                         <td><a th:href="@{'/downloadFile?id=' + ${id} + '&serviceType=' + ${serviceType} + '&fileName=' + ${file}}">Download</a></td> 
@@ -33,7 +33,7 @@
                 </div>
                 <div>
                     <span th:each="i: ${#numbers.sequence(totalPages == 0 ? 0 : 1, totalPages)}">
-                        <a th:href="@{'/task?pageNumber=' + ${i} + '&pageSize=2'}">[[${i}]]</a>
+                        <a th:href="@{'/files?serviceType=' + ${serviceType} + '&pageNumber=' + ${i} + '&pageSize=5&id='+${id}}">[[${i}]]</a>
                     </span>
                 </div>
             </div>

@@ -15,7 +15,7 @@
                 <div class="toolbar">
                     <span><a th:href="@{/addProject}">Add Project</a></span>
                     <div class="searchBox">
-                        <form th:action="@{/project?pageNumber=1&pageSize=2}" th:object="${formData}" method="POST">
+                        <form th:action="@{/project?pageNumber=1&pageSize=5}" th:object="${formData}" method="POST">
                             <input type="text" th:field="*{nazwa}" placeholder="Search by name"/>
                             <button type="submit">Search</button>
                         </form>                  
@@ -44,7 +44,7 @@
                         </td>
                         <td th:if="${project.zadania == null}"></td>
                         <td>
-                            <a th:href="@{'/files?serviceType=project&id='+${project.projektId}}">Files</a>
+                            <a th:href="@{'/files?serviceType=project&pageNumber=1&pageSize=5&id='+${project.projektId}}">Files</a>
                         </td>    
                         
                         <td th:if="${userRole == 'ADMIN'}"><a th:href="@{'/editProjekt?projectID=' + ${project.projektId}}">Edit</a></td>
@@ -55,13 +55,15 @@
                 </table>
                 <div>
                     <span th:each="i: ${#numbers.sequence(totalPages == 0 ? 0 : 1, totalPages)}">
-                        <a th:href="@{'/project?pageNumber=' + ${i} + '&pageSize=2'}">[[${i}]]</a>
+                        <a th:href="@{'/project?pageNumber=' + ${i} + '&pageSize=5'}">[[${i}]]</a>
                     </span>
                 </div>
             </div>
             <div th:if="${mode == 'projectAdd'}">
                 <form th:action="@{/addProject}" th:object="${saveData}" method="POST">
+                    <label for="nazwa">Name</label>:
                     <input type="text" th:field="*{nazwa}"/>
+                    <label for="opis">Description</label>:
                     <input type="text" th:field="*{opis}"/>
                     <button type="submit">Save</button>
                 </form>

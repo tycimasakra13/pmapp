@@ -1,10 +1,7 @@
 package com.project.controllers;
 
-import com.project.config.FileStorageProperties;
-import com.project.config.PeagableConfig;
 import com.project.model.Projekt;
 import com.project.model.Student;
-import com.project.model.User;
 import com.project.model.Zadanie;
 import com.project.services.ProjektService;
 import com.project.services.StudentService;
@@ -20,8 +17,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import org.springframework.http.HttpStatusCode;
@@ -49,9 +44,6 @@ public class ZadanieController {
     @Autowired
     StudentService studentService;
     
-    @Autowired
-    PeagableConfig peagableConfig;
-    
     private Integer setPageNumber(Integer pageNumber) {
         if(pageNumber == null || pageNumber == 0) {
             pageNumber = 1;
@@ -62,7 +54,7 @@ public class ZadanieController {
     
     private Integer setPageSize(Integer pageSize) {
         if(pageSize == null || pageSize == 0){
-            pageSize = 2;
+            pageSize = 5;
         }
         
         return pageSize;
@@ -175,10 +167,9 @@ public class ZadanieController {
         try {
             statusCode = updateZadanie(updateData, taskId).getStatusCode();
             if(statusCode.is2xxSuccessful()){
-                returnValue = "redirect:/task";
+                returnValue = "redirect:/task?pageNumber=1&pageSize=5";
             } 
         } catch(Exception e) {
-            System.out.println("e: " + e.getLocalizedMessage());
             model.addAttribute("formUrl","/editTask?taskId="+taskId);
             model.addAttribute("msg", e.getLocalizedMessage());
             model.addAttribute("msgError", true);
@@ -191,9 +182,8 @@ public class ZadanieController {
     public String deleteTask(@RequestParam(value="taskId") Integer taskId, Model model) {
         String statusCode = deleteZadanie(taskId).getStatusCode().toString();
        
-        System.out.println(statusCode);
         model.addAttribute("statusMsg", statusCode);
-        return "redirect:/task";
+        return "redirect:/task?pageNumber=1&pageSize=5";
     }
     
     @PostMapping("/addTask")
@@ -202,7 +192,7 @@ public class ZadanieController {
         
         try {
             createZadanie(saveData).getStatusCode().toString();
-            returnValue = "redirect:/task";
+            returnValue = "redirect:/task?pageNumber=1&pageSize=5";
         } catch(Exception e) {
             model.addAttribute("formUrl","/addTask");
             model.addAttribute("msg", e.getLocalizedMessage());
