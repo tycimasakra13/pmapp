@@ -27,6 +27,7 @@
                         <th>Create Date</th>
                         <th>Project ID</th>
                         <th>Assigned Student</th>
+                        <th>Files</th>
                         <th>Edit</th>
                         <th>Delete</th>
                     </tr>
@@ -43,7 +44,9 @@
                         </td> 
                         <td th:if="${task.student == null}">NOT ASSIGNED</td> 
  
-
+                        <td>
+                            <a th:href="@{'/files?serviceType=task&id='+${task.zadanieId}}">Files</a>
+                        </td> 
                         <td><a th:href="@{'/editTask?taskId=' + ${task.zadanieId}}">Edit</a></td>
                         <td><a th:href="@{'/deleteTask?taskId=' + ${task.zadanieId}}">Delete</a></td>
                     </tr>

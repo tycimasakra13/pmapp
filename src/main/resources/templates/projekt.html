@@ -16,7 +16,7 @@
                     <span><a th:href="@{/addProject}">Add Project</a></span>
                     <div class="searchBox">
                         <form th:action="@{/project?pageNumber=1&pageSize=2}" th:object="${formData}" method="POST">
-                            <input type="text" th:field="*{nazwa}" placeholder="Search by surname"/>
+                            <input type="text" th:field="*{nazwa}" placeholder="Search by name"/>
                             <button type="submit">Search</button>
                         </form>                  
                     </div>
@@ -29,6 +29,7 @@
                         <th>Create date</th>
                         <th>Modification date</th>
                         <th>Tasks</th>
+                        <th>Files</th>
                         <th></th>
                         <th></th>
                     </tr>
@@ -42,11 +43,9 @@
                             <a th:href="'/task?projectID=' + ${project.projektId}">Tasks</a>
                         </td>
                         <td th:if="${project.zadania == null}"></td>
-
-                        <!---
-                        studenci
-                        zadania
-                        pliki--->
+                        <td>
+                            <a th:href="@{'/files?serviceType=project&id='+${project.projektId}}">Files</a>
+                        </td>    
                         
 <!--                        <td th:if="${userRole == 'ADMIN'}"><a th:href="@{'/editProjekt?projectID=' + ${project.projektId}}">Edit</a></td>
                         <td th:if="${userRole == 'ADMIN'}"><a th:href="@{'/deleteProject?projectID=' + ${project.projektId}}">Delete</a></td>-->
