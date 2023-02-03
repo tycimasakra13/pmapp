@@ -2,6 +2,7 @@ package com.project.services;
 
 import com.project.model.Student;
 import com.project.repositories.StudentRepository;
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -71,5 +72,10 @@ public class StudentServiceImpl implements StudentService {
     public void deleteStudent(Integer studentId, Pageable pageable) {
         zadanieService.removeAssignStudent(studentId, pageable);
         repository.deleteById(studentId);
+    }
+    
+    @Override
+    public List<Student> getStudentsList() {
+        return repository.findAll();
     }
 }

@@ -4,7 +4,6 @@ import com.project.config.FileStorageProperties;
 import com.project.config.PeagableConfig;
 import com.project.model.Projekt;
 import com.project.model.Student;
-import com.project.model.User;
 import com.project.model.Zadanie;
 import com.project.services.ProjektService;
 import com.project.services.StudentService;
@@ -49,9 +48,6 @@ public class ZadanieController {
     @Autowired
     StudentService studentService;
     
-    @Autowired
-    PeagableConfig peagableConfig;
-    
     private Integer setPageNumber(Integer pageNumber) {
         if(pageNumber == null || pageNumber == 0) {
             pageNumber = 1;
@@ -62,27 +58,25 @@ public class ZadanieController {
     
     private Integer setPageSize(Integer pageSize) {
         if(pageSize == null || pageSize == 0){
-            pageSize = 2;
+            pageSize = 5;
         }
         
         return pageSize;
     }
     
-    private Map<Integer, String> projectsForSelect(Pageable pageable) { 
-        Map<Integer, String> projectsLists = new HashMap<>();
-        Page<Projekt> proj = projektService.getProjekts(pageable);
-        proj.forEach((pr) -> {
-            projectsLists.put(pr.getProjektId(),pr.getNazwa());
+    private Map<Integer, String> projectsForSelect() { 
+        Map<Integer, String> projectsLists = new HashMap();
+        projektService.getProjectsList().forEach((projekt) -> {
+            projekt.getProjektId();
+            projectsLists.put(projekt.getProjektId(),projekt.getNazwa());
         });
         
         return projectsLists;
     }
     
-    private Map<Integer, String> studentsForSelect(Pageable pageable) {
-        
+    private Map<Integer, String> studentsForSelect() {
         Map<Integer, String> studentsLists = new HashMap<>();
-        Page<Student> students = studentService.getStudents(pageable);
-        students.forEach((student) -> {
+        studentService.getStudentsList().forEach((student) -> {
             studentsLists.put(student.getStudentId(), student.getImie() + " " + student.getNazwisko());
         });
         
@@ -147,8 +141,8 @@ public class ZadanieController {
         Zadanie task = new Zadanie();
         
         model.addAttribute("saveData", task);
-        model.addAttribute("projects", projectsForSelect(pageable));
-        model.addAttribute("students", studentsForSelect(pageable));
+        model.addAttribute("projects", projectsForSelect());
+        model.addAttribute("students", studentsForSelect());
         model.addAttribute("mode","taskAdd");
         return "task.html";
     }
@@ -158,8 +152,8 @@ public class ZadanieController {
         Zadanie selectedTask = zadanieService.getZadanieById(taskId).get();
         
         model.addAttribute("updateData", selectedTask);
-        model.addAttribute("projects", projectsForSelect(pageable));
-        model.addAttribute("students", studentsForSelect(pageable));
+        model.addAttribute("projects", projectsForSelect());
+        model.addAttribute("students", studentsForSelect());
         model.addAttribute("mode","taskEdit");
  
         return "task.html";
@@ -175,10 +169,9 @@ public class ZadanieController {
         try {
             statusCode = updateZadanie(updateData, taskId).getStatusCode();
             if(statusCode.is2xxSuccessful()){
-                returnValue = "redirect:/task";
+                returnValue = "redirect:/task?pageNumber=1&pageSize=5";
             } 
         } catch(Exception e) {
-            System.out.println("e: " + e.getLocalizedMessage());
             model.addAttribute("formUrl","/editTask?taskId="+taskId);
             model.addAttribute("msg", e.getLocalizedMessage());
             model.addAttribute("msgError", true);
@@ -191,9 +184,8 @@ public class ZadanieController {
     public String deleteTask(@RequestParam(value="taskId") Integer taskId, Model model) {
         String statusCode = deleteZadanie(taskId).getStatusCode().toString();
        
-        System.out.println(statusCode);
         model.addAttribute("statusMsg", statusCode);
-        return "redirect:/task";
+        return "redirect:/task?pageNumber=1&pageSize=5";
     }
     
     @PostMapping("/addTask")
@@ -202,7 +194,7 @@ public class ZadanieController {
         
         try {
             createZadanie(saveData).getStatusCode().toString();
-            returnValue = "redirect:/task";
+            returnValue = "redirect:/task?pageNumber=1&pageSize=5";
         } catch(Exception e) {
             model.addAttribute("formUrl","/addTask");
             model.addAttribute("msg", e.getLocalizedMessage());

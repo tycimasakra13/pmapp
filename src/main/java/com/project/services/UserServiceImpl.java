@@ -1,8 +1,6 @@
 package com.project.services;
 
-import com.project.model.Projekt;
 import com.project.model.User;
-import com.project.repositories.ProjectRepository;
 import com.project.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

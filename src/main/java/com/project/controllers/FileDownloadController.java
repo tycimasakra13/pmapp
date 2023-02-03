@@ -23,7 +23,7 @@ public class FileDownloadController {
     public ResponseEntity<Resource> downloadFile(String path, String fileName, HttpServletRequest request) {
         // Load file as Resource
         Resource resource = fileStorageService.loadFileAsResource(path, fileName);
-        System.out.println("resource" + resource.getFilename());
+
         // Try to determine file's content type
         String contentType = null;
         try {

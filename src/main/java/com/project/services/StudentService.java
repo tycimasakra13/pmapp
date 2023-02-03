@@ -1,6 +1,7 @@
 package com.project.services;
 
 import com.project.model.Student;
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -22,4 +23,6 @@ public interface StudentService {
     void updateStudent(Integer id, Student student);
 
     void deleteStudent(Integer studentId, Pageable pageable);
+    
+    List<Student> getStudentsList();
 }

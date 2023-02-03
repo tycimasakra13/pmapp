@@ -60,7 +60,7 @@ public class FileStorageService {
             Files.createDirectories(this.fileStorageLocation.resolve(path));
             // Copy file to the target location (Replacing existing file with the same name)
             Path targetLocation = this.fileStorageLocation.resolve(path).resolve(fileName);
-            System.out.println(targetLocation);
+
             Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
             return fileName;
@@ -82,7 +82,7 @@ public class FileStorageService {
             Path path = Paths.get(pathStr);
             Path filePath = path.resolve(fileName).normalize();
             //Path filePath = this.fileStorageLocation.resolve(fileName).normalize();
-            System.out.println("filePath " + filePath);
+
             Resource resource = new UrlResource(filePath.toUri());
             if (resource.exists()) {
                 return resource;

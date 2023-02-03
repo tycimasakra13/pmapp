@@ -23,8 +23,8 @@ public class ProjektLoader implements CommandLineRunner {
 
     private void loadProjekts() {
         if (projektRepository.count() == 0) {
-            int count = 5;
-            for(int x = 0; x <= count; x++) {
+            int count = 10;
+            for(int x = 1; x <= count; x++) {
                 insertNewProject(x);
             }
         }

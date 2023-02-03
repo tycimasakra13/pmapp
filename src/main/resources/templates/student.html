@@ -13,7 +13,7 @@
                 <div class="toolbar">
                     <span><a th:href="@{/addStudent}">Add Student</a></span>
                     <div class="searchBox">
-                        <form th:action="@{/student?pageNumber=1&pageSize=2}" th:object="${formData}" method="POST">
+                        <form th:action="@{/student?pageNumber=1&pageSize=5}" th:object="${formData}" method="POST">
                             <input type="text" th:field="*{nazwisko}" placeholder="Search by surname"/>
                             <button type="submit">Search</button>
                         </form>
@@ -31,8 +31,8 @@
                         <th>E-mail</th>
                         <th>Full time</th>
                         <th>Tasks</th>
-                        <th>Edit</th>
-                        <th>Delete</th>
+                        <th></th>
+                        <th></th>
                     </tr>
                     <tr th:each="student : ${students}">
                         <td th:text="${student.studentId}"></td>
@@ -53,7 +53,7 @@
                 </table>
                 <div>
                     <span th:each="i: ${#numbers.sequence(totalPages == 0 ? 0 : 1, totalPages)}">
-                        <a th:href="@{'/student?pageNumber=' + ${i} + '&pageSize=2'}">[[${i}]]</a>
+                        <a th:href="@{'/student?pageNumber=' + ${i} + '&pageSize=5'}">[[${i}]]</a>
                     </span>
                 </div>
             </div>

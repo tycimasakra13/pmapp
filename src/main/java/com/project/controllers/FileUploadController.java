@@ -8,6 +8,7 @@ import com.project.services.FileStorageService;
 import com.project.services.ProjektService;
 import com.project.services.UserService;
 import com.project.services.ZadanieService;
+import static java.nio.file.Files.list;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +19,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import org.springframework.beans.support.PagedListHolder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -80,24 +82,32 @@ public class FileUploadController {
     
     @GetMapping("/files")
     public String getFilesList(@RequestParam("serviceType") String serviceType,
+            @RequestParam(value="pageNumber") Integer pageNumber,
+            @RequestParam(value="pageSize") Integer pageSize,
             @RequestParam("id") Integer id, Pageable pageable,
             Model model, Authentication authentication) {
-        System.out.println("agesize:" + pageable.getPageSize());
         //final Pageable pageable = PageRequest.of(pageNumber - 1, pageSize);
         String path = fileStorageService.getDirectoryPath(serviceType, id);
         List<String> fileSet = fileStorageService.loadFiles(path);
  
-        Page<String> listFiles = new PageImpl<>(fileSet,PageRequest.of(1, 5),fileSet.size());
-        
+        //Page<String> listFiles = new PageImpl<>(fileSet,PageRequest.of(pageNumber -1, pageSize),fileSet.size());
+        PagedListHolder listFiles = new PagedListHolder(fileSet);
+        listFiles.setPageSize(pageSize); // number of items per page
+        listFiles.setPage(pageNumber - 1);      // set to first page
+        Boolean showInfo = false;
+        if (listFiles.getNrOfElements() == 0) {
+            showInfo = true;
+        }
+
         String msg = "Files not found.";
         String userRole = userService.getCurrentUserRole(authentication);
         model.addAttribute("formData", new File());
         model.addAttribute("userRole",userRole);
         model.addAttribute("files",listFiles);
         model.addAttribute("mode", "filesView");
-        model.addAttribute("totalPages", listFiles.getTotalPages());
+        model.addAttribute("totalPages", listFiles.getPageCount());
         model.addAttribute("id", id);
-        model.addAttribute("msgInfo", listFiles.isEmpty());
+        model.addAttribute("msgInfo", showInfo);
         model.addAttribute("msg", msg);
         model.addAttribute("serviceType",serviceType);
 
@@ -144,9 +154,9 @@ public class FileUploadController {
                 break;
         }
    
-        System.out.println(statusCodeMsg);
         model.addAttribute("statusMsg", statusCodeMsg);
-        return "redirect:/files?id=" + id + "&serviceType=" + serviceType;
+        return "redirect:/files?id=" + id + "&serviceType=" + serviceType
+                + "&pageNumber=1&pageSize=5";
     
     }
     
@@ -156,9 +166,10 @@ public class FileUploadController {
             @RequestParam("fileName") String fileName) {
         
         String path = fileStorageService.getDirectoryPath(serviceType, id) + fileName;
-        System.out.println(path);
+
         deleteSelectedFile(path);
-        return "redirect:/files?id=" + id + "&serviceType=" + serviceType;
+        return "redirect:/files?id=" + id + "&serviceType=" + serviceType
+                + "&pageNumber=1&pageSize=5";
     }
     
     public ResponseEntity<Response> uploadtoZadanie(@RequestParam("file") MultipartFile file, @PathVariable Integer zadanieId) {
