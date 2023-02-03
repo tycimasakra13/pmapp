@@ -28,8 +28,8 @@
                         <th>E-mail</th>
                         <th>Full time</th>
                         <th>Tasks</th>
-                        <th>Edit</th>
-                        <th>Delete</th>
+                        <th></th>
+                        <th></th>
                     </tr>
                     <tr th:each="student : ${students}">
                         <td th:text="${student.studentId}"></td>
@@ -42,8 +42,10 @@
                             <a th:href="'/task?studentId=' + ${student.studentId}">Tasks</a>
                         </td>
                         <td th:if="${student.zadania == null}"></td>
-                        <td><a th:href="@{'/editStudent?studentId=' + ${student.studentId}}">Edit</a></td>
-                        <td><a th:href="@{'/deleteStudent?studentId=' + ${student.studentId}}">Delete</a></td>
+                        <td th:if="${userRole != 'ADMIN'}"></td>
+                        <td th:if="${userRole != 'ADMIN'}"></td>
+                        <td th:if="${userRole == 'ADMIN'}"><a th:href="@{'/editStudent?studentId=' + ${student.studentId}}">Edit</a></td>
+                        <td th:if="${userRole == 'ADMIN'}"><a th:href="@{'/deleteStudent?studentId=' + ${student.studentId}}">Delete</a></td>
                     </tr>
                 </table>
                 <div>

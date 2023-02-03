@@ -18,14 +18,30 @@ public class SecurityConfig {
                 frameOptions().
                 sameOrigin();
         
+//        http
+//                .csrf().disable()
+//                .authorizeRequests()
+//                .requestMatchers("/h2/").permitAll()
+//                .and()
+//                .logout()
+//                .and()
+//                .httpBasic();
+        
         http
-                .csrf().disable()
                 .authorizeRequests()
                 .requestMatchers("/h2/").permitAll()
+                .anyRequest().authenticated()
+                .and()
+                .formLogin()
+                .loginPage("/login")
+                .defaultSuccessUrl("/index", true)
+                .permitAll()
                 .and()
                 .logout()
-                .and()
-                .httpBasic();
+                .clearAuthentication(true)
+                .permitAll()
+                .and().csrf().disable();
+        
         return http.build();
     }
 

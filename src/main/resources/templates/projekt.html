@@ -47,10 +47,10 @@
                             <a th:href="@{'/files?serviceType=project&id='+${project.projektId}}">Files</a>
                         </td>    
                         
-<!--                        <td th:if="${userRole == 'ADMIN'}"><a th:href="@{'/editProjekt?projectID=' + ${project.projektId}}">Edit</a></td>
-                        <td th:if="${userRole == 'ADMIN'}"><a th:href="@{'/deleteProject?projectID=' + ${project.projektId}}">Delete</a></td>-->
-                        <td><a th:href="@{'/editProjekt?projectID=' + ${project.projektId}}">Edit</a></td>
-                        <td><a th:href="@{'/deleteProject?projectID=' + ${project.projektId}}">Delete</a></td>
+                        <td th:if="${userRole == 'ADMIN'}"><a th:href="@{'/editProjekt?projectID=' + ${project.projektId}}">Edit</a></td>
+                        <td th:if="${userRole == 'ADMIN'}"><a th:href="@{'/deleteProject?projectID=' + ${project.projektId}}">Delete</a></td>
+                        <td th:if="${userRole != 'ADMIN'}"></td>
+                        <td th:if="${userRole != 'ADMIN'}"></td>
                     </tr>
                 </table>
                 <div>

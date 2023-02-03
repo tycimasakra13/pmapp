@@ -28,8 +28,8 @@
                         <th>Project ID</th>
                         <th>Assigned Student</th>
                         <th>Files</th>
-                        <th>Edit</th>
-                        <th>Delete</th>
+                        <th></th>
+                        <th></th>
                     </tr>
                     <tr th:each="task : ${tasks}">
                         <td th:text="${task.zadanieId}"></td>
@@ -47,8 +47,11 @@
                         <td>
                             <a th:href="@{'/files?serviceType=task&id='+${task.zadanieId}}">Files</a>
                         </td> 
-                        <td><a th:href="@{'/editTask?taskId=' + ${task.zadanieId}}">Edit</a></td>
-                        <td><a th:href="@{'/deleteTask?taskId=' + ${task.zadanieId}}">Delete</a></td>
+                        <td th:if="${userRole == 'ADMIN'}"><a th:href="@{'/editTask?taskId=' + ${task.zadanieId}}">Edit</a></td>
+                        <td th:if="${userRole == 'ADMIN'}"><a th:href="@{'/deleteTask?taskId=' + ${task.zadanieId}}">Delete</a></td>
+
+                        <td th:if="${userRole != 'ADMIN'}"></td>
+                        <td th:if="${userRole != 'ADMIN'}"></td>
                     </tr>
                 </table>
                 <div>

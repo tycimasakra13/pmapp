@@ -68,6 +68,7 @@ public class ZadanieServiceImpl implements ZadanieService {
     @Override
     @Transactional
     public void deleteZadanie(Integer zadanieId) {
+        this.removeAssignedProject(zadanieId);
         repository.deleteById(zadanieId);
     }
     
@@ -80,6 +81,14 @@ public class ZadanieServiceImpl implements ZadanieService {
             zadanie.setStudent(null);
             repository.save(zadanie);
         });
+    }
+    
+    @Transactional
+    public void removeAssignedProject(Integer zadanieId) {
+        //repository.deleteById(stutendId);
+        Zadanie zadanie = this.getZadanieById(zadanieId).get();
+        zadanie.setProjekt(null);
+        repository.save(zadanie);
     }
     
     @Override

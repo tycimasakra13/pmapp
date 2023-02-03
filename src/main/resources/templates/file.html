@@ -11,21 +11,21 @@
         <div class="content">
             <div th:if="${mode == 'filesView'}">
                 <div class="toolbar">
-                    <span><a th:href="@{'/addFile?id=' + ${id}}">Add File</a></span>
-                    <span><a th:href="@{/addFile}">Download File</a></span>
+                    <span><a th:href="@{'/addFile?id=' + ${id} +'&serviceType=' + ${serviceType}}">Add File</a></span>
                 </div>
                 <table>
                     <tr>
                         <th>Name</th>
                         <th th:text="${serviceType} == 'project' ? 'Project ID' : 'Task ID'"></th>
-                        <th>Delete</th>
                         <th>Download</th>
+                        <th>Delete</th>
                     </tr>
                     <tr th:each="file : ${files}">
                         <td th:text="${file}"></td>
                         <td th:text="${id}"></td>
-                        <td><a th:href="@{'/deleteFile?id=' + ${id} + '&serviceType=' + ${serviceType} + '&fileName=' + ${file}}">Delete</a></td>
-                        <td><a th:href="@{'/downloadFile?id=' + ${id} + '&serviceType=' + ${serviceType} + '&fileName=' + ${file}}">Download</a></td>    
+                        <td><a th:href="@{'/downloadFile?id=' + ${id} + '&serviceType=' + ${serviceType} + '&fileName=' + ${file}}">Download</a></td> 
+                        <td th:if="${userRole == 'ADMIN'}"><a th:href="@{'/deleteFile?id=' + ${id} + '&serviceType=' + ${serviceType} + '&fileName=' + ${file}}">Delete</a></td>
+                           
                     </tr>
                 </table>
                 <div th:if="${msgInfo}" class="info">
@@ -38,7 +38,7 @@
                 </div>
             </div>
             <div th:if="${mode == 'fileAdd'}">
-                <form method="post" th:action="@{'/addFile?id=' + ${id}}" enctype="multipart/form-data">
+                <form method="post" th:action="@{'/addFile?id=' + ${id}+'&serviceType=' + ${serviceType}}" enctype="multipart/form-data">
                         <input type="file" name="file" multiple>
                     <button type="submit">Upload File</button>
                 </form>

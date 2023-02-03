@@ -6,6 +6,7 @@ import com.project.model.Zadanie;
 import com.project.payload.Response;
 import com.project.services.FileStorageService;
 import com.project.services.ProjektService;
+import com.project.services.UserService;
 import com.project.services.ZadanieService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -19,8 +20,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatusCode;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 
@@ -34,6 +37,8 @@ public class FileUploadController {
     private ProjektService projektService;
     @Autowired
     private ZadanieService zadanieService;
+    @Autowired
+    private UserService userService;
     
     private ResponseEntity<Response> upload(MultipartFile file, Integer id, Optional<ProjektService> projektService, Optional<ZadanieService> zadanieService) {
         String type = "";
@@ -75,23 +80,22 @@ public class FileUploadController {
     
     @GetMapping("/files")
     public String getFilesList(@RequestParam("serviceType") String serviceType,
-            @RequestParam("id") Integer id,
-            Pageable pageable,
-            Model model) {
-       
+            @RequestParam("id") Integer id, Pageable pageable,
+            Model model, Authentication authentication) {
+        System.out.println("agesize:" + pageable.getPageSize());
+        //final Pageable pageable = PageRequest.of(pageNumber - 1, pageSize);
         String path = fileStorageService.getDirectoryPath(serviceType, id);
         List<String> fileSet = fileStorageService.loadFiles(path);
  
-        Page<String> listFiles = new PageImpl<>(fileSet,
-                pageable,
-                fileSet.size());
+        Page<String> listFiles = new PageImpl<>(fileSet,PageRequest.of(1, 5),fileSet.size());
         
         String msg = "Files not found.";
-
+        String userRole = userService.getCurrentUserRole(authentication);
         model.addAttribute("formData", new File());
+        model.addAttribute("userRole",userRole);
         model.addAttribute("files",listFiles);
         model.addAttribute("mode", "filesView");
-        model.addAttribute("totalPages", 1);
+        model.addAttribute("totalPages", listFiles.getTotalPages());
         model.addAttribute("id", id);
         model.addAttribute("msgInfo", listFiles.isEmpty());
         model.addAttribute("msg", msg);
@@ -102,28 +106,47 @@ public class FileUploadController {
     
     //add new project
     @GetMapping("/addFile")
-    public String getAddFileForm(Model model, @RequestParam("id") Integer id) {
+    public String getAddFileForm(Model model, @RequestParam("id") Integer id,
+            @RequestParam("serviceType") String serviceType) {
         model.addAttribute("id", id);
         model.addAttribute("mode","fileAdd");
+        model.addAttribute("serviceType",serviceType);
         return "file.html";
     }
     
     @PostMapping("/addFile")
     public String uploadFiles(@RequestParam("file") MultipartFile[] files,
             @RequestParam("id") Integer id,
+            @RequestParam("serviceType") String serviceType,
             Model model, Pageable pageable) {
 
         String statusCodeMsg = "";
-        uploadMultipletoProjekt(files, id).forEach((status)->{
-            final HttpStatusCode statusCode = status.getStatusCode();
-            if(statusCode.isError()) {
-                System.out.println(statusCode.toString());
-            }
-        });
+        
+        switch(serviceType) {
+            case "project":
+                uploadMultipletoProjekt(files, id).forEach((status)->{
+                    final HttpStatusCode statusCode = status.getStatusCode();
+                    if(statusCode.isError()) {
+                        System.out.println(statusCode.toString());
+                    }
+                });
+                break;
+            case "task":
+                uploadMultipletoZadanie(files, id).forEach((status) -> {
+                    final HttpStatusCode statusCode = status.getStatusCode();
+                    if(statusCode.isError()) {
+                        System.out.println(statusCode.toString());
+                    }
+                });
+                break;
+            default:
+                statusCodeMsg = "unknown service type";
+                break;
+        }
    
         System.out.println(statusCodeMsg);
         model.addAttribute("statusMsg", statusCodeMsg);
-        return "file.html";
+        return "redirect:/files?id=" + id + "&serviceType=" + serviceType;
     
     }
     
@@ -135,7 +158,7 @@ public class FileUploadController {
         String path = fileStorageService.getDirectoryPath(serviceType, id) + fileName;
         System.out.println(path);
         deleteSelectedFile(path);
-        return "file.html";
+        return "redirect:/files?id=" + id + "&serviceType=" + serviceType;
     }
     
     public ResponseEntity<Response> uploadtoZadanie(@RequestParam("file") MultipartFile file, @PathVariable Integer zadanieId) {
