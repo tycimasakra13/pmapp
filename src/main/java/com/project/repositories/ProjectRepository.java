@@ -1,6 +1,7 @@
 package com.project.repositories;
 
 import com.project.model.Projekt;
+import java.util.Collection;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,6 +17,7 @@ public interface ProjectRepository extends JpaRepository<Projekt, Integer> {
 
     List<Projekt> findByNazwaContainingIgnoreCase(String nazwa);
     
-    @Query("SELECT projektId, nazwa  FROM Projekt")
-    List<Map<Integer, String>> getProjectsListForSelect();
+    @Query("SELECT p FROM Projekt p")
+    List<Projekt> getProjectsListForSelect();
+   // Map<Integer, String> getProjectsListForSelect();
 }

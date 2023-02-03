@@ -23,5 +23,5 @@ public interface ProjektService {
 
     Page<Projekt> searchByNazwa(String nazwa, Integer pageNumber, Integer pageSize);
     
-    List<Map<Integer, String>> getProjectsForSelect();
+    List<Projekt> getProjectsList();
 }

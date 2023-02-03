@@ -66,7 +66,7 @@ public class ProjektServiceImpl implements ProjektService {
     }
     
     @Override
-    public List<Map<Integer, String>> getProjectsForSelect() {
-        return repository.getProjectsListForSelect();
+    public List<Projekt> getProjectsList() {
+        return repository.findAll();
     }
 }

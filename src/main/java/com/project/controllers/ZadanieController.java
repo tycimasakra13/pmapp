@@ -60,21 +60,19 @@ public class ZadanieController {
         return pageSize;
     }
     
-    private Map<Integer, String> projectsForSelect(Pageable pageable) { 
-        Map<Integer, String> projectsLists = new HashMap<>();
-        Page<Projekt> proj = projektService.getProjekts(pageable);
-        proj.forEach((pr) -> {
-            projectsLists.put(pr.getProjektId(),pr.getNazwa());
+    private Map<Integer, String> projectsForSelect() { 
+        Map<Integer, String> projectsLists = new HashMap();
+        projektService.getProjectsList().forEach((projekt) -> {
+            projekt.getProjektId();
+            projectsLists.put(projekt.getProjektId(),projekt.getNazwa());
         });
         
         return projectsLists;
     }
     
-    private Map<Integer, String> studentsForSelect(Pageable pageable) {
-        
+    private Map<Integer, String> studentsForSelect() {
         Map<Integer, String> studentsLists = new HashMap<>();
-        Page<Student> students = studentService.getStudents(pageable);
-        students.forEach((student) -> {
+        studentService.getStudentsList().forEach((student) -> {
             studentsLists.put(student.getStudentId(), student.getImie() + " " + student.getNazwisko());
         });
         
@@ -139,8 +137,8 @@ public class ZadanieController {
         Zadanie task = new Zadanie();
         
         model.addAttribute("saveData", task);
-        model.addAttribute("projects", projectsForSelect(pageable));
-        model.addAttribute("students", studentsForSelect(pageable));
+        model.addAttribute("projects", projectsForSelect());
+        model.addAttribute("students", studentsForSelect());
         model.addAttribute("mode","taskAdd");
         return "task.html";
     }
@@ -150,8 +148,8 @@ public class ZadanieController {
         Zadanie selectedTask = zadanieService.getZadanieById(taskId).get();
         
         model.addAttribute("updateData", selectedTask);
-        model.addAttribute("projects", projectsForSelect(pageable));
-        model.addAttribute("students", studentsForSelect(pageable));
+        model.addAttribute("projects", projectsForSelect());
+        model.addAttribute("students", studentsForSelect());
         model.addAttribute("mode","taskEdit");
  
         return "task.html";
