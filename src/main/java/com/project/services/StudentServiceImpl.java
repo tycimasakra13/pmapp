@@ -1,6 +1,5 @@
 package com.project.services;
 
-import com.project.model.Projekt;
 import com.project.model.Student;
 import com.project.repositories.StudentRepository;
 import org.springframework.data.domain.Page;
@@ -36,7 +35,8 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public Page<Student> getStudentByNazwiskoStartsWithIgnoreCase(String nazwisko, Pageable pageable) {
+    public Page<Student> getStudentByNazwiskoStartsWithIgnoreCase(String nazwisko, Integer pageNumber, Integer pageSize) {
+        final Pageable pageable = PageRequest.of(pageNumber - 1, pageSize);
         return repository.findByNazwiskoStartsWithIgnoreCase(nazwisko, pageable);
     }
 

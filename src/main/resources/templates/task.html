@@ -1,12 +1,11 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
     <head>
-       
+        <title>PM - Tasks</title>
         <meta charset="UTF-8">
         <link href="css/styles.css" rel="stylesheet" type="text/css"/>
         <script src="js/main.js" type="text/javascript"></script>
-        <title>PM - Projects</title>
-      <style>
+       <style>
     .header {
   background-color: #f2f2f2;
   padding: 20px;
@@ -142,74 +141,88 @@ tr:nth-child(even) {background-color: #f0f8ff}
 </style>  
 </head>
     <body >
-       
+     
         <div class="header" th:insert="fragments/header.html"></div>
         <div class="content">
-                <div class="menuNavigator"></div>
-            <div th:if="${mode == 'projectListViewPaginated'}">
-                
+           <div class="menuNavigator"></div>
+            <div th:if="${mode == 'taskListViewPaginated'}">
                 <div class="toolbar">
-                    
-                    <span><a th:href="@{/addProject}">Add Project</a></span>
+                    <span><a th:href="@{/addTask}">Add Task</a></span>
+                   
                     <div class="searchBox">
-                        <form th:action="@{/project?pageNumber=1&pageSize=2}" th:object="${formData}" method="POST">
-                            <input type="text" th:field="*{nazwa}"/>
+                        <form th:action="@{/task?pageNumber=1&pageSize=2}" th:object="${formData}" method="POST">
+                            <input type="text" th:field="*{nazwa}" placeholder="Search by name"/>
                             <button type="submit">Search</button>
                         </form>                  
                     </div>
                 </div>
-              
+               
                 <table>
-                    
                     <tr>
+                        <th>Task ID</th>
+                        <th>Description</th>
+                        <th>Name</th>
+                        <th>Create Date</th>
                         <th>Project ID</th>
-                        <th>Nazwa</th>
-                        <th>Opis</th>
-                        <th>Create date</th>
-                        <th>Modification date</th>
-<!--                        <th></th>
-                        <th></th>-->
+                        <th>Edit</th>
+                        <th>Delete</th>
                     </tr>
-                    <tr th:each="project : ${projects}">
-                        <td th:text="${project.projektId}"></td>
-                        <td th:text="${project.nazwa}"></td>
-                        <td th:text="${project.opis}"></td>
-                        <td th:text="${project.dataCzasUtworzenia}"></td>
-                        <td th:text="${project.dataCzasModyfikacji}"></td>
-
-                        <!---
-                        studenci
-                        zadania
-                        pliki--->
-                        
-                        <td th:if="${userRole == 'ADMIN'}"><a th:href="@{'/editProjekt?projectID=' + ${project.projektId}}">Edit</a></td>
-                        <td th:if="${userRole == 'ADMIN'}"><a th:href="@{'/deleteProject?projectID=' + ${project.projektId}}">Delete</a></td>
+                    <tr th:each="task : ${tasks}">
+                        <td th:text="${task.zadanieId}"></td>
+                        <td th:text="${task.opis}"></td>
+                        <td th:text="${task.nazwa}"></td>
+                        <td th:text="${task.dataDodania}"></td>
+                        <td th:text="${task.projekt.getProjektId()}"></td>
+                        <td><a th:href="@{'/editTask?taskId=' + ${task.zadanieId}}">Edit</a></td>
+                        <td><a th:href="@{'/deleteTask?taskId=' + ${task.zadanieId}}">Delete</a></td>
                     </tr>
                 </table>
                 <div>
                     <span th:each="i: ${#numbers.sequence(1, totalPages)}">
-                        <a th:href="@{'/project?pageNumber=' + ${i} + '&pageSize=2'}">[[${i}]]</a>
+                        <a th:href="@{'/task?pageNumber=' + ${i} + '&pageSize=2'}">[[${i}]]</a>
                     </span>
                 </div>
             </div>
-            <div th:if="${mode == 'projectAdd'}">
-                <form th:action="@{/addProject}" th:object="${saveData}" method="POST">
-                    <input type="text" th:field="*{nazwa}"/>
+            <div th:if="${mode == 'taskAdd'}">
+                <form th:action="@{/addTask}" th:object="${saveData}" method="POST">
+                    <label for="opis">Description</label>:
                     <input type="text" th:field="*{opis}"/>
-                    <button type="submit">Save</button>
+                    <label for="nazwa">Name</label>:
+                    <input type="text" th:field="*{nazwa}"/>
+                    <label for="projekt">Project</label>:
+                    <select th:field="*{projekt}">
+                        <option value="0">select project</option>
+                        <option th:each="project : ${projects}" th:value="${project.key}" th:text="${project.value}"></option>
+                        </option>
+                    </select>
+                    <button type="submit">Add</button>
                 </form>
             </div>
-            <div th:if="${mode == 'projectEdit'}">
-                <form th:action="@{/updateProject}" th:object="${updateData}" method="POST">
-                    <input type="text" th:field="*{projektId}"/>
-                    <input type="text" th:field="*{nazwa}"/>
+            <div th:if="${mode == 'taskEdit'}">
+                <form th:action="@{/updateTask}" th:object="${updateData}" method="POST">
+                    <input type="hidden" th:field="*{zadanieId}"/>
+                    <label for="opis">Description</label>:
                     <input type="text" th:field="*{opis}"/>
+                    <label for="nazwa">Name</label>:
+                    <input type="text" th:field="*{nazwa}"/>
+                    <label for="projekt">Project</label>:
+                    <select th:field="*{projekt}"/>
+                        <option value="0">select project</option>
+                        <ption th:value="${selectedProject}" text="test"></option>
+                        <option th:each="project : ${projects}" th:value="${project.key}" th:text="${project.value}"
+                            th:selected="(${project.key} == *{projekt.projektId})"></option>
+                        </option>
+                    </select>
                     <button type="submit">Update</button>
                 </form>
             </div>
-                
+            <div th:if="${msgError}" class="error">
+                <p th:text="${msg}"></p>
+                <a th:href="${formUrl}">Try again</a>
+            </div>
+            
         </div>
-        <footer >
+     <footer>
         <p>Project Manager Application.</p> <p>Programowanie zwinne - projekt</p>               
 </footer>
     </body>

@@ -1,7 +1,9 @@
 package com.project.controllers;
 
+import com.project.model.Projekt;
 import com.project.model.User;
 import com.project.model.Zadanie;
+import com.project.services.ProjektService;
 import com.project.services.ZadanieService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +15,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 
@@ -20,11 +25,12 @@ import org.springframework.ui.Model;
 @RequestMapping("")
 public class ZadanieController {
     private final ZadanieService zadanieService;
- 
-    
+    private final ProjektService projektService;
+  
     @Autowired
-    public ZadanieController(ZadanieService zadanieService) {
+    public ZadanieController(ZadanieService zadanieService, ProjektService projektService) {
         this.zadanieService = zadanieService;
+        this.projektService = projektService;
     }
     
     private Integer setPageNumber(Integer pageNumber) {
@@ -43,6 +49,16 @@ public class ZadanieController {
         return pageSize;
     }
     
+    private Map<Integer, String> projectsForSelect(Pageable pageable) { 
+        Map<Integer, String> projectsLists = new HashMap<>();
+        Page<Projekt> proj = projektService.getProjekts(pageable);
+        proj.forEach((pr) -> {
+            projectsLists.put(pr.getProjektId(),pr.getNazwa());
+        });
+        
+        return projectsLists;
+    }
+
     @GetMapping("/task")
     public String getPaginatedTasks(@ModelAttribute("loggedUser") User lUser, 
             @RequestParam(value="pageNumber") Integer pageNumber,
@@ -65,29 +81,12 @@ public class ZadanieController {
         return "task.html";
     }
     
-    @GetMapping("/addTask")
-    public String getAddTaskForm(Model model) {
-        model.addAttribute("saveData", new Zadanie());
-        model.addAttribute("mode","taskAdd");
-        return "task.html";
-    }
-    
-    @GetMapping("/editTask")
-    public String getEditTaskForm(@RequestParam(value="taskId") Integer taskId, Model model) {
-        Zadanie selectedTask = zadanieService.getZadanieById(taskId).get();
-     
-        model.addAttribute("updateData", selectedTask);
-        model.addAttribute("mode","taskEdit");
- 
-        return "task.html";
-    }
-    
-    @PostMapping("/searchTask")
+    @PostMapping("/task")
     public String searchTask(@Valid @ModelAttribute("formData") Zadanie formData,
                                Model model, Pageable pageable) {
 
         System.out.println("response " + formData.getNazwa());
-        Page<Zadanie> totalTasks = zadanieService.getZadaniaProjektu(formData.getProjekt().getProjektId(), pageable);
+        Page<Zadanie> totalTasks = zadanieService.searchByNazwa(formData.getNazwa(), 1, 2);
         Integer totalPages = totalTasks.getTotalPages();
         
         model.addAttribute("formData", new Zadanie());
@@ -98,14 +97,46 @@ public class ZadanieController {
         return "task.html";
     }
     
+    @GetMapping("/addTask")
+    public String getAddTaskForm(Model model, Pageable pageable) {
+        Zadanie task = new Zadanie();
+        
+        model.addAttribute("saveData", task);
+        model.addAttribute("projects", projectsForSelect(pageable));
+        model.addAttribute("mode","taskAdd");
+        return "task.html";
+    }
+    
+    @GetMapping("/editTask")
+    public String getEditTaskForm(@RequestParam(value="taskId") Integer taskId, Model model, Pageable pageable) {
+        Zadanie selectedTask = zadanieService.getZadanieById(taskId).get();
+        
+        model.addAttribute("updateData", selectedTask);
+        model.addAttribute("projects", projectsForSelect(pageable));
+        model.addAttribute("mode","taskEdit");
+ 
+        return "task.html";
+    }
+    
+    
     @PostMapping("/updateTask")
     public String updateTask(@Valid @ModelAttribute Zadanie updateData, Model model, Pageable pageable) {
+        String returnValue = "task.html";
+        Integer taskId = updateData.getZadanieId();
+        HttpStatusCode statusCode;
+        try {
+            statusCode = updateZadanie(updateData, taskId).getStatusCode();
+            if(statusCode.is2xxSuccessful()){
+                returnValue = "redirect:/task?pageNumber=1&pageSize=2";
+            } 
+        } catch(Exception e) {
+            System.out.println("e: " + e.getLocalizedMessage());
+            model.addAttribute("formUrl","/editTask?taskId="+taskId);
+            model.addAttribute("msg", e.getLocalizedMessage());
+            model.addAttribute("msgError", true);
+        }
        
-        String statusCode = updateZadanie(updateData, updateData.getZadanieId()).getStatusCode().toString();
-                                          
-        System.out.println(statusCode);
-        model.addAttribute("statusMsg", statusCode);
-        return "task.html";
+        return returnValue;
     }
     
     @GetMapping("/deleteTask")
@@ -114,17 +145,24 @@ public class ZadanieController {
        
         System.out.println(statusCode);
         model.addAttribute("statusMsg", statusCode);
-        return "task.html";
+        return "redirect:/task?pageNumber=1&pageSize=2";
     }
     
     @PostMapping("/addTask")
     public String addTask(@Valid @ModelAttribute Zadanie saveData, Model model, Pageable pageable) {
+        String returnValue = "task.html";
         
-        String statusCode = createZadanie(saveData).getStatusCode().toString();
+        try {
+            createZadanie(saveData).getStatusCode().toString();
+            returnValue = "redirect:/task?pageNumber=1&pageSize=2";
+        } catch(Exception e) {
+            System.out.println("e: " + e.getLocalizedMessage());
+            model.addAttribute("formUrl","/addTask");
+            model.addAttribute("msg", e.getLocalizedMessage());
+            model.addAttribute("msgError", true);
+        }
    
-        System.out.println(statusCode);
-        model.addAttribute("statusMsg", statusCode);
-        return "task.html";
+        return returnValue;
     }
     
     ResponseEntity<Void> createZadanie(@Valid @RequestBody Zadanie zadanie) {

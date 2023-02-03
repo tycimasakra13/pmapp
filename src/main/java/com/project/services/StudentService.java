@@ -1,6 +1,5 @@
 package com.project.services;
 
-import com.project.model.Projekt;
 import com.project.model.Student;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,7 +13,7 @@ public interface StudentService {
 
     Page<Student> getStudentByNrIndeksu(String nrIndeksu, Pageable pageable);
 
-    Page<Student> getStudentByNazwiskoStartsWithIgnoreCase(String nazwisko, Pageable pageable);
+    Page<Student> getStudentByNazwiskoStartsWithIgnoreCase(String nazwisko, Integer pageNumber, Integer pageSize);
 
     Optional<Student> getStudentById(Integer id);
 

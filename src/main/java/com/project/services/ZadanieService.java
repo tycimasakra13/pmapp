@@ -20,4 +20,6 @@ public interface ZadanieService {
     void updateZadanie(Integer id, Zadanie zadanie);
 
     void deleteZadanie(Integer zadanieId);
+    
+    Page<Zadanie> searchByNazwa(String nazwa, Integer pageNumber, Integer pageSize);
 }
