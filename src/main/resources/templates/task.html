@@ -150,7 +150,7 @@ tr:nth-child(even) {background-color: #f0f8ff}
                     <span><a th:href="@{/addTask}">Add Task</a></span>
                    
                     <div class="searchBox">
-                        <form th:action="@{/task?pageNumber=1&pageSize=2}" th:object="${formData}" method="POST">
+                        <form th:action="@{/task?pageNumber=1&pageSize=5}" th:object="${formData}" method="POST">
                             <input type="text" th:field="*{nazwa}" placeholder="Search by name"/>
                             <button type="submit">Search</button>
                         </form>                  
@@ -164,8 +164,10 @@ tr:nth-child(even) {background-color: #f0f8ff}
                         <th>Name</th>
                         <th>Create Date</th>
                         <th>Project ID</th>
-                        <th>Edit</th>
-                        <th>Delete</th>
+                        <th>Assigned Student</th>
+                        <th>Files</th>
+                        <th></th>
+                        <th></th>
                     </tr>
                     <tr th:each="task : ${tasks}">
                         <td th:text="${task.zadanieId}"></td>
@@ -173,13 +175,26 @@ tr:nth-child(even) {background-color: #f0f8ff}
                         <td th:text="${task.nazwa}"></td>
                         <td th:text="${task.dataDodania}"></td>
                         <td th:text="${task.projekt.getProjektId()}"></td>
-                        <td><a th:href="@{'/editTask?taskId=' + ${task.zadanieId}}">Edit</a></td>
-                        <td><a th:href="@{'/deleteTask?taskId=' + ${task.zadanieId}}">Delete</a></td>
+                        <td th:if="${task.student != null}">
+                            <a th:href="'/student?studentId=' + ${task.student.getStudentId()}">
+                                <span th:text="(${task.student.getImie()} + ' ' + ${task.student.getNazwisko()})"></span>
+                            </a>
+                        </td> 
+                        <td th:if="${task.student == null}">NOT ASSIGNED</td> 
+ 
+                        <td>
+                            <a th:href="@{'/files?serviceType=task&pageNumber=1&pageSize=5&id='+${task.zadanieId}}">Files</a>
+                        </td> 
+                        <td th:if="${userRole == 'ADMIN'}"><a th:href="@{'/editTask?taskId=' + ${task.zadanieId}}">Edit</a></td>
+                        <td th:if="${userRole == 'ADMIN'}"><a th:href="@{'/deleteTask?taskId=' + ${task.zadanieId}}">Delete</a></td>
+
+                        <td th:if="${userRole != 'ADMIN'}"></td>
+                        <td th:if="${userRole != 'ADMIN'}"></td>
                     </tr>
                 </table>
                 <div>
-                    <span th:each="i: ${#numbers.sequence(1, totalPages)}">
-                        <a th:href="@{'/task?pageNumber=' + ${i} + '&pageSize=2'}">[[${i}]]</a>
+                    <span th:each="i: ${#numbers.sequence(totalPages == 0 ? 0 : 1, totalPages)}">
+                        <a th:href="@{'/task?pageNumber=' + ${i} + '&pageSize=5'}">[[${i}]]</a>
                     </span>
                 </div>
             </div>
@@ -193,7 +208,11 @@ tr:nth-child(even) {background-color: #f0f8ff}
                     <select th:field="*{projekt}">
                         <option value="0">select project</option>
                         <option th:each="project : ${projects}" th:value="${project.key}" th:text="${project.value}"></option>
-                        </option>
+                    </select>
+                    <label for="student">Assign student</label>:
+                    <select th:field="*{student}">
+                        <option value="0">select student</option>
+                        <option th:each="student : ${students}" th:value="${student.key}" th:text="${student.value}"></option>
                     </select>
                     <button type="submit">Add</button>
                 </form>
@@ -207,10 +226,15 @@ tr:nth-child(even) {background-color: #f0f8ff}
                     <input type="text" th:field="*{nazwa}"/>
                     <label for="projekt">Project</label>:
                     <select th:field="*{projekt}"/>
-                        <option value="0">select project</option>
-                        <ption th:value="${selectedProject}" text="test"></option>
                         <option th:each="project : ${projects}" th:value="${project.key}" th:text="${project.value}"
-                            th:selected="(${project.key} == *{projekt.projektId})"></option>
+                            th:selected="(${project.key} == *{projekt.projektId})">
+                        </option>
+                    </select>
+                    <label for="student">Assigned student</label>:
+                    <select th:field="*{student}"/>
+                        <option value="0">select student</option>
+                        <option th:each="student : ${students}" th:value="${student.key}" th:text="${student.value}"
+                            th:selected="(${student.key} == (*{student} == null ? 0 : *{student.studentId}))">
                         </option>
                     </select>
                     <button type="submit">Update</button>

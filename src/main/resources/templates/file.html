@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>PM - Files</title>
+        <meta charset="UTF-8">
+        <link href="css/styles.css" rel="stylesheet" type="text/css"/>
+        <script src="js/main.js" type="text/javascript"></script>
+</head>
+    <body>
+        <div class="header" th:insert="fragments/header.html"></div>
+        <div class="content">
+            <div th:if="${mode == 'filesView'}">
+                <div class="toolbar">
+                    <span><a th:href="@{'/addFile?id=' + ${id} +'&serviceType=' + ${serviceType}}">Add File</a></span>
+                </div>
+                <table>
+                    <tr>
+                        <th>Name</th>
+                        <th th:text="${serviceType} == 'project' ? 'Project ID' : 'Task ID'"></th>
+                        <th>Download</th>
+                        <th>Delete</th>
+                    </tr>
+                    <tr th:each="file : ${files.pageList}">
+                        <td th:text="${file}"></td>
+                        <td th:text="${id}"></td>
+                        <td><a th:href="@{'/downloadFile?id=' + ${id} + '&serviceType=' + ${serviceType} + '&fileName=' + ${file}}">Download</a></td> 
+                        <td th:if="${userRole == 'ADMIN'}"><a th:href="@{'/deleteFile?id=' + ${id} + '&serviceType=' + ${serviceType} + '&fileName=' + ${file}}">Delete</a></td>
+                           
+                    </tr>
+                </table>
+                <div th:if="${msgInfo}" class="info">
+                    <p th:text="${msg}"></p>
+                </div>
+                <div>
+                    <span th:each="i: ${#numbers.sequence(totalPages == 0 ? 0 : 1, totalPages)}">
+                        <a th:href="@{'/files?serviceType=' + ${serviceType} + '&pageNumber=' + ${i} + '&pageSize=5&id='+${id}}">[[${i}]]</a>
+                    </span>
+                </div>
+            </div>
+            <div th:if="${mode == 'fileAdd'}">
+                <form method="post" th:action="@{'/addFile?id=' + ${id}+'&serviceType=' + ${serviceType}}" enctype="multipart/form-data">
+                        <input type="file" name="file" multiple>
+                    <button type="submit">Upload File</button>
+                </form>
+            </div>
+            <div th:if="${msgError}" class="error">
+                <p th:text="${msg}"></p>
+                <a th:href="${formUrl}">Try again</a>
+            </div>
+        </div>
+        <div class="footer" th:insert="fragments/footer.html"></div>
+    </body>
+</html>

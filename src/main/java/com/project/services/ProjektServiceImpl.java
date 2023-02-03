@@ -2,6 +2,8 @@ package com.project.services;
 
 import com.project.model.Projekt;
 import com.project.repositories.ProjectRepository;
+import java.util.List;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -61,5 +63,10 @@ public class ProjektServiceImpl implements ProjektService {
     public Page<Projekt> searchByNazwa(String nazwa, Integer pageNumber, Integer pageSize) {
         final Pageable pageable = PageRequest.of(pageNumber - 1, pageSize);
         return repository.findByNazwaContainingIgnoreCase(nazwa, pageable);
+    }
+    
+    @Override
+    public List<Map<Integer, String>> getProjectsForSelect() {
+        return repository.getProjectsListForSelect();
     }
 }

@@ -1,8 +1,6 @@
 package com.project.services;
 
-import com.project.model.Projekt;
 import com.project.model.User;
-import com.project.repositories.ProjectRepository;
 import com.project.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -12,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+import org.springframework.security.core.Authentication;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -39,7 +38,7 @@ public class UserServiceImpl implements UserService {
     
     @Override
     public Optional<User> getUserByName(String userName) {
-        return repository.findByUserName(userName);
+        return repository.findByUsername(userName);
     }
     
     @Override
@@ -52,7 +51,7 @@ public class UserServiceImpl implements UserService {
     public void updateUser(Integer id, User user) {
         User userFromDb = repository.findById(id).get();
 
-        userFromDb.setUserName(user.getUserName());
+        userFromDb.setUsername(user.getUsername());
         userFromDb.setPassword(user.getPassword());
 
         repository.save(userFromDb);
@@ -62,6 +61,18 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void deleteUser(Integer userId) {
         repository.deleteById(userId);
+    }
+    
+    @Override
+    public String getCurrentUserRole(Authentication authentication) {
+        User user = this.getUserByName(authentication.getName()).get();
+        String userRole = user.getRole();
+        return userRole;
+    }
+    
+    @Override
+    public String getCurrentUserName(Authentication authentication) {
+        return authentication.getName();
     }
 
 //    @Override

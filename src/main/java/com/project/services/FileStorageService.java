@@ -16,6 +16,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -34,6 +36,16 @@ public class FileStorageService {
             throw new FileStorageException("Could not create the directory where the uploaded files will be stored.", ex);
         }
     }
+    
+    public Path getStorageLocationPath() {
+        return fileStorageLocation;
+    }
+    
+    public String getDirectoryPath(String serviceType, Integer id) {
+        String pathType = "project".equals(serviceType) ? "/projekt/" : "/zadanie/";
+        String path = getStorageLocationPath() + pathType + id + "/";
+        return path;
+    }
 
     public String storeFile(MultipartFile file, String path) {
         // Normalize file name
@@ -48,7 +60,7 @@ public class FileStorageService {
             Files.createDirectories(this.fileStorageLocation.resolve(path));
             // Copy file to the target location (Replacing existing file with the same name)
             Path targetLocation = this.fileStorageLocation.resolve(path).resolve(fileName);
-            System.out.println(targetLocation);
+
             Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
             return fileName;
@@ -65,9 +77,12 @@ public class FileStorageService {
         }
     }
 
-    public Resource loadFileAsResource(String fileName) {
+    public Resource loadFileAsResource(String pathStr, String fileName) {
         try {
-            Path filePath = this.fileStorageLocation.resolve(fileName).normalize();
+            Path path = Paths.get(pathStr);
+            Path filePath = path.resolve(fileName).normalize();
+            //Path filePath = this.fileStorageLocation.resolve(fileName).normalize();
+
             Resource resource = new UrlResource(filePath.toUri());
             if (resource.exists()) {
                 return resource;
@@ -78,4 +93,23 @@ public class FileStorageService {
             throw new FileNotFoundException("File not found " + fileName, ex);
         }
     }
+    
+    
+    public List<String> loadFiles(String path) {
+        List<String> filesList = new ArrayList<>();
+        try {
+            Path filePath = this.fileStorageLocation.resolve(path).normalize();
+            if(Files.exists(filePath)) {
+                Files.list(filePath).forEach((file) -> {
+                    filesList.add(file.getFileName().toString());
+                });
+            }
+
+            return filesList;
+            
+        } catch (IOException ex) {
+            throw new FileNotFoundException("File not found " + path, ex);
+        }
+    }
+    
 }

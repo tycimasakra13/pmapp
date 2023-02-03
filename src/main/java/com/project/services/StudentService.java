@@ -21,5 +21,5 @@ public interface StudentService {
 
     void updateStudent(Integer id, Student student);
 
-    void deleteStudent(Integer studentId);
+    void deleteStudent(Integer studentId, Pageable pageable);
 }
