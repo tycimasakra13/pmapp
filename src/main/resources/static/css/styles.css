@@ -126,12 +126,24 @@ div {
 /*  width: 100%;*/
 }
 
+.loginForm form {
+    width: 50%;
+    margin: 0 auto;
+}
+
+.loginForm form input {
+    width: 50%;
+    margin: auto;
+    border: 2px solid red;
+    /* width: fit-content; */
+    padding: 5px 15px;
+    text-align: center;
+    display: block;
+}
 
 .footer{
-    position: static;
-    bottom: 0;
     width: 100%;
-    background: black;
+    background: #00000087;
     color: whitesmoke;
     padding: 10px;
     background-color: black;
