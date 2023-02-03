@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>PM - Projects</title>
+        <meta charset="UTF-8">
+        <link href="css/styles.css" rel="stylesheet" type="text/css"/>
+        <script src="js/main.js" type="text/javascript"></script>
+
+
+</head>
+    <body>
+        <div class="header" th:insert="fragments/header.html"></div>
+        <div class="content">
+            <div th:if="${mode == 'projectListViewPaginated'}">
+                <div class="toolbar">
+                    <span><a th:href="@{/addProject}">Add Project</a></span>
+                    <div class="searchBox">
+                        <form th:action="@{/project?pageNumber=1&pageSize=5}" th:object="${formData}" method="POST">
+                            <input type="text" th:field="*{nazwa}" placeholder="Search by name"/>
+                            <button type="submit">Search</button>
+                        </form>                  
+                    </div>
+                </div>
+                <table>
+                    <tr>
+                        <th>Project ID</th>
+                        <th>Nazwa</th>
+                        <th>Opis</th>
+                        <th>Create date</th>
+                        <th>Modification date</th>
+                        <th>Tasks</th>
+                        <th>Files</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                    <tr th:each="project : ${projects}">
+                        <td th:text="${project.projektId}"></td>
+                        <td th:text="${project.nazwa}"></td>
+                        <td th:text="${project.opis}"></td>
+                        <td th:text="${project.dataCzasUtworzenia}"></td>
+                        <td th:text="${project.dataCzasModyfikacji}"></td>
+                        <td th:if="${project.zadania != null}">
+                            <a th:href="'/task?projectID=' + ${project.projektId}">Tasks</a>
+                        </td>
+                        <td th:if="${project.zadania == null}"></td>
+                        <td>
+                            <a th:href="@{'/files?serviceType=project&pageNumber=1&pageSize=5&id='+${project.projektId}}">Files</a>
+                        </td>    
+                        
+                        <td th:if="${userRole == 'ADMIN'}"><a th:href="@{'/editProjekt?projectID=' + ${project.projektId}}">Edit</a></td>
+                        <td th:if="${userRole == 'ADMIN'}"><a th:href="@{'/deleteProject?projectID=' + ${project.projektId}}">Delete</a></td>
+                        <td th:if="${userRole != 'ADMIN'}"></td>
+                        <td th:if="${userRole != 'ADMIN'}"></td>
+                    </tr>
+                </table>
+                <div>
+                    <span th:each="i: ${#numbers.sequence(totalPages == 0 ? 0 : 1, totalPages)}">
+                        <a th:href="@{'/project?pageNumber=' + ${i} + '&pageSize=5'}">[[${i}]]</a>
+                    </span>
+                </div>
+            </div>
+            <div th:if="${mode == 'projectAdd'}">
+                <form th:action="@{/addProject}" th:object="${saveData}" method="POST">
+                    <label for="nazwa">Name</label>:
+                    <input type="text" th:field="*{nazwa}"/>
+                    <label for="opis">Description</label>:
+                    <input type="text" th:field="*{opis}"/>
+                    <button type="submit">Save</button>
+                </form>
+            </div>
+            <div th:if="${mode == 'projectEdit'}">
+                <form th:action="@{/updateProject}" th:object="${updateData}" method="POST">
+                    <input type="text" th:field="*{projektId}"/>
+                    <input type="text" th:field="*{nazwa}"/>
+                    <input type="text" th:field="*{opis}"/>
+                    <button type="submit">Update</button>
+                </form>
+            </div>
+        </div>
+        <div class="footer" th:insert="fragments/footer.html"></div>
+    </body>
+</html>

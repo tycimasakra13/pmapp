@@ -8,10 +8,12 @@ import java.util.Optional;
 
 public interface StudentService {
     Page<Student> getStudents(Pageable pageable);
+    
+    Page<Student> getPaginatedStudents(Integer pageNumber, Integer pageSize);
 
     Page<Student> getStudentByNrIndeksu(String nrIndeksu, Pageable pageable);
 
-    Page<Student> getStudentByNazwiskoStartsWithIgnoreCase(String nazwisko, Pageable pageable);
+    Page<Student> getStudentByNazwiskoStartsWithIgnoreCase(String nazwisko, Integer pageNumber, Integer pageSize);
 
     Optional<Student> getStudentById(Integer id);
 
@@ -19,5 +21,5 @@ public interface StudentService {
 
     void updateStudent(Integer id, Student student);
 
-    void deleteStudent(Integer studentId);
+    void deleteStudent(Integer studentId, Pageable pageable);
 }

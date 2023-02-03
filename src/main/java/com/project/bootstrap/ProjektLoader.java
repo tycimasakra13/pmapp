@@ -23,14 +23,21 @@ public class ProjektLoader implements CommandLineRunner {
 
     private void loadProjekts() {
         if (projektRepository.count() == 0) {
-            Zadanie zadanie = new Zadanie();
-            zadanie.setZadanieId(1);
-            Projekt projekt = new Projekt();
-            projekt.setOpis("ABC");
-            projekt.setNazwa("CDA");
-            projekt.setZadania(List.of(zadanie));
-            projektRepository.save(projekt);
-            System.out.println("Sample Projekts Loaded");
+            int count = 5;
+            for(int x = 0; x <= count; x++) {
+                insertNewProject(x);
+            }
         }
+    }
+    
+    private void insertNewProject(int x) {
+        Zadanie zadanie = new Zadanie();
+        zadanie.setZadanieId(x);
+        Projekt projekt = new Projekt();
+        projekt.setOpis("ABC " + x);
+        projekt.setNazwa("CDA " + x);
+        projekt.setZadania(List.of(zadanie));
+        projektRepository.save(projekt);
+        System.out.println("Sample Projekts Loaded " + x);   
     }
 }

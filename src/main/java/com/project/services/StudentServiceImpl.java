@@ -8,17 +8,26 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+import org.springframework.data.domain.PageRequest;
 
 @Service
 public class StudentServiceImpl implements StudentService {
     StudentRepository repository;
+    ZadanieService zadanieService;
 
-    public StudentServiceImpl(StudentRepository studentRepository) {
+    public StudentServiceImpl(StudentRepository studentRepository, ZadanieService zadanieService) {
         this.repository = studentRepository;
+        this.zadanieService = zadanieService;
     }
 
     @Override
     public Page<Student> getStudents(Pageable pageable) {
+        return repository.findAll(pageable);
+    }
+    
+    @Override
+    public Page<Student> getPaginatedStudents(Integer pageNumber, Integer pageSize) {
+        final Pageable pageable = PageRequest.of(pageNumber - 1, pageSize);
         return repository.findAll(pageable);
     }
 
@@ -28,7 +37,8 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public Page<Student> getStudentByNazwiskoStartsWithIgnoreCase(String nazwisko, Pageable pageable) {
+    public Page<Student> getStudentByNazwiskoStartsWithIgnoreCase(String nazwisko, Integer pageNumber, Integer pageSize) {
+        final Pageable pageable = PageRequest.of(pageNumber - 1, pageSize);
         return repository.findByNazwiskoStartsWithIgnoreCase(nazwisko, pageable);
     }
 
@@ -58,7 +68,8 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     @Transactional
-    public void deleteStudent(Integer studentId) {
+    public void deleteStudent(Integer studentId, Pageable pageable) {
+        zadanieService.removeAssignStudent(studentId, pageable);
         repository.deleteById(studentId);
     }
 }

@@ -1,8 +1,6 @@
 package com.project.controllers;
 
-import com.project.model.Projekt;
 import com.project.model.Student;
-import com.project.services.ProjektServiceImpl;
 import com.project.services.StudentService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -78,7 +76,7 @@ public class StudentControllerTest {
         student.setImie("abc");
         List<Student> list = new ArrayList<>();
         list.add(student);
-        when(studentService.getStudentByNazwiskoStartsWithIgnoreCase("abc", PageRequest.of(0, 20)))
+        when(studentService.getStudentByNazwiskoStartsWithIgnoreCase("abc", 0, 20))
                 .thenReturn(new PageImpl<>(list));
         mvc.perform(MockMvcRequestBuilders.get("/api/student?nazwisko=abc")
                         .with(user("user").password("password"))

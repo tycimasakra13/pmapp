@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>PM - Tasks</title>
+        <meta charset="UTF-8">
+        <link href="css/styles.css" rel="stylesheet" type="text/css"/>
+        <script src="js/main.js" type="text/javascript"></script>
+</head>
+    <body>
+        <div class="header" th:insert="fragments/header.html"></div>
+        <div class="content">
+            <div th:if="${mode == 'taskListViewPaginated'}">
+                <div class="toolbar">
+                    <span><a th:href="@{/addTask}">Add Task</a></span>
+                    <div class="searchBox">
+                        <form th:action="@{/task?pageNumber=1&pageSize=5}" th:object="${formData}" method="POST">
+                            <input type="text" th:field="*{nazwa}" placeholder="Search by name"/>
+                            <button type="submit">Search</button>
+                        </form>                  
+                    </div>
+                </div>
+                <table>
+                    <tr>
+                        <th>Task ID</th>
+                        <th>Description</th>
+                        <th>Name</th>
+                        <th>Create Date</th>
+                        <th>Project ID</th>
+                        <th>Assigned Student</th>
+                        <th>Files</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                    <tr th:each="task : ${tasks}">
+                        <td th:text="${task.zadanieId}"></td>
+                        <td th:text="${task.opis}"></td>
+                        <td th:text="${task.nazwa}"></td>
+                        <td th:text="${task.dataDodania}"></td>
+                        <td th:text="${task.projekt.getProjektId()}"></td>
+                        <td th:if="${task.student != null}">
+                            <a th:href="'/student?studentId=' + ${task.student.getStudentId()}">
+                                <span th:text="(${task.student.getImie()} + ' ' + ${task.student.getNazwisko()})"></span>
+                            </a>
+                        </td> 
+                        <td th:if="${task.student == null}">NOT ASSIGNED</td> 
+ 
+                        <td>
+                            <a th:href="@{'/files?serviceType=task&pageNumber=1&pageSize=5&id='+${task.zadanieId}}">Files</a>
+                        </td> 
+                        <td th:if="${userRole == 'ADMIN'}"><a th:href="@{'/editTask?taskId=' + ${task.zadanieId}}">Edit</a></td>
+                        <td th:if="${userRole == 'ADMIN'}"><a th:href="@{'/deleteTask?taskId=' + ${task.zadanieId}}">Delete</a></td>
+
+                        <td th:if="${userRole != 'ADMIN'}"></td>
+                        <td th:if="${userRole != 'ADMIN'}"></td>
+                    </tr>
+                </table>
+                <div>
+                    <span th:each="i: ${#numbers.sequence(totalPages == 0 ? 0 : 1, totalPages)}">
+                        <a th:href="@{'/task?pageNumber=' + ${i} + '&pageSize=5'}">[[${i}]]</a>
+                    </span>
+                </div>
+            </div>
+            <div th:if="${mode == 'taskAdd'}">
+                <form th:action="@{/addTask}" th:object="${saveData}" method="POST">
+                    <label for="opis">Description</label>:
+                    <input type="text" th:field="*{opis}"/>
+                    <label for="nazwa">Name</label>:
+                    <input type="text" th:field="*{nazwa}"/>
+                    <label for="projekt">Project</label>:
+                    <select th:field="*{projekt}">
+                        <option value="0">select project</option>
+                        <option th:each="project : ${projects}" th:value="${project.key}" th:text="${project.value}"></option>
+                    </select>
+                    <label for="student">Assign student</label>:
+                    <select th:field="*{student}">
+                        <option value="0">select student</option>
+                        <option th:each="student : ${students}" th:value="${student.key}" th:text="${student.value}"></option>
+                    </select>
+                    <button type="submit">Add</button>
+                </form>
+            </div>
+            <div th:if="${mode == 'taskEdit'}">
+                <form th:action="@{/updateTask}" th:object="${updateData}" method="POST">
+                    <input type="hidden" th:field="*{zadanieId}"/>
+                    <label for="opis">Description</label>:
+                    <input type="text" th:field="*{opis}"/>
+                    <label for="nazwa">Name</label>:
+                    <input type="text" th:field="*{nazwa}"/>
+                    <label for="projekt">Project</label>:
+                    <select th:field="*{projekt}"/>
+                        <option th:each="project : ${projects}" th:value="${project.key}" th:text="${project.value}"
+                            th:selected="(${project.key} == *{projekt.projektId})">
+                        </option>
+                    </select>
+                    <label for="student">Assigned student</label>:
+                    <select th:field="*{student}"/>
+                        <option value="0">select student</option>
+                        <option th:each="student : ${students}" th:value="${student.key}" th:text="${student.value}"
+                            th:selected="(${student.key} == (*{student} == null ? 0 : *{student.studentId}))">
+                        </option>
+                    </select>
+                    <button type="submit">Update</button>
+                </form>
+            </div>
+            <div th:if="${msgError}" class="error">
+                <p th:text="${msg}"></p>
+                <a th:href="${formUrl}">Try again</a>
+            </div>
+            
+        </div>
+        <div class="footer" th:insert="fragments/footer.html"></div>
+    </body>
+</html>
