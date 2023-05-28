@@ -1,0 +1,37 @@
+scalar DateTime @specifiedBy(url: "https://scalars.graphql.org/andimarek/date-time.html")
+
+type Projekt {
+    projektId: ID!
+    nazwa: String!
+    opis: String
+    dataCzasUtworzenia: DateTime!
+    dataCzasModyfikacji: DateTime!
+    zadania: [Zadanie]
+    studenci: [Student]
+    pliki: File
+}
+
+type Zadanie {
+    zadanieId: ID!
+    opis: String!
+    kolejnosc: Int
+    nazwa: String!
+    dataDodania: DateTime!
+    projekt: Projekt
+    student: Student
+}
+
+type Student {
+    studentId: ID!
+    imie: String!
+    nazwisko: String!
+    nrIndeksu: String!
+    email: String
+    stacjonarny: Boolean!
+    zadania: [Zadanie]
+    projekty: [Projekt]
+}
+
+type File {
+    name: String
+}
