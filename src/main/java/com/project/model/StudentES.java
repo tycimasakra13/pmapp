@@ -5,28 +5,28 @@ import jakarta.persistence.*;
 import java.util.List;
 
 import java.util.Set;
+import org.springframework.data.elasticsearch.annotations.Document;
+import org.springframework.data.elasticsearch.annotations.Field;
+import org.springframework.data.elasticsearch.annotations.FieldType;
 
-@Entity
-@Table(name = "student")
-public class Student {
+@Document(indexName = "student")
+public class StudentES {
     @Id
-    @GeneratedValue
-    @Column(name = "student_id", nullable = false)
-    private Integer studentId;
+    private Integer id;
     
-    @Column(nullable = false, length = 50)
+    @Field(type = FieldType.Text, name = "imie")
     private String imie;
     
-    @Column(nullable = false, length = 100)
+    @Field(type = FieldType.Text, name = "nazwisko")
     private String nazwisko;
     
-    @Column(nullable = false, length = 20)
+    @Field(type = FieldType.Text, name = "nrIndeksu")
     private String nrIndeksu;
     
-    @Column(nullable = true, length = 50)
+    @Field(type = FieldType.Text, name = "email")
     private String email;
     
-    @Column(nullable = false)
+    @Field(type = FieldType.Boolean, name = "stacjonarny")
     private Boolean stacjonarny;
     
     @OneToMany(mappedBy = "student")
@@ -44,17 +44,17 @@ public class Student {
         this.zadania = zadania;
     }
 
-    public Student() {
+    public StudentES() {
     }
 
-    public Student(String imie, String nazwisko, String nrIndeksu, Boolean stacjonarny) {
+    public StudentES(String imie, String nazwisko, String nrIndeksu, Boolean stacjonarny) {
         this.imie = imie;
         this.nazwisko = nazwisko;
         this.nrIndeksu = nrIndeksu;
         this.stacjonarny = stacjonarny;
     }
 
-    public Student(String imie, String nazwisko, String nrIndeksu, String email,
+    public StudentES(String imie, String nazwisko, String nrIndeksu, String email,
                    Boolean stacjonarny) {
         this.imie = imie;
         this.nazwisko = nazwisko;
@@ -64,11 +64,11 @@ public class Student {
     }
 
     public Integer getStudentId() {
-        return studentId;
+        return id;
     }
 
-    public void setStudentId(Integer studentId) {
-        this.studentId = studentId;
+    public void setStudentId(Integer id) {
+        this.id = id;
     }
 
     public String getImie() {

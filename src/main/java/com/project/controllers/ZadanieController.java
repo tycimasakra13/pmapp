@@ -1,12 +1,8 @@
 package com.project.controllers;
 
-import com.project.config.FileStorageProperties;
-import com.project.config.PeagableConfig;
-import com.project.model.Projekt;
-import com.project.model.Student;
 import com.project.model.Zadanie;
 import com.project.services.ProjektService;
-import com.project.services.StudentService;
+import com.project.services.StudentServiceES;
 import com.project.services.UserService;
 import com.project.services.ZadanieService;
 import jakarta.validation.Valid;
@@ -19,8 +15,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import org.springframework.http.HttpStatusCode;
@@ -46,7 +40,7 @@ public class ZadanieController {
     ProjektService projektService;
     
     @Autowired
-    StudentService studentService;
+    StudentServiceES studentService;
     
     private Integer setPageNumber(Integer pageNumber) {
         if(pageNumber == null || pageNumber == 0) {

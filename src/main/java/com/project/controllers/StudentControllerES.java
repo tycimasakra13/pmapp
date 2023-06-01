@@ -1,31 +1,38 @@
 package com.project.controllers;
 
-import com.project.model.Student;
-import com.project.services.StudentService;
+import com.project.model.StudentES;
+import com.project.repositories.StudentRepositoryES;
+import com.project.services.StudentServiceES;
 import com.project.services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
+import java.net.URI;
+import java.util.Random;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
-import java.net.URI;
 import org.springframework.security.core.Authentication;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @Controller
 @RequestMapping("")
-public class StudentController {
-    private final StudentService studentService;
+public class StudentControllerES {
 
+    private final StudentServiceES studentService;
+    public final StudentRepositoryES studentRepository;
+    public Random rd = new Random();
+    
     @Autowired
-    public StudentController(StudentService studentService) {
+    public StudentControllerES(StudentServiceES studentService, StudentRepositoryES studentRepository) {
         this.studentService = studentService;
+        this.studentRepository = studentRepository;
     }
     
     @Autowired
@@ -47,11 +54,40 @@ public class StudentController {
         return pageSize;
     }
     
-//    @GetMapping("/")
-//    public String getStudents(Model model, Pageable pageable) {
-//        model.addAttribute("students", studentService.getStudents(pageable));
-//        return "student.html";
-//    }
+    private void loadStudents() throws IOException {
+        
+        //Long size = studentRepository.count();
+        //System.out.println("Sample Students Loaded size " + size); 
+       // if (size == 0) {
+            int count = 10;
+            for(int x = 1; x <= count; x++) {
+                insertNewStudents(x);
+            }
+        //}
+        //else System.out.println("nnot first");
+        
+    }
+    
+    private void insertNewStudents(int x) throws IOException {
+        int bound = x + 5;
+        StudentES student = new StudentES();
+        student.setStudentId(x);
+        student.setImie("Test" + x);
+        student.setNazwisko("TestS " + x);
+        student.setEmail("test" + x + "@test.pl");
+        student.setNrIndeksu("" + rd.nextInt(bound) + rd.nextInt(bound) + rd.nextInt(bound));
+        student.setStacjonarny(rd.nextBoolean());
+        studentRepository.save(student);
+        System.out.println("Sample Students Loaded " + x);   
+    }
+    
+    @GetMapping("/preloadStudent")
+    public String preloadPro() throws IOException {
+        long size = studentRepository.count();
+        if (size == 0) loadStudents();
+        else System.out.println("not first");
+        return "index";
+    }
     
     @GetMapping("/student")
     public String getPaginatedStudents( 
@@ -62,8 +98,8 @@ public class StudentController {
         pageNumber = setPageNumber(pageNumber);
         pageSize = setPageSize(pageSize);
         
-        Student selectedStudent = null;// = new Optional<Student>();
-        Page<Student> allStudents = null;// = studentService.getPaginatedStudents(pageNumber, pageSize);
+        StudentES selectedStudent = null;// = new Optional<Student>();
+        Page<StudentES> allStudents = null;// = studentService.getPaginatedStudents(pageNumber, pageSize);
         Integer totalPages = 1;//allStudents.getTotalPages();
   
         String userRole = userService.getCurrentUserRole(authentication);
@@ -71,10 +107,11 @@ public class StudentController {
         if(studentId != null) {
             selectedStudent = studentService.getStudentById(studentId).get();
         } else {
-            allStudents = studentService.getPaginatedStudents(pageNumber, pageSize);
-            totalPages = allStudents.getTotalPages();
+//            allStudents = studentService.getPaginatedStudents(pageNumber, pageSize);
+           // totalPages = allStudents.getTotalPages();
+           System.out.println("total students");
         }
-        model.addAttribute("formData", new Student());
+        model.addAttribute("formData", new StudentES());
         model.addAttribute("students",allStudents == null ? selectedStudent : allStudents);
         model.addAttribute("mode","studentListViewPaginated");
         model.addAttribute("userRole",userRole);
@@ -85,13 +122,13 @@ public class StudentController {
     
     @GetMapping("/addStudent")
     public String getAddStudentForm(Model model) {
-        model.addAttribute("saveData", new Student());
+        model.addAttribute("saveData", new StudentES());
         model.addAttribute("mode","studentAdd");
         return "student.html";
     }
     
     @PostMapping("/addStudent")
-    public String addStudent(@Valid @ModelAttribute("saveData") Student saveData, Model model, Pageable pageable) {
+    public String addStudent(@Valid @ModelAttribute("saveData") StudentES saveData, Model model, Pageable pageable) {
         
         String statusCode = createStudent(saveData).getStatusCode().toString();
    
@@ -102,7 +139,7 @@ public class StudentController {
     
     @GetMapping("/editStudent")
     public String getEditStudentForm(@RequestParam(value="studentId") Integer studentId, Model model) {
-        Student selectedStudent = studentService.getStudentById(studentId).get();
+        StudentES selectedStudent = studentService.getStudentById(studentId).get();
 
         String name = selectedStudent.getImie();
         String sName = selectedStudent.getNazwisko();
@@ -120,16 +157,16 @@ public class StudentController {
     }
     
     @PostMapping("/student")
-    public String searchStudent(@Valid @ModelAttribute("formData") Student formData,
+    public String searchStudent(@Valid @ModelAttribute("formData") StudentES formData,
                                Model model, Authentication authentication) {
         
         Integer pageNumber = 1;//setPageNumber(1);
         Integer pageSize = 5;//setPageSize(0);
         
-        Page<Student> totalStudents = studentService.getStudentByNazwiskoStartsWithIgnoreCase(formData.getNazwisko(), pageNumber, pageSize);
+        Page<StudentES> totalStudents = studentService.getStudentByNazwiskoStartsWithIgnoreCase(formData.getNazwisko(), pageNumber, pageSize);
         Integer totalPages = totalStudents.getTotalPages();
         String userRole = userService.getCurrentUserRole(authentication);
-        model.addAttribute("formData", new Student());
+        model.addAttribute("formData", new StudentES());
         model.addAttribute("students",totalStudents);
         model.addAttribute("totalPages", totalPages);
         model.addAttribute("userRole",userRole);
@@ -139,7 +176,7 @@ public class StudentController {
     }
     
     @PostMapping("/updateStudent")
-    public String updateStudent(@Valid @ModelAttribute Student updateData, Model model, Pageable pageable) {
+    public String updateStudent(@Valid @ModelAttribute StudentES updateData, Model model, Pageable pageable) {
         
         ResponseEntity<Void> updateStud = studentService.getStudentById(updateData.getStudentId())
                 .map(p -> {
@@ -166,8 +203,8 @@ public class StudentController {
         return "redirect:/student?pageNumber=1&pageSize=5";
     }
 
-    ResponseEntity<Void> createStudent(@Valid @RequestBody Student student) {
-        Student createdStudent = studentService.insert(student);
+    ResponseEntity<Void> createStudent(@Valid @RequestBody StudentES student) {
+        StudentES createdStudent = studentService.insert(student);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{studentId}").buildAndExpand(createdStudent.getStudentId()).toUri();
         return ResponseEntity.created(location).build();
@@ -175,7 +212,7 @@ public class StudentController {
 
     @PutMapping("/{studentId}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> updateStudent(@Valid @RequestBody Student student,
+    public ResponseEntity<Void> updateStudent(@Valid @RequestBody StudentES student,
                                               @PathVariable Integer studentId) {
         return studentService.getStudentById(studentId)
                 .map(p -> {

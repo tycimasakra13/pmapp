@@ -27,11 +27,11 @@ public class Projekt {
     @UpdateTimestamp
     @Column(name = "dataczas_modyfikacji", nullable = false)
     private LocalDateTime dataCzasModyfikacji;
-    @JsonIgnore
-    @ManyToMany
-    @JoinTable(name = "projekt_student", joinColumns = {@JoinColumn(name = "projekt_id")},
-            inverseJoinColumns = {@JoinColumn(name = "student_id")})
-    private Set<Student> studenci;
+//    @JsonIgnore
+//    @ManyToMany
+//    @JoinTable(name = "projekt_student", joinColumns = {@JoinColumn(name = "projekt_id")},
+//            inverseJoinColumns = {@JoinColumn(name = "student_id")})
+//    private Set<StudentES> studenci;
     
     @OneToMany(mappedBy = "projekt", cascade = CascadeType.REMOVE)
     private List<Zadanie> zadania;
@@ -98,11 +98,11 @@ public class Projekt {
         this.dataCzasModyfikacji = dataCzasModyfikacji;
     }
 
-    public Set<Student> getStudenci() {
-        return studenci;
-    }
-
-    public void setStudenci(Set<Student> studenci) {
-        this.studenci = studenci;
-    }
+//    public Set<StudentES> getStudenci() {
+//        return studenci;
+//    }
+//
+//    public void setStudenci(Set<StudentES> studenci) {
+//        this.studenci = studenci;
+//    }
 }
