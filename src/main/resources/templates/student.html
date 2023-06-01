@@ -22,20 +22,21 @@
                 
                 <table>
                     <tr>
-                        <th>Student ID</th>
+<!--                        <th>Student ID</th>-->
 
 
                         <th>Name</th>
                         <th>Surname</th>
                         <th>Index number</th>
                         <th>E-mail</th>
+                        <th></th>
 <!--                        <th>Full time</th>
                         <th>Tasks</th>
                         <th></th>
                         <th></th>-->
                     </tr>
                     <tr th:each="student : ${students}">
-                        <td th:text="${student.id}"></td>
+<!--                        <td th:text="${student.id}"></td>-->
                         <td th:text="${student.imie}"></td>
                         <td th:text="${student.nazwisko}"></td>
                         <td th:text="${student.nrIndeksu}"></td>
@@ -47,9 +48,9 @@
                         <td th:if="${student.zadania == null}"></td>
                         <td></td>
                         <td th:if="${userRole != 'ADMIN'}"></td>
-                        <td th:if="${userRole != 'ADMIN'}"></td>
+                        <td th:if="${userRole != 'ADMIN'}"></td>-->
                         <td th:if="${userRole == 'ADMIN'}"><a th:href="@{'/editStudent?studentId=' + ${student.id}}">Edit</a></td>
-                        <td th:if="${userRole == 'ADMIN'}"><a th:href="@{'/deleteStudent?studentId=' + ${student.id}}">Delete</a></td>-->
+                        <!--<td th:if="${userRole == 'ADMIN'}"><a th:href="@{'/deleteStudent?studentId=' + ${student.id}}">Delete</a></td>-->
                     </tr>
                 </table>
                 <div>

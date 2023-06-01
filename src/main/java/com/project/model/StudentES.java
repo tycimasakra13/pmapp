@@ -63,11 +63,11 @@ public class StudentES {
         this.stacjonarny = stacjonarny;
     }
 
-    public Integer getStudentId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setStudentId(Integer id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

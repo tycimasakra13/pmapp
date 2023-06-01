@@ -71,7 +71,7 @@ public class ZadanieController {
     private Map<Integer, String> studentsForSelect() {
         Map<Integer, String> studentsLists = new HashMap<>();
         studentService.getStudentsList().forEach((student) -> {
-            studentsLists.put(student.getStudentId(), student.getImie() + " " + student.getNazwisko());
+            studentsLists.put(student.getId(), student.getImie() + " " + student.getNazwisko());
         });
         
         return studentsLists;

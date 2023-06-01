@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Random;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -71,7 +72,7 @@ public class StudentControllerES {
     private void insertNewStudents(int x) throws IOException {
         int bound = x + 5;
         StudentES student = new StudentES();
-        student.setStudentId(x);
+        //student.setId(x);
         student.setImie("Test" + x);
         student.setNazwisko("TestS " + x);
         student.setEmail("test" + x + "@test.pl");
@@ -109,7 +110,10 @@ public class StudentControllerES {
         } else {
 //            allStudents = studentService.getPaginatedStudents(pageNumber, pageSize);
            // totalPages = allStudents.getTotalPages();
-           System.out.println("total students");
+           final Pageable pageable = PageRequest.of(pageNumber, pageSize);
+           allStudents = studentRepository.findAll(pageable);
+           //model.addAttribute("listProductDocuments",.searchAllDocuments());
+           System.out.println("total students" + allStudents.get().count());
         }
         model.addAttribute("formData", new StudentES());
         model.addAttribute("students",allStudents == null ? selectedStudent : allStudents);
@@ -178,9 +182,9 @@ public class StudentControllerES {
     @PostMapping("/updateStudent")
     public String updateStudent(@Valid @ModelAttribute StudentES updateData, Model model, Pageable pageable) {
         
-        ResponseEntity<Void> updateStud = studentService.getStudentById(updateData.getStudentId())
+        ResponseEntity<Void> updateStud = studentService.getStudentById(updateData.getId())
                 .map(p -> {
-                    studentService.updateStudent(updateData.getStudentId(), updateData);
+                    studentService.updateStudent(updateData.getId(), updateData);
                     return new ResponseEntity<Void>(HttpStatus.OK);
                 })
                 .orElseGet(() -> ResponseEntity.notFound().build());
@@ -206,7 +210,7 @@ public class StudentControllerES {
     ResponseEntity<Void> createStudent(@Valid @RequestBody StudentES student) {
         StudentES createdStudent = studentService.insert(student);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-                .path("/{studentId}").buildAndExpand(createdStudent.getStudentId()).toUri();
+                .path("/{studentId}").buildAndExpand(createdStudent.getId()).toUri();
         return ResponseEntity.created(location).build();
     }
 
