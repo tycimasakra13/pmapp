@@ -13,44 +13,40 @@
                 <div class="toolbar">
                     <span><a th:href="@{/addStudent}">Add Student</a></span>
                     <div class="searchBox">
-<!--                        <form th:action="@{/student?pageNumber=1&pageSize=5}" th:object="${formData}" method="POST">
+                        <form th:action="@{/student?pageNumber=1&pageSize=5}" th:object="${formData}" method="POST">
                             <input type="text" th:field="*{nazwisko}" placeholder="Search by surname"/>
                             <button type="submit">Search</button>
-                        </form>-->
+                        </form>
                     </div>
                 </div >
                 
                 <table>
                     <tr>
-<!--                        <th>Student ID</th>-->
-
-
+                        <th>Student ID</th>
                         <th>Name</th>
                         <th>Surname</th>
                         <th>Index number</th>
                         <th>E-mail</th>
-                        <th></th>
-<!--                        <th>Full time</th>
+                        <th>Full time</th>
                         <th>Tasks</th>
                         <th></th>
-                        <th></th>-->
+                        <th></th>
                     </tr>
                     <tr th:each="student : ${students}">
-<!--                        <td th:text="${student.id}"></td>-->
+                        <td th:text="${student.id}"></td>
                         <td th:text="${student.imie}"></td>
                         <td th:text="${student.nazwisko}"></td>
                         <td th:text="${student.nrIndeksu}"></td>
                         <td th:text="${student.email}"></td>
-<!--                        <td th:text="${student.stacjonarny}"></td>
-                        <td th:if="${student.id != null}">
+                        <td th:text="${student.stacjonarny}"></td>
+                        <td th:if="${student.zadania != null}">
                             <a th:href="'/task?studentId=' + ${student.id}">Tasks</a>
                         </td>
                         <td th:if="${student.zadania == null}"></td>
-                        <td></td>
                         <td th:if="${userRole != 'ADMIN'}"></td>
-                        <td th:if="${userRole != 'ADMIN'}"></td>-->
+                        <td th:if="${userRole != 'ADMIN'}"></td>
                         <td th:if="${userRole == 'ADMIN'}"><a th:href="@{'/editStudent?studentId=' + ${student.id}}">Edit</a></td>
-                        <!--<td th:if="${userRole == 'ADMIN'}"><a th:href="@{'/deleteStudent?studentId=' + ${student.id}}">Delete</a></td>-->
+                        <td th:if="${userRole == 'ADMIN'}"><a th:href="@{'/deleteStudent?studentId=' + ${student.id}}">Delete</a></td>
                     </tr>
                 </table>
                 <div>
@@ -59,7 +55,7 @@
                     </span>
                 </div>
             </div>
-<!--            <div th:if="${mode == 'studentAdd'}">
+            <div th:if="${mode == 'studentAdd'}">
                 <form th:action="@{/addStudent}" th:object="${saveData}" method="POST">
                     <label for="imie">Name</label>:
                     <input type="text" th:field="*{imie}"/>
@@ -76,7 +72,7 @@
                     </select>
                     <button type="submit">Save</button>
                 </form>
-            </div>-->
+            </div>
 <!--            <div th:if="${mode == 'studentEdit'}">
                 <form th:action="@{/updateStudent}" th:object="${updateData}" method="POST">
                     <input type="hidden" th:field="*{id}"/>

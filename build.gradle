@@ -29,6 +29,11 @@ dependencies {
     implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
     implementation 'org.springframework.boot:spring-boot-starter-aop'
     implementation 'org.springframework.data:spring-data-elasticsearch'
+    implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
+    implementation 'org.elasticsearch.client:elasticsearch-rest-high-level-client:7.16.1'
+    //runtime group: 'org.elasticsearch.client:elasticsearch-rest-high-level-client', version: '8.0.0-alpha2'
+    implementation 'org.elasticsearch.client:elasticsearch-rest-client'
+    implementation 'org.elasticsearch:elasticsearch'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     testCompileOnly 'org.junit.jupiter:junit-jupiter-api'
     testCompileOnly 'org.junit.jupiter:junit-jupiter-engine'
@@ -38,10 +43,12 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-commons:1.9.0'
     testRuntimeOnly 'org.springframework.boot:spring-boot-starter-test'
 //    runtimeOnly 'org.postgresql:postgresql'
-    runtimeOnly 'com.h2database:h2'
+    //runtimeOnly 'com.h2database:h2'
+    runtimeOnly 'com.mysql:mysql-connector-j'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
 }
+
 
 test {
     useJUnitPlatform()

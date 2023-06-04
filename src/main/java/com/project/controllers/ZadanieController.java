@@ -2,7 +2,7 @@ package com.project.controllers;
 
 import com.project.model.Zadanie;
 import com.project.services.ProjektService;
-import com.project.services.StudentServiceES;
+import com.project.services.StudentService;
 import com.project.services.UserService;
 import com.project.services.ZadanieService;
 import jakarta.validation.Valid;
@@ -40,7 +40,7 @@ public class ZadanieController {
     ProjektService projektService;
     
     @Autowired
-    StudentServiceES studentService;
+    StudentService studentService;
     
     private Integer setPageNumber(Integer pageNumber) {
         if(pageNumber == null || pageNumber == 0) {

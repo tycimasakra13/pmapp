@@ -10,7 +10,7 @@ import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
 @Document(indexName = "student")
-public class StudentES {
+public class StudentES2 {
     @Id
     private Integer id;
     
@@ -44,17 +44,17 @@ public class StudentES {
         this.zadania = zadania;
     }
 
-    public StudentES() {
+    public StudentES2() {
     }
 
-    public StudentES(String imie, String nazwisko, String nrIndeksu, Boolean stacjonarny) {
+    public StudentES2(String imie, String nazwisko, String nrIndeksu, Boolean stacjonarny) {
         this.imie = imie;
         this.nazwisko = nazwisko;
         this.nrIndeksu = nrIndeksu;
         this.stacjonarny = stacjonarny;
     }
 
-    public StudentES(String imie, String nazwisko, String nrIndeksu, String email,
+    public StudentES2(String imie, String nazwisko, String nrIndeksu, String email,
                    Boolean stacjonarny) {
         this.imie = imie;
         this.nazwisko = nazwisko;

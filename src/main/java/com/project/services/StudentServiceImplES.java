@@ -1,6 +1,6 @@
 package com.project.services;
 
-import com.project.model.StudentES;
+import com.project.model.StudentES2;
 import com.project.repositories.StudentRepositoryES;
 import java.util.List;
 import org.springframework.data.domain.Page;
@@ -13,50 +13,50 @@ import org.springframework.data.domain.PageRequest;
 
 @Service
 public class StudentServiceImplES implements StudentServiceES {
-    StudentRepositoryES repository;
+    StudentRepositoryES repositoryES;
     ZadanieService zadanieService;
 
     public StudentServiceImplES(StudentRepositoryES studentRepository, ZadanieService zadanieService) {
-        this.repository = studentRepository;
+        this.repositoryES = studentRepository;
         this.zadanieService = zadanieService;
     }
 
     @Override
-    public Page<StudentES> getStudents(Pageable pageable) {
-        return repository.findAll(pageable);
+    public Page<StudentES2> getStudents(Pageable pageable) {
+        return repositoryES.findAll(pageable);
     }
     
     @Override
-    public Page<StudentES> getPaginatedStudents(Integer pageNumber, Integer pageSize) {
+    public Page<StudentES2> getPaginatedStudents(Integer pageNumber, Integer pageSize) {
         final Pageable pageable = PageRequest.of(pageNumber - 1, pageSize);
-        return repository.findAll(pageable);
+        return repositoryES.findAll(pageable);
     }
 
     @Override
-    public Page<StudentES> getStudentByNrIndeksu(String nrIndeksu, Pageable pageable) {
-        return repository.findByNrIndeksuStartsWith(nrIndeksu, pageable);
+    public Page<StudentES2> getStudentByNrIndeksu(String nrIndeksu, Pageable pageable) {
+        return repositoryES.findByNrIndeksuStartsWith(nrIndeksu, pageable);
     }
 
     @Override
-    public Page<StudentES> getStudentByNazwiskoStartsWithIgnoreCase(String nazwisko, Integer pageNumber, Integer pageSize) {
+    public Page<StudentES2> getStudentByNazwiskoStartsWithIgnoreCase(String nazwisko, Integer pageNumber, Integer pageSize) {
         final Pageable pageable = PageRequest.of(pageNumber - 1, pageSize);
-        return repository.findByNazwiskoStartsWithIgnoreCase(nazwisko, pageable);
+        return repositoryES.findByNazwiskoStartsWithIgnoreCase(nazwisko, pageable);
     }
 
     @Override
-    public Optional<StudentES> getStudentById(Integer id) {
-        return repository.findById(id);
+    public Optional<StudentES2> getStudentById(Integer id) {
+        return repositoryES.findById(id);
     }
 
     @Override
-    public StudentES insert(StudentES student) {
-        return repository.save(student);
+    public StudentES2 insert(StudentES2 student) {
+        return repositoryES.save(student);
     }
 
     @Override
     @Transactional
-    public void updateStudent(Integer id, StudentES student) {
-        StudentES studentFromDb = repository.findById(id).get();
+    public void updateStudent(Integer id, StudentES2 student) {
+        StudentES2 studentFromDb = repositoryES.findById(id).get();
 
         studentFromDb.setEmail(student.getEmail());
         studentFromDb.setImie(student.getImie());
@@ -64,18 +64,18 @@ public class StudentServiceImplES implements StudentServiceES {
         studentFromDb.setNrIndeksu(student.getNrIndeksu());
         studentFromDb.setStacjonarny(student.getStacjonarny());
 
-        repository.save(studentFromDb);
+        repositoryES.save(studentFromDb);
     }
 
     @Override
     @Transactional
     public void deleteStudent(Integer studentId, Pageable pageable) {
         zadanieService.removeAssignStudent(studentId, pageable);
-        repository.deleteById(studentId);
+        repositoryES.deleteById(studentId);
     }
     
     @Override
-    public List<StudentES> getStudentsList() {
-        return (List<StudentES>) repository.findAll();
+    public List<StudentES2> getStudentsList() {
+        return (List<StudentES2>) repositoryES.findAll();
     }
 }

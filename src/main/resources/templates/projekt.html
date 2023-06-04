@@ -42,8 +42,9 @@
                         <td th:text="${project.projektId}"></td>
                         <td th:text="${project.nazwa}"></td>
                         <td th:text="${project.opis}"></td>
-                        <td th:text="${project.dataCzasUtworzenia}"></td>
-                        <td th:text="${project.dataCzasModyfikacji}"></td>
+<!--                        <td th:text="${project.dataCzasUtworzenia}"></td>
+                        <td th:text="${project.dataCzasModyfikacji}"></td>-->
+<td></td><td></td>
                         <td th:if="${project.zadania != null}">
                             <a th:href="'/task?projectID=' + ${project.projektId}">Tasks</a>
                         </td>

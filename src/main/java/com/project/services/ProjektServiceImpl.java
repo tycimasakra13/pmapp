@@ -3,6 +3,8 @@ package com.project.services;
 import com.project.model.Projekt;
 import com.project.model.Zadanie;
 import com.project.repositories.ProjectRepository;
+import com.project.dao.ElasticsearchDao;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,13 +15,20 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class ProjektServiceImpl implements ProjektService {
+    private final org.slf4j.Logger logger = LoggerFactory.getLogger(ElasticsearchDao.class);
+    
     public ProjectRepository repository;
+    private ElasticsearchDao elasticsearchDao;
     @Autowired
-    public ProjektServiceImpl(ProjectRepository projectRepository) {
+    public ProjektServiceImpl(ProjectRepository projectRepository, ElasticsearchDao elasticsearchDao) {
         this.repository = projectRepository;
+        this.elasticsearchDao = elasticsearchDao;
     }
 
     @Override
@@ -40,7 +49,13 @@ public class ProjektServiceImpl implements ProjektService {
     
     @Override
     public Projekt insert(Projekt projekt) {
-        return repository.save(projekt);
+        try {
+            elasticsearchDao.save(projekt);
+        } catch (IOException ex) {
+            logger.error("save to es projekt problem", ex);
+        }
+        //return repository.save(projekt);
+        return projekt;
     }
 
     @Override
@@ -57,6 +72,11 @@ public class ProjektServiceImpl implements ProjektService {
     @Override
     @Transactional
     public void deleteProjekt(Integer projektId) {
+        try {
+            elasticsearchDao.delete(projektId);
+        } catch (IOException ex) {
+            logger.error("delete from es projekt problem", ex);
+        }
         repository.deleteById(projektId);
     }
 

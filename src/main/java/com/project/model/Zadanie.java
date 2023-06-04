@@ -12,7 +12,7 @@ import java.util.List;
 @Table(name = "zadanie")
 public class Zadanie {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name = "zadanie_id", nullable = false)
     private Integer zadanieId;
 
@@ -34,18 +34,18 @@ public class Zadanie {
     @JoinColumn(name = "projekt_id", nullable = false)
     private Projekt projekt;
     
-//    @JsonIgnore
-//    @ManyToOne()
-//    @JoinColumn(name = "student_id", nullable = true)
-//    private StudentES student;
-//
-//    public StudentES getStudent() {
-//        return student;
-//    }
-//
-//    public void setStudent(StudentES student) {
-//        this.student = student;
-//    }
+    @JsonIgnore
+    @ManyToOne()
+    @JoinColumn(name = "id", nullable = true)
+    private Student student;
+
+    public Student getStudent() {
+        return student;
+    }
+
+    public void setStudent(Student student) {
+        this.student = student;
+    }
 
     @ElementCollection
     private List<File> pliki;

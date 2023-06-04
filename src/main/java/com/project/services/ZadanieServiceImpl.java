@@ -35,11 +35,11 @@ public class ZadanieServiceImpl implements ZadanieService {
         return repository.findZadaniaProjektu(projektId, pageable);
     }
     
-//    @Override
-//    public Page<Zadanie> getZadaniaStudenta(Integer studentId, Integer pageNumber, Integer pageSize) {
-//        final Pageable pageable = PageRequest.of(pageNumber - 1, pageSize);
-//        return repository.findZadaniaStudenta(studentId, pageable);
-//    }
+    @Override
+    public Page<Zadanie> getZadaniaStudenta(Integer studentId, Integer pageNumber, Integer pageSize) {
+        final Pageable pageable = PageRequest.of(pageNumber - 1, pageSize);
+        return repository.findZadaniaStudenta(studentId, pageable);
+    }
 
     @Override
     public Optional<Zadanie> getZadanieById(Integer id) {
@@ -60,7 +60,7 @@ public class ZadanieServiceImpl implements ZadanieService {
         zadanieFromDb.setOpis(zadanie.getOpis());
         zadanieFromDb.setKolejnosc(zadanie.getKolejnosc());
         zadanieFromDb.setProjekt(zadanie.getProjekt());
-//        zadanieFromDb.setStudent(zadanie.getStudent());
+        zadanieFromDb.setStudent(zadanie.getStudent());
 
         repository.save(zadanieFromDb);
     }
@@ -72,20 +72,20 @@ public class ZadanieServiceImpl implements ZadanieService {
         repository.deleteById(zadanieId);
     }
     
-//    @Override
-//    @Transactional
-//    public void removeAssignStudent(Integer studentId, Pageable pageable) {
-//        //repository.deleteById(stutendId);
-//        Page<Zadanie> zadanieFromDb = repository.findZadaniaStudenta(studentId, pageable);
-//        zadanieFromDb.getContent().forEach((zadanie) -> {
-////            zadanie.setStudent(null);
-//            repository.save(zadanie);
-//        });
-//    }
+    @Override
+    @Transactional
+    public void removeAssignStudent(Integer studentId, Pageable pageable) {
+        //repository.deleteById(studentId);
+        Page<Zadanie> zadanieFromDb = repository.findZadaniaStudenta(studentId, pageable);
+        zadanieFromDb.getContent().forEach((zadanie) -> {
+            zadanie.setStudent(null);
+            repository.save(zadanie);
+        });
+    }
     
     @Transactional
     public void removeAssignedProject(Integer zadanieId) {
-        //repository.deleteById(stutendId);
+        //repository.deleteById(zadanieId);
         Zadanie zadanie = this.getZadanieById(zadanieId).get();
         zadanie.setProjekt(null);
         repository.save(zadanie);
@@ -95,15 +95,5 @@ public class ZadanieServiceImpl implements ZadanieService {
     public Page<Zadanie> searchByNazwa(String nazwa, Integer pageNumber, Integer pageSize) {
         final Pageable pageable = PageRequest.of(pageNumber - 1, pageSize);
         return repository.findByNazwaContainingIgnoreCase(nazwa, pageable);
-    }
-
-    @Override
-    public Page<Zadanie> getZadaniaStudenta(Integer studentId, Integer pageNumber, Integer pageSize) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public void removeAssignStudent(Integer stutendId, Pageable pageable) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 }

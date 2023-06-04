@@ -1,7 +1,7 @@
 package com.project.bootstrap;
 
 import com.project.model.Projekt;
-import com.project.model.StudentES;
+import com.project.model.Student;
 import com.project.model.Zadanie;
 import com.project.repositories.ZadanieRepository;
 import org.springframework.boot.CommandLineRunner;
@@ -35,14 +35,14 @@ public class ZadanieLoader implements CommandLineRunner {
         Projekt projekt = new Projekt();
         projekt.setProjektId(1);
 
-//        StudentES student = new StudentES();
-//        student.setStudentId(1);
+        Student student = new Student();
+        student.setId(1);
 
         Zadanie zadanie = new Zadanie();
         zadanie.setOpis("ABC" + x);
         zadanie.setNazwa("CDA" + x);
         zadanie.setProjekt(projekt);
-//        zadanie.setStudent(student);
+        zadanie.setStudent(student);
         zadanieRepository.save(zadanie);
         System.out.println("Sample Zadanies Loaded " + x);
     }
