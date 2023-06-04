@@ -1,7 +1,11 @@
 scalar DateTime @specifiedBy(url: "https://scalars.graphql.org/andimarek/date-time.html")
 
+type Query {
+    projektById(id: Int): Projekt
+}
+
 type Projekt {
-    projektId: ID!
+    projektId: Int!
     nazwa: String!
     opis: String
     dataCzasUtworzenia: DateTime!
@@ -12,7 +16,7 @@ type Projekt {
 }
 
 type Zadanie {
-    zadanieId: ID!
+    zadanieId: Int!
     opis: String!
     kolejnosc: Int
     nazwa: String!
@@ -22,7 +26,7 @@ type Zadanie {
 }
 
 type Student {
-    studentId: ID!
+    studentId: Int!
     imie: String!
     nazwisko: String!
     nrIndeksu: String!
