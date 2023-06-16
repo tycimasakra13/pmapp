@@ -9,6 +9,8 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.graphql.data.method.annotation.Argument;
+import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -49,6 +51,11 @@ public class ProjektController {
         }
         
         return pageSize;
+    }
+
+    @QueryMapping
+    public Projekt projektById(@Argument Integer id) {
+        return projektService.getProjektById(id).get();
     }
     
     @GetMapping("/project")

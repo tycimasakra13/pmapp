@@ -12,13 +12,15 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
+
 @Configuration
-@EnableMethodSecurity(prePostEnabled = true)
+@EnableMethodSecurity
 public class SecurityConfig {
     @Bean
     public UserDetailsService userDetailsService() {
         return new SecurityUserDetailsService();
     }
+    
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.
@@ -26,40 +28,17 @@ public class SecurityConfig {
                 frameOptions().
                 sameOrigin();
         
-//        http
-//                .csrf().disable()
-//                .authorizeRequests()
-//                .requestMatchers("/h2/").permitAll()
-//                .and()
-//                .logout()
-//                .and()
-//                .httpBasic();
-        
         http
-                .authorizeRequests()
-                .requestMatchers("/graphql/").permitAll()
-                .requestMatchers("/h2", "/js/**", "/css/**", "/img/**").permitAll()
-                .anyRequest().authenticated()
-                .and()
-                .formLogin()
-                .loginPage("/login")
-                .defaultSuccessUrl("/index", true)
                 
-                .permitAll()
-                .and()
-                .logout()
-                .clearAuthentication(true)
-                .permitAll()
-                .and().csrf().disable();
+                .csrf().disable();
         
         return http.build();
     }
-
     @Bean
     public PasswordEncoder passwordEncoder() {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
-    
+
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
@@ -67,7 +46,6 @@ public class SecurityConfig {
         authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
     }
-    
 
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.authenticationProvider(authenticationProvider());
