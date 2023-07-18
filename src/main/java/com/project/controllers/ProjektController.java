@@ -1,11 +1,11 @@
 package com.project.controllers;
 
-import com.project.model.File;
 import com.project.model.Projekt;
 import com.project.model.User;
 import com.project.services.ProjektService;
 import com.project.services.UserService;
 import jakarta.validation.Valid;
+import java.io.IOException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
-import org.springframework.context.annotation.Bean;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,13 +23,10 @@ import org.springframework.ui.Model;
 @Controller
 @RequestMapping("")
 public class ProjektController {
-    private final ProjektService projektService;
     private String userRole;
-
+    
     @Autowired
-    public ProjektController(ProjektService projektService) {
-        this.projektService = projektService;
-    }
+    private ProjektService projektService;
     
     @Autowired
     private UserService userService;
@@ -53,13 +50,23 @@ public class ProjektController {
     
     @GetMapping("/project")
     public String getPaginatedProjects( 
-            @RequestParam(value="pageNumber") Integer pageNumber,
-            @RequestParam(value="pageSize") Integer pageSize,
+            @RequestParam(required = false, value="pageNumber") Integer pageNumber,
+            @RequestParam(required = false, value="pageSize") Integer pageSize,
+            @RequestParam(required = false, value="projectID") Integer projektID,
             Model model, Pageable pageable, User user,
             Authentication authentication) {
         pageNumber = setPageNumber(pageNumber);
         pageSize = setPageSize(pageSize);
-        Page<Projekt> totalProjects = projektService.getPaginatedProjects(pageNumber, pageSize);
+        
+        Page<Projekt> totalProjects = null;
+        System.out.println("przed if");
+        if (projektID != null) {
+            System.out.println("W if 1");
+            totalProjects = projektService.getProjektByIdPaginated(projektID, PageRequest.of(0, pageSize));
+        } else {
+            totalProjects = projektService.getPaginatedProjects(pageNumber, pageSize);
+        }
+        
         Integer totalPages = totalProjects.getTotalPages();
         
         userRole = userService.getCurrentUserRole(authentication);
@@ -74,13 +81,15 @@ public class ProjektController {
     
     @PostMapping("/project")
     public String searchProject(@Valid @ModelAttribute("formData") Projekt formData,
-                               Model model, Pageable pageable, Authentication authentication) {
+                               Model model, Pageable pageable, Authentication authentication) throws IOException {
 
         Integer pageNumber = 1;
         Integer pageSize = 5;
-        Page<Projekt> totalProjects = projektService.searchByNazwa(formData.getNazwa(), pageNumber, pageSize);
+        //Page<Projekt> totalProjects = projektService.searchByNazwa(formData.getNazwa(), pageNumber, pageSize);
+        System.out.println(formData.getNazwa());
+        Page<Projekt> totalProjects = projektService.search(formData.getNazwa().toString(), 0, pageSize);
         Integer totalPages = totalProjects.getTotalPages();
-        
+        System.out.println(totalProjects.toList().toString());
         userRole = userService.getCurrentUserRole(authentication);
         model.addAttribute("formData", new Projekt());
         model.addAttribute("projects",totalProjects);
@@ -115,6 +124,13 @@ public class ProjektController {
                 .path("/{projektId}").buildAndExpand(createdProjekt.getProjektId()).toUri();
         return ResponseEntity.created(location).build();
     }
+//    ResponseEntity<Void> createProjekt(ProjektDto projektDto) {
+//        ProjektDto createdProjekt = projektService.insert(projektDto);
+//        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+//                .path("/{projektId").buildAndExpand(createdProjekt.getProjektId()).toUri();
+//        
+//        return ResponseEntity.created(location).build();
+//    }
     //end of add new project
     
     //edit project
@@ -136,7 +152,6 @@ public class ProjektController {
     @PostMapping("/updateProject")
     public String updateProject(@Valid @ModelAttribute Projekt updateData, Model model, Pageable pageable) {
         String statusCode = updateProjekt(updateData, updateData.getProjektId()).getStatusCode().toString();
-       
         model.addAttribute("statusMsg", statusCode);
         return "redirect:/project?pageNumber=1&pageSize=5";
     }
@@ -145,7 +160,7 @@ public class ProjektController {
                                               @PathVariable Integer projektId) {
         return projektService.getProjektById(projektId)
                 .map(p -> {
-                    projektService.updateProjekt(projektId, projekt);
+                    projektService.updateProjekt(projektId, projekt, false);
                     return new ResponseEntity<Void>(HttpStatus.OK);
                 })
                 .orElseGet(() -> ResponseEntity.notFound().build());
@@ -163,7 +178,7 @@ public class ProjektController {
     
     public ResponseEntity<Void> deleteProjekt(@PathVariable Integer projektId) {
         return projektService.getProjektById(projektId).map(p -> {
-            projektService.deleteProjekt(projektId);
+            projektService.updateProjekt(projektId, null, true);
             return new ResponseEntity<Void>(HttpStatus.OK);
         }).orElseGet(() -> ResponseEntity.notFound().build());
     }

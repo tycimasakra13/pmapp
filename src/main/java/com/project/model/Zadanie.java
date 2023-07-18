@@ -7,13 +7,14 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
 @Table(name = "zadanie")
 public class Zadanie {
     @Id
-    @GeneratedValue
-    @Column(name = "zadanie_id", nullable = false)
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @Column(name = "zadanie_id")
     private Integer zadanieId;
 
     @Column(length = 1000, nullable = false)
@@ -25,9 +26,23 @@ public class Zadanie {
     @Column(nullable = false, length = 50)
     private String nazwa;
     
+//    @CreationTimestamp
+//    @Column(name = "data_dodania", nullable = false)
+//    private LocalDateTime dataDodania;
+    
+    @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp
-    @Column(name = "data_dodania", nullable = false)
-    private LocalDateTime dataDodania;
+    private LocalDateTime createDate;
+    
+    @Temporal(TemporalType.TIMESTAMP)
+    @UpdateTimestamp
+    private LocalDateTime modificationDate;
+    
+    @Column(name = "synced")
+    private Boolean synced;
+    
+    @Column(name = "toBeDeleted")
+    private Boolean toBeDeleted;
     
     @JsonIgnore
     @ManyToOne(cascade = CascadeType.REMOVE)
@@ -36,7 +51,7 @@ public class Zadanie {
     
     @JsonIgnore
     @ManyToOne()
-    @JoinColumn(name = "student_id", nullable = true)
+    @JoinColumn(name = "id", nullable = true)
     private Student student;
 
     public Student getStudent() {
@@ -89,13 +104,17 @@ public class Zadanie {
     public void setNazwa(String nazwa) {
         this.nazwa = nazwa;
     }
-
-    public String getDataDodania() {
-        return dataDodania.format(DateTimeFormatter.ISO_DATE);
+    
+    public LocalDateTime getCreateDate() {
+        return createDate;
+    }
+    
+    public String getCreateDateToString() {
+        return createDate.format(DateTimeFormatter.ISO_DATE);
     }
 
-    public void setDataDodania(LocalDateTime dataDodania) {
-        this.dataDodania = dataDodania;
+    public void setCreateDate(LocalDateTime createDate) {
+        this.createDate = createDate;
     }
 
     public Projekt getProjekt() {
@@ -105,4 +124,29 @@ public class Zadanie {
     public void setProjekt(Projekt projekt) {
         this.projekt = projekt;
     }
+
+    public Boolean getSynced() {
+        return synced;
+    }
+
+    public void setSynced(Boolean synced) {
+        this.synced = synced;
+    }
+
+    public Boolean getToBeDeleted() {
+        return toBeDeleted;
+    }
+
+    public void setToBeDeleted(Boolean toBeDeleted) {
+        this.toBeDeleted = toBeDeleted;
+    }
+    
+    public LocalDateTime getModificationDate() {
+        return modificationDate;
+    }
+
+    public void setModificationDate(LocalDateTime modificationDate) {
+        this.modificationDate = modificationDate;
+    }
+    
 }

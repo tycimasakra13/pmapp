@@ -2,35 +2,84 @@ package com.project.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Set;
+import org.hibernate.annotations.CreationTimestamp;
 
 @Entity
 @Table(name = "projekt")
 public class Projekt {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "projekt_id")
     private Integer projektId;
     @Column(nullable = false, length = 50)
     private String nazwa;
     @Column(nullable = true, length = 1000)
     private String opis;
+    
+    @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp
-    @Column(name = "dataczas_utworzenia", nullable = false, updatable = false)
-    private LocalDateTime dataCzasUtworzenia;
+    private LocalDateTime createDate;
+    
+    @Temporal(TemporalType.TIMESTAMP)
     @UpdateTimestamp
-    @Column(name = "dataczas_modyfikacji", nullable = false)
-    private LocalDateTime dataCzasModyfikacji;
+    private LocalDateTime modificationDate;
+
+    @Column(name = "synced")
+    private Boolean synced;
+    
+    @Column(name = "toBeDeleted")
+    private Boolean toBeDeleted;
+
+    public Boolean getToBeDeleted() {
+        return toBeDeleted;
+    }
+
+    public void setToBeDeleted(Boolean toBeDeleted) {
+        this.toBeDeleted = toBeDeleted;
+    }
+
+    public Boolean isSynced() {
+        return synced;
+    }
+
+    public void setSynced(Boolean synced) {
+        this.synced = synced;
+    }
+    
+    public LocalDateTime getModificationDate() {
+        return modificationDate;
+    }
+
+    public void setModificationDate(LocalDateTime modificationDate) {
+        this.modificationDate = modificationDate;
+    }
+
+    public LocalDateTime getCreateDate() {
+        return createDate;
+    }
+
+    public void setCreateDate(LocalDateTime createDate) {
+        this.createDate = createDate;
+    }
+    
+    
+    
+//    @CreationTimestamp
+//    @Column(name = "dataczas_utworzenia", nullable = false, updatable = false)
+//    private LocalDateTime dataCzasUtworzenia;
+//    @UpdateTimestamp
+//    @Column(name = "dataczas_modyfikacji", nullable = false)
+//    private LocalDateTime dataCzasModyfikacji;
+
     @JsonIgnore
     @ManyToMany
     @JoinTable(name = "projekt_student", joinColumns = {@JoinColumn(name = "projekt_id")},
-            inverseJoinColumns = {@JoinColumn(name = "student_id")})
+            inverseJoinColumns = {@JoinColumn(name = "id")})
     private Set<Student> studenci;
     
     @OneToMany(mappedBy = "projekt", cascade = CascadeType.REMOVE)
@@ -65,6 +114,11 @@ public class Projekt {
     public void setProjektId(Integer projektId) {
         this.projektId = projektId;
     }
+    
+    public String idAsString() {
+        return projektId != null ? "" + projektId : null;
+    }
+
 
     public String getNazwa() {
         return nazwa;
@@ -82,21 +136,21 @@ public class Projekt {
         this.opis = opis;
     }
 
-    public String getDataCzasUtworzenia() {
-        return dataCzasUtworzenia.format(DateTimeFormatter.ISO_DATE);
-    }
-
-    public void setDataCzasUtworzenia(LocalDateTime dataCzasUtworzenia) {
-        this.dataCzasUtworzenia = dataCzasUtworzenia;
-    }
-
-    public String getDataCzasModyfikacji() {
-        return dataCzasModyfikacji.format(DateTimeFormatter.ISO_DATE);
-    }
-
-    public void setDataCzasModyfikacji(LocalDateTime dataCzasModyfikacji) {
-        this.dataCzasModyfikacji = dataCzasModyfikacji;
-    }
+//    public String getDataCzasUtworzenia() {
+//        return dataCzasUtworzenia.format(DateTimeFormatter.ISO_DATE);
+//    }
+//
+//    public void setDataCzasUtworzenia(LocalDateTime dataCzasUtworzenia) {
+//        this.dataCzasUtworzenia = dataCzasUtworzenia;
+//    }
+//
+//    public String getDataCzasModyfikacji() {
+//        return dataCzasModyfikacji.format(DateTimeFormatter.ISO_DATE);
+//    }
+//
+//    public void setDataCzasModyfikacji(LocalDateTime dataCzasModyfikacji) {
+//        this.dataCzasModyfikacji = dataCzasModyfikacji;
+//    }
 
     public Set<Student> getStudenci() {
         return studenci;

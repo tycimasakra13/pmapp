@@ -1,15 +1,12 @@
 package com.project.controllers;
 
-import com.project.config.FileStorageProperties;
-import com.project.config.PeagableConfig;
-import com.project.model.Projekt;
-import com.project.model.Student;
 import com.project.model.Zadanie;
 import com.project.services.ProjektService;
 import com.project.services.StudentService;
 import com.project.services.UserService;
 import com.project.services.ZadanieService;
 import jakarta.validation.Valid;
+import java.io.IOException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,10 +16,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -31,22 +27,19 @@ import org.springframework.ui.Model;
 @Controller
 @RequestMapping("")
 public class ZadanieController {
-    private final ZadanieService zadanieService;
     private String userRole;
-  
-    @Autowired
-    public ZadanieController(ZadanieService zadanieService) {
-        this.zadanieService = zadanieService;
-    }
     
     @Autowired
-    UserService userService;
+    private UserService userService;
     
     @Autowired
-    ProjektService projektService;
+    private ZadanieService zadanieService;
     
     @Autowired
-    StudentService studentService;
+    private ProjektService projektService;
+    
+    @Autowired
+    private StudentService studentService;
     
     private Integer setPageNumber(Integer pageNumber) {
         if(pageNumber == null || pageNumber == 0) {
@@ -77,7 +70,7 @@ public class ZadanieController {
     private Map<Integer, String> studentsForSelect() {
         Map<Integer, String> studentsLists = new HashMap<>();
         studentService.getStudentsList().forEach((student) -> {
-            studentsLists.put(student.getStudentId(), student.getImie() + " " + student.getNazwisko());
+            studentsLists.put(student.getId(), student.getImie() + " " + student.getNazwisko());
         });
         
         return studentsLists;
@@ -118,12 +111,20 @@ public class ZadanieController {
     
     @PostMapping("/task")
     public String searchTask(@Valid @ModelAttribute("formData") Zadanie formData,
-                               Model model, Authentication authentication) {
+                               Model model, Authentication authentication) throws IOException {
         
         Integer pageNumber = setPageNumber(0);
         Integer pageSize = setPageSize(0);
         
-        Page<Zadanie> totalTasks = zadanieService.searchByNazwa(formData.getNazwa(), pageNumber, pageSize);
+        //Page<Zadanie> totalTasks = zadanieService.searchByNazwa(formData.getNazwa(), pageNumber, pageSize);
+        Page<Zadanie> totalTasks = zadanieService.search(formData.getNazwa().toString(), 0, pageSize);
+        
+        totalTasks.forEach(task -> {
+            Zadanie zadanieDB = zadanieService.getZadanieById(task.getZadanieId()).get();
+            task.setProjekt(zadanieDB.getProjekt());
+            task.setStudent(zadanieDB.getStudent());
+        });
+        
         Integer totalPages = totalTasks.getTotalPages();
         
         userRole = userService.getCurrentUserRole(authentication);
@@ -146,6 +147,30 @@ public class ZadanieController {
         model.addAttribute("mode","taskAdd");
         return "task.html";
     }
+    
+    @PostMapping("/addTask")
+    public String addTask(@Valid @ModelAttribute Zadanie saveData, Model model) {
+        String returnValue = "task.html";
+        
+        try {
+            createZadanie(saveData).getStatusCode().toString();
+            returnValue = "redirect:/task?pageNumber=1&pageSize=5";
+        } catch(Exception e) {
+            model.addAttribute("formUrl","/addTask");
+            model.addAttribute("msg", e.getLocalizedMessage());
+            model.addAttribute("msgError", true);
+        }
+   
+        return returnValue;
+    }
+    
+    ResponseEntity<Void> createZadanie(@Valid @RequestBody Zadanie zadanie) {
+        Zadanie createdZadanie = zadanieService.insert(zadanie);
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{zadanieId}").buildAndExpand(createdZadanie.getZadanieId()).toUri();
+        return ResponseEntity.created(location).build();
+    }
+
     
     @GetMapping("/editTask")
     public String getEditTaskForm(@RequestParam(value="taskId") Integer taskId, Model model, Pageable pageable) {
@@ -180,6 +205,16 @@ public class ZadanieController {
         return returnValue;
     }
     
+    public ResponseEntity<Void> updateZadanie(@Valid @RequestBody Zadanie zadanie,
+                                              @PathVariable Integer zadanieId) {
+        return zadanieService.getZadanieById(zadanieId)
+                .map(p -> {
+                    zadanieService.updateZadanie(zadanieId, zadanie, false);
+                    return new ResponseEntity<Void>(HttpStatus.OK);
+                })
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+    
     @GetMapping("/deleteTask")
     public String deleteTask(@RequestParam(value="taskId") Integer taskId, Model model) {
         String statusCode = deleteZadanie(taskId).getStatusCode().toString();
@@ -187,44 +222,10 @@ public class ZadanieController {
         model.addAttribute("statusMsg", statusCode);
         return "redirect:/task?pageNumber=1&pageSize=5";
     }
-    
-    @PostMapping("/addTask")
-    public String addTask(@Valid @ModelAttribute Zadanie saveData, Model model) {
-        String returnValue = "task.html";
-        
-        try {
-            createZadanie(saveData).getStatusCode().toString();
-            returnValue = "redirect:/task?pageNumber=1&pageSize=5";
-        } catch(Exception e) {
-            model.addAttribute("formUrl","/addTask");
-            model.addAttribute("msg", e.getLocalizedMessage());
-            model.addAttribute("msgError", true);
-        }
-   
-        return returnValue;
-    }
-    
-    ResponseEntity<Void> createZadanie(@Valid @RequestBody Zadanie zadanie) {
-        Zadanie createdZadanie = zadanieService.insert(zadanie);
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-                .path("/{zadanieId}").buildAndExpand(createdZadanie.getZadanieId()).toUri();
-        return ResponseEntity.created(location).build();
-    }
-
-
-    public ResponseEntity<Void> updateZadanie(@Valid @RequestBody Zadanie zadanie,
-                                              @PathVariable Integer zadanieId) {
-        return zadanieService.getZadanieById(zadanieId)
-                .map(p -> {
-                    zadanieService.updateZadanie(zadanieId, zadanie);
-                    return new ResponseEntity<Void>(HttpStatus.OK);
-                })
-                .orElseGet(() -> ResponseEntity.notFound().build());
-    }
 
     public ResponseEntity<Void> deleteZadanie(@PathVariable Integer zadanieId) {
         return zadanieService.getZadanieById(zadanieId).map(p -> {
-            zadanieService.deleteZadanie(zadanieId);
+            zadanieService.updateZadanie(zadanieId, null, true);// .deleteZadanie(zadanieId);
             return new ResponseEntity<Void>(HttpStatus.OK);
         }).orElseGet(() -> ResponseEntity.notFound().build());
     }

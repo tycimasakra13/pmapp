@@ -37,6 +37,8 @@ public class ProjektLoader implements CommandLineRunner {
         projekt.setOpis("ABC " + x);
         projekt.setNazwa("CDA " + x);
         projekt.setZadania(List.of(zadanie));
+        projekt.setSynced(false);
+        projekt.setToBeDeleted(false);
         projektRepository.save(projekt);
         System.out.println("Sample Projekts Loaded " + x);   
     }

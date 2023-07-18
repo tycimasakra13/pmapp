@@ -1,10 +1,11 @@
 package com.project.services;
 
 import com.project.model.Projekt;
-import com.project.model.Zadanie;
 import com.project.repositories.ProjectRepository;
+import com.project.dao.ProjectDao;
+import com.project.mapper.ProjectMapper;
+import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -13,13 +14,24 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class ProjektServiceImpl implements ProjektService {
     public ProjectRepository repository;
+    private ProjectMapper projectMapper;
+    private final ProjectDao projectDao;
+    private final org.slf4j.Logger logger = LoggerFactory.getLogger(ProjectDao.class);
+    
     @Autowired
-    public ProjektServiceImpl(ProjectRepository projectRepository) {
+    public ProjektServiceImpl(ProjectRepository projectRepository, ProjectMapper projectMapper, ProjectDao projectDao) {
         this.repository = projectRepository;
+        this.projectMapper = projectMapper;
+        this.projectDao = projectDao;
     }
 
     @Override
@@ -31,6 +43,7 @@ public class ProjektServiceImpl implements ProjektService {
     public Page<Projekt> getPaginatedProjects(Integer pageNumber, Integer pageSize) {
         final Pageable pageable = PageRequest.of(pageNumber - 1, pageSize);
         return repository.findAll(pageable);
+
     }
     
     @Override
@@ -39,17 +52,52 @@ public class ProjektServiceImpl implements ProjektService {
     }
     
     @Override
-    public Projekt insert(Projekt projekt) {
-        return repository.save(projekt);
+    public Page<Projekt> getProjektByIdPaginated(Integer projektId, Pageable pageable) {
+        return repository.findAllByprojektId(projektId, pageable);
     }
+    
+    @Override
+    public Projekt insert(Projekt projekt) {
+        //try {
+            //Integer lastProjektId = repository.findTopByOrderByProjektIdDesc().get().getProjektId();
+            logger.error("Last projekt id is: {}", projekt.getProjektId());
+            
+            //projekt.setProjektId(lastProjektId + 1);
+            //elasticsearchDao.save(projekt);
+            projekt.setSynced(false);
+            repository.save(projekt);
+        //} catch (IOException e) {
+            //logger.error("Problem with insert in PSI", e);
+        //}
+        
+        logger.debug("Saved projekt[{}]", projekt.getProjektId());
+        return projekt;
+    }
+//    
+//    @Override
+//    public ProjektDto insert(ProjektDto projektDto) {
+////        try {
+////            elasticsearchDao.save(projekt);
+////        } catch (IOException ex) {
+////            logger.error("save to es projekt problem", ex);
+////        }
+//        Projekt projekt = this.repository.save(this.msm.projektDtoToProjekt(projektDto));
+//        return this.msm.projektToProjektDto(projekt);
+//        //return projekt;
+//    }
 
     @Override
     @Transactional
-    public void updateProjekt(Integer id, Projekt projekt) {
+    public void updateProjekt(Integer id, Projekt projekt, Boolean toBeDeleted) {
         Projekt projektFromDb = repository.findById(id).get();
-
-        projektFromDb.setNazwa(projekt.getNazwa());
-        projektFromDb.setOpis(projekt.getOpis());
+        
+        if ( toBeDeleted ) {
+            projektFromDb.setToBeDeleted(toBeDeleted);
+        } else {
+            projektFromDb.setNazwa(projekt.getNazwa());
+            projektFromDb.setOpis(projekt.getOpis());
+            projektFromDb.setSynced(false);
+        }
 
         repository.save(projektFromDb);
     }
@@ -57,7 +105,14 @@ public class ProjektServiceImpl implements ProjektService {
     @Override
     @Transactional
     public void deleteProjekt(Integer projektId) {
-        repository.deleteById(projektId);
+        logger.debug("Projekt: {}", projektId);
+        
+        if(projektId != null) {
+            repository.deleteById(projektId);
+
+        }
+        
+        logger.debug("Projekt deleted: {}", projektId);
     }
 
     @Override
@@ -65,6 +120,43 @@ public class ProjektServiceImpl implements ProjektService {
         final Pageable pageable = PageRequest.of(pageNumber - 1, pageSize);
         return repository.findByNazwaContainingIgnoreCase(nazwa, pageable);
     }
+    
+    @Override
+    public List<String> getDocId(Integer projektId) throws IOException {
+        QueryBuilder query;
+       
+       System.out.println("projektId search: " + projektId);
+       query = QueryBuilders.matchQuery("projektId", projektId);
+
+//           query = QueryBuilders.multiMatchQuery(projektId)
+//                   .field("projektId");
+
+       List<String> returnedDocId = projectDao.getDocId(query);
+       System.out.println("returnedProjekt {}" + returnedDocId.toString());
+      
+       return returnedDocId;
+    }
+    
+    @Override
+    public Page<Projekt> search(String q, Integer from, Integer size) throws IOException {
+       QueryBuilder query;
+       
+       System.out.println("q: " + q);
+       if(q.isEmpty()) {
+           query = QueryBuilders.matchAllQuery();
+       } else {
+           query = QueryBuilders.multiMatchQuery(q)
+                   .field("nazwa")
+                   .field("opis");
+       }
+
+       Page<Projekt> returnedProjekt = projectDao.search(query, from, size, PageRequest.of(from, size));
+       System.out.println("returnedProjekt {}" + returnedProjekt.toString());
+      
+       return returnedProjekt;
+    }
+    
+    
     
     @Override
     public List<Projekt> getProjectsList() {

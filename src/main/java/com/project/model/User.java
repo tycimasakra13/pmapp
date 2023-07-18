@@ -6,6 +6,7 @@ import java.util.List;
 import jakarta.persistence.Column; 
 import jakarta.persistence.Entity; 
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id; 
 import java.time.LocalDateTime;
 import org.hibernate.annotations.CreationTimestamp;
@@ -16,7 +17,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Table(name = "Users")
 public class User implements UserDetails {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name = "userId")
     private Integer userID;
     @Column(nullable = false, length = 50)

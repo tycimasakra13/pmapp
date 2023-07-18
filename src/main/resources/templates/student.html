@@ -23,8 +23,6 @@
                 <table>
                     <tr>
                         <th>Student ID</th>
-
-
                         <th>Name</th>
                         <th>Surname</th>
                         <th>Index number</th>
@@ -35,20 +33,20 @@
                         <th></th>
                     </tr>
                     <tr th:each="student : ${students}">
-                        <td th:text="${student.studentId}"></td>
+                        <td th:text="${student.id}"></td>
                         <td th:text="${student.imie}"></td>
                         <td th:text="${student.nazwisko}"></td>
                         <td th:text="${student.nrIndeksu}"></td>
                         <td th:text="${student.email}"></td>
                         <td th:text="${student.stacjonarny}"></td>
                         <td th:if="${student.zadania != null}">
-                            <a th:href="'/task?studentId=' + ${student.studentId}">Tasks</a>
+                            <a th:href="'/task?studentId=' + ${student.id}">Tasks</a>
                         </td>
                         <td th:if="${student.zadania == null}"></td>
                         <td th:if="${userRole != 'ADMIN'}"></td>
                         <td th:if="${userRole != 'ADMIN'}"></td>
-                        <td th:if="${userRole == 'ADMIN'}"><a th:href="@{'/editStudent?studentId=' + ${student.studentId}}">Edit</a></td>
-                        <td th:if="${userRole == 'ADMIN'}"><a th:href="@{'/deleteStudent?studentId=' + ${student.studentId}}">Delete</a></td>
+                        <td th:if="${userRole == 'ADMIN'}"><a th:href="@{'/editStudent?studentId=' + ${student.id}}">Edit</a></td>
+                        <td th:if="${userRole == 'ADMIN'}"><a th:href="@{'/deleteStudent?studentId=' + ${student.id}}">Delete</a></td>
                     </tr>
                 </table>
                 <div>
@@ -75,9 +73,9 @@
                     <button type="submit">Save</button>
                 </form>
             </div>
-            <div th:if="${mode == 'studentEdit'}">
+<!--            <div th:if="${mode == 'studentEdit'}">
                 <form th:action="@{/updateStudent}" th:object="${updateData}" method="POST">
-                    <input type="hidden" th:field="*{studentId}"/>
+                    <input type="hidden" th:field="*{id}"/>
                     <label for="imie">Name</label>:
                     <input type="text" th:field="*{imie}"/>
                     <label for="nazwisko">Surname</label>:
@@ -93,7 +91,7 @@
                     </select>
                     <button type="submit">Update</button>
                 </form>
-            </div>
+            </div>-->
             <div th:if="${msgError}" class="error">
                 <p th:text="${msg}"></p>
                 <a th:href="${formUrl}">Try again</a>

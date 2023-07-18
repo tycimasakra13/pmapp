@@ -1,6 +1,8 @@
 package com.project.services;
 
 import com.project.model.Zadanie;
+import java.io.IOException;
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -19,11 +21,15 @@ public interface ZadanieService {
 
     Zadanie insert(Zadanie zadanie);
 
-    void updateZadanie(Integer id, Zadanie zadanie);
+    void updateZadanie(Integer id, Zadanie zadanie, Boolean toBeDeleted);
 
     void deleteZadanie(Integer zadanieId);
     
     void removeAssignStudent(Integer stutendId, Pageable pageable);
     
     Page<Zadanie> searchByNazwa(String nazwa, Integer pageNumber, Integer pageSize);
+
+    List<String> getDocId(Integer projektId) throws IOException;
+    
+    Page<Zadanie> search(String q, Integer from, Integer size) throws IOException;
 }

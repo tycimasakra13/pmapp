@@ -32,12 +32,17 @@ public class StudentsLoader implements CommandLineRunner {
     
     private void insertNewStudents(int x) {
         int bound = x + 5;
+        Boolean stacjonarny = rd.nextBoolean();
+        String nrIndeksu = "ABC " + + rd.nextInt(bound) + rd.nextInt(bound) + rd.nextInt(bound);
+        System.out.println("Sample Students stacjonarny " + stacjonarny);   
         Student student = new Student();
         student.setImie("Test" + x);
         student.setNazwisko("TestS " + x);
         student.setEmail("test" + x + "@test.pl");
-        student.setNrIndeksu("" + rd.nextInt(bound) + rd.nextInt(bound) + rd.nextInt(bound));
-        student.setStacjonarny(rd.nextBoolean());
+        student.setNrIndeksu(nrIndeksu);
+        student.setStacjonarny(stacjonarny);
+        student.setSynced(false);
+        student.setToBeDeleted(false);
         studentRepository.save(student);
         System.out.println("Sample Students Loaded " + x);   
     }
