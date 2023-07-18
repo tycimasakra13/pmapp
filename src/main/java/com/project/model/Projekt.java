@@ -2,25 +2,73 @@ package com.project.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Set;
+import org.hibernate.annotations.CreationTimestamp;
 
 @Entity
 @Table(name = "projekt")
 public class Projekt {
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "projekt_id")
-    private Long projektId = null;
+    private Integer projektId;
     @Column(nullable = false, length = 50)
     private String nazwa;
     @Column(nullable = true, length = 1000)
     private String opis;
+    
+    @Temporal(TemporalType.TIMESTAMP)
+    @CreationTimestamp
+    private LocalDateTime createDate;
+    
+    @Temporal(TemporalType.TIMESTAMP)
+    @UpdateTimestamp
+    private LocalDateTime modificationDate;
+
+    @Column(name = "synced")
+    private Boolean synced;
+    
+    @Column(name = "toBeDeleted")
+    private Boolean toBeDeleted;
+
+    public Boolean getToBeDeleted() {
+        return toBeDeleted;
+    }
+
+    public void setToBeDeleted(Boolean toBeDeleted) {
+        this.toBeDeleted = toBeDeleted;
+    }
+
+    public Boolean isSynced() {
+        return synced;
+    }
+
+    public void setSynced(Boolean synced) {
+        this.synced = synced;
+    }
+    
+    public LocalDateTime getModificationDate() {
+        return modificationDate;
+    }
+
+    public void setModificationDate(LocalDateTime modificationDate) {
+        this.modificationDate = modificationDate;
+    }
+
+    public LocalDateTime getCreateDate() {
+        return createDate;
+    }
+
+    public void setCreateDate(LocalDateTime createDate) {
+        this.createDate = createDate;
+    }
+    
+    
+    
 //    @CreationTimestamp
 //    @Column(name = "dataczas_utworzenia", nullable = false, updatable = false)
 //    private LocalDateTime dataCzasUtworzenia;
@@ -59,11 +107,11 @@ public class Projekt {
         this.zadania = zadania;
     }
 
-    public Long getProjektId() {
+    public Integer getProjektId() {
         return projektId;
     }
 
-    public void setProjektId(Long projektId) {
+    public void setProjektId(Integer projektId) {
         this.projektId = projektId;
     }
     

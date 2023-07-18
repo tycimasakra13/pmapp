@@ -7,72 +7,26 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.elasticsearch.annotations.Document;
 
-@Entity
-@Table(name = "zadanie")
-public class Zadanie {
-    @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
-    @Column(name = "zadanie_id")
+@Document(indexName = "zadanie")
+public class ZadanieES {
     private Integer zadanieId;
-
-    @Column(length = 1000, nullable = false)
     private String opis;
-
-    @Column
     private Integer kolejnosc;
-    
-    @Column(nullable = false, length = 50)
     private String nazwa;
-    
-//    @CreationTimestamp
-//    @Column(name = "data_dodania", nullable = false)
-//    private LocalDateTime dataDodania;
-    
-    @Temporal(TemporalType.TIMESTAMP)
-    @CreationTimestamp
     private LocalDateTime createDate;
-    
-    @Temporal(TemporalType.TIMESTAMP)
-    @UpdateTimestamp
     private LocalDateTime modificationDate;
-    
-    @Column(name = "synced")
     private Boolean synced;
-    
-    @Column(name = "toBeDeleted")
     private Boolean toBeDeleted;
     
-    @JsonIgnore
-    @ManyToOne(cascade = CascadeType.REMOVE)
-    @JoinColumn(name = "projekt_id", nullable = false)
     private Projekt projekt;
     
-    @JsonIgnore
-    @ManyToOne()
-    @JoinColumn(name = "id", nullable = true)
     private Student student;
-
-    public Student getStudent() {
-        return student;
-    }
-
-    public void setStudent(Student student) {
-        this.student = student;
-    }
-
-    @ElementCollection
     private List<File> pliki;
 
-    public List<File> getPliki() {
-        return pliki;
-    }
-
-    public void setPliki(List<File> pliki) {
-        this.pliki = pliki;
-    }
-
+    public ZadanieES() {}
+    
     public Integer getZadanieId() {
         return zadanieId;
     }
@@ -108,21 +62,12 @@ public class Zadanie {
     public LocalDateTime getCreateDate() {
         return createDate;
     }
-    
     public String getCreateDateToString() {
         return createDate.format(DateTimeFormatter.ISO_DATE);
     }
 
     public void setCreateDate(LocalDateTime createDate) {
         this.createDate = createDate;
-    }
-
-    public Projekt getProjekt() {
-        return projekt;
-    }
-
-    public void setProjekt(Projekt projekt) {
-        this.projekt = projekt;
     }
 
     public Boolean getSynced() {
@@ -140,7 +85,7 @@ public class Zadanie {
     public void setToBeDeleted(Boolean toBeDeleted) {
         this.toBeDeleted = toBeDeleted;
     }
-    
+
     public LocalDateTime getModificationDate() {
         return modificationDate;
     }
@@ -148,5 +93,30 @@ public class Zadanie {
     public void setModificationDate(LocalDateTime modificationDate) {
         this.modificationDate = modificationDate;
     }
+
+    public Projekt getProjekt() {
+        return projekt;
+    }
+
+    public void setProjekt(Projekt projekt) {
+        this.projekt = projekt;
+    }
+
+    public Student getStudent() {
+        return student;
+    }
+
+    public void setStudent(Student student) {
+        this.student = student;
+    }
+
+    public List<File> getPliki() {
+        return pliki;
+    }
+
+    public void setPliki(List<File> pliki) {
+        this.pliki = pliki;
+    }
+    
     
 }

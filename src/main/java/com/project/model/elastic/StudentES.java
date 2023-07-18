@@ -1,7 +1,10 @@
-package com.project.model;
+package com.project.model.elastic;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.project.model.Projekt;
+import com.project.model.Zadanie;
 import jakarta.persistence.*;
+import java.util.Date;
 import java.util.List;
 
 import java.util.Set;
@@ -10,57 +13,16 @@ import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
 @Document(indexName = "student")
-public class StudentES2 {
-    @Id
+public class StudentES {
     private Integer id;
-    
-    @Field(type = FieldType.Text, name = "imie")
     private String imie;
-    
-    @Field(type = FieldType.Text, name = "nazwisko")
     private String nazwisko;
-    
-    @Field(type = FieldType.Text, name = "nrIndeksu")
     private String nrIndeksu;
-    
-    @Field(type = FieldType.Text, name = "email")
     private String email;
-    
-    @Field(type = FieldType.Boolean, name = "stacjonarny")
     private Boolean stacjonarny;
-    
-    @OneToMany(mappedBy = "student")
-    private List<Zadanie> zadania;
-    
-    @JsonIgnore
-    @ManyToMany(mappedBy = "studenci", cascade = CascadeType.REMOVE)
-    private Set<Projekt> projekty;
+    private Date modificationDate;
 
-    public List<Zadanie> getZadania() {
-        return zadania;
-    }
-
-    public void setZadania(List<Zadanie> zadania) {
-        this.zadania = zadania;
-    }
-
-    public StudentES2() {
-    }
-
-    public StudentES2(String imie, String nazwisko, String nrIndeksu, Boolean stacjonarny) {
-        this.imie = imie;
-        this.nazwisko = nazwisko;
-        this.nrIndeksu = nrIndeksu;
-        this.stacjonarny = stacjonarny;
-    }
-
-    public StudentES2(String imie, String nazwisko, String nrIndeksu, String email,
-                   Boolean stacjonarny) {
-        this.imie = imie;
-        this.nazwisko = nazwisko;
-        this.nrIndeksu = nrIndeksu;
-        this.email = email;
-        this.stacjonarny = stacjonarny;
+    public StudentES() {
     }
 
     public Integer getId() {
@@ -111,11 +73,11 @@ public class StudentES2 {
         this.stacjonarny = stacjonarny;
     }
 
-    public Set<Projekt> getProjekty() {
-        return projekty;
+    public Date getModificationDate() {
+        return modificationDate;
     }
 
-    public void setProjekty(Set<Projekt> projekty) {
-        this.projekty = projekty;
+    public void setModificationDate(Date modificationDate) {
+        this.modificationDate = modificationDate;
     }
 }

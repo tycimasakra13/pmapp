@@ -53,7 +53,7 @@ public class FileUploadController {
             } else {
                 entityId = projekt.get().getProjektId().toString();
                 projekt.get().getPliki().add(new File(file.getOriginalFilename()));
-                projektService.get().updateProjekt(projekt.get().getProjektId(), projekt.get());
+                projektService.get().updateProjekt(projekt.get().getProjektId(), projekt.get(), false);
             }
         } else if (zadanieService.isPresent()) {
             type = "zadanie";
@@ -63,7 +63,7 @@ public class FileUploadController {
             } else {
                 entityId = zadanie.get().getZadanieId().toString();
                 zadanie.get().getPliki().add(new File(file.getOriginalFilename()));
-                zadanieService.get().updateZadanie(zadanie.get().getZadanieId(), zadanie.get());
+                zadanieService.get().updateZadanie(zadanie.get().getZadanieId(), zadanie.get(), false);
             }
         } else {
             throw new RuntimeException("Cannot create file unassigned to project or task");

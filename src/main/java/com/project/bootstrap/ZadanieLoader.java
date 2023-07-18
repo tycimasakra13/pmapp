@@ -21,26 +21,30 @@ public class ZadanieLoader implements CommandLineRunner {
     }
 
     private void loadZadanies() {
-        if (zadanieRepository.count() == 0) {
+        //if (zadanieRepository.count() == 0) {
             int count = 10;
             for(int x = 1; x <= count; x++) {
-                insertNewStudents(x);
+                if(!zadanieRepository.existsByZadanieId(count)) {
+                    insertNewStudents(x);
+                }
             }
-        }
+        //}
         
 
     }
     
     private void insertNewStudents(int x) {
         Projekt projekt = new Projekt();
-        projekt.setProjektId(1);
+        projekt.setProjektId(10);
 
         Student student = new Student();
-        student.setId(1);
+        student.setId(12);
 
         Zadanie zadanie = new Zadanie();
         zadanie.setOpis("ABC" + x);
         zadanie.setNazwa("CDA" + x);
+        zadanie.setSynced(false);
+        zadanie.setToBeDeleted(false);
         zadanie.setProjekt(projekt);
         zadanie.setStudent(student);
         zadanieRepository.save(zadanie);

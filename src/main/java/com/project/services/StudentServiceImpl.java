@@ -1,7 +1,10 @@
 package com.project.services;
 
+import static co.elastic.clients.elasticsearch._types.query_dsl.Query.Kind.MultiMatch;
+import com.project.dao.StudentDao;
 import com.project.model.Student;
 import com.project.repositories.StudentRepository;
+import java.io.IOException;
 import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -9,16 +12,21 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+import org.elasticsearch.index.query.MultiMatchQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.springframework.data.domain.PageRequest;
 
 @Service
 public class StudentServiceImpl implements StudentService {
     StudentRepository repository;
     ZadanieService zadanieService;
+    private final StudentDao studentDao;
 
-    public StudentServiceImpl(StudentRepository studentRepository, ZadanieService zadanieService) {
+    public StudentServiceImpl(StudentRepository studentRepository, ZadanieService zadanieService, StudentDao studentDao) {
         this.repository = studentRepository;
         this.zadanieService = zadanieService;
+        this.studentDao = studentDao;
     }
 
     @Override
@@ -55,9 +63,11 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     @Transactional
-    public void updateStudent(Integer id, Student student) {
+    public void updateStudent(Integer id, Student student, Boolean toBeDeleted) {
         Student studentFromDb = repository.findById(id).get();
-
+        
+        studentFromDb.setToBeDeleted(toBeDeleted);
+        
         studentFromDb.setEmail(student.getEmail());
         studentFromDb.setImie(student.getImie());
         studentFromDb.setNazwisko(student.getNazwisko());
@@ -77,5 +87,32 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public List<Student> getStudentsList() {
         return repository.findAll();
+    }
+    
+    @Override
+    public Page<Student> search(String q, Integer from, Integer size) throws IOException {
+        QueryBuilder query;
+        q = q.toLowerCase();
+        System.out.println("student q: " + q);
+        
+        if (q.isEmpty()) {
+            query = QueryBuilders.matchAllQuery();
+        } else {
+
+            System.out.println("search string " + q);
+            query = QueryBuilders.multiMatchQuery(q)
+                    //.field("id")
+                    .field("imie")
+                    .field("nazwisko")
+                    .field("nrIndeksu")
+                    .field("email");
+
+                
+        }
+        
+        System.out.println("query " + query);
+        Page<Student> returnedStudent = studentDao.search(query, from, size, PageRequest.of(from, size));
+        
+        return returnedStudent;
     }
 }

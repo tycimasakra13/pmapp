@@ -4,6 +4,7 @@ import com.project.model.Student;
 import com.project.services.StudentService;
 import com.project.services.UserService;
 import jakarta.validation.Valid;
+import java.io.IOException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,12 +22,9 @@ import org.springframework.ui.Model;
 @Controller
 @RequestMapping("")
 public class StudentController {
-    private final StudentService studentService;
 
     @Autowired
-    public StudentController(StudentService studentService) {
-        this.studentService = studentService;
-    }
+    StudentService studentService;
     
     @Autowired
     private UserService userService;
@@ -121,12 +119,13 @@ public class StudentController {
     
     @PostMapping("/student")
     public String searchStudent(@Valid @ModelAttribute("formData") Student formData,
-                               Model model, Authentication authentication) {
+                               Model model, Authentication authentication) throws IOException {
         
         Integer pageNumber = 1;//setPageNumber(1);
         Integer pageSize = 5;//setPageSize(0);
         
-        Page<Student> totalStudents = studentService.getStudentByNazwiskoStartsWithIgnoreCase(formData.getNazwisko(), pageNumber, pageSize);
+        //Page<Student> totalStudents = studentService.getStudentByNazwiskoStartsWithIgnoreCase(formData.getNazwisko(), pageNumber, pageSize);
+        Page<Student> totalStudents = studentService.search(formData.getNazwisko().toString(), 0, 5);
         Integer totalPages = totalStudents.getTotalPages();
         String userRole = userService.getCurrentUserRole(authentication);
         model.addAttribute("formData", new Student());
@@ -143,7 +142,7 @@ public class StudentController {
         
         ResponseEntity<Void> updateStud = studentService.getStudentById(updateData.getId())
                 .map(p -> {
-                    studentService.updateStudent(updateData.getId(), updateData);
+                    studentService.updateStudent(updateData.getId(), updateData, false);
                     return new ResponseEntity<Void>(HttpStatus.OK);
                 })
                 .orElseGet(() -> ResponseEntity.notFound().build());
@@ -179,7 +178,7 @@ public class StudentController {
                                               @PathVariable Integer studentId) {
         return studentService.getStudentById(studentId)
                 .map(p -> {
-                    studentService.updateStudent(studentId, student);
+                    studentService.updateStudent(studentId, student, false);
                     return new ResponseEntity<Void>(HttpStatus.OK);
                 })
                 .orElseGet(() -> ResponseEntity.notFound().build());

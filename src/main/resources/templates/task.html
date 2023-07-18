@@ -39,8 +39,15 @@
                         <td th:text="${task.zadanieId}"></td>
                         <td th:text="${task.opis}"></td>
                         <td th:text="${task.nazwa}"></td>
-                        <td th:text="${task.dataDodania}"></td>
-                        <td th:text="${task.projekt.getProjektId()}"></td>
+                        <td th:text="${#temporals.format(task.createDate, 'dd-MM-yyyy HH:mm')}"></td>
+                        
+                        <td th:if="${task.projekt != null}">
+                            <a th:href="'/project?projectID=' + ${task.projekt.getProjektId()}">
+                                <span th:text="(${task.projekt.getProjektId()})"></span>
+                            </a>
+                        </td> 
+                        <td th:if="${task.projekt == null}">NOT ASSIGNED</td> 
+                        
                         <td th:if="${task.student != null}">
                             <a th:href="'/student?studentId=' + ${task.student.getId()}">
                                 <span th:text="(${task.student.getImie()} + ' ' + ${task.student.getNazwisko()})"></span>

@@ -22,4 +22,10 @@ public interface ZadanieRepository extends JpaRepository<Zadanie, Integer> {
     Page<Zadanie> findZadaniaStudenta(@Param("studentId") Integer studentId, Pageable pageable);
     
     Page<Zadanie> findByNazwaContainingIgnoreCase(String nazwa, Pageable pageable);
+
+    List<Zadanie> findBySyncedFalse();
+    
+    List<Zadanie> findBytoBeDeletedTrue();
+    
+    Boolean existsByZadanieId(Integer zadanieId);
 }

@@ -42,9 +42,8 @@
                         <td th:text="${project.projektId}"></td>
                         <td th:text="${project.nazwa}"></td>
                         <td th:text="${project.opis}"></td>
-<!--                        <td th:text="${project.dataCzasUtworzenia}"></td>
-                        <td th:text="${project.dataCzasModyfikacji}"></td>-->
-<td></td><td></td>
+                        <td th:text="${#temporals.format(project.createDate, 'dd-MM-yyyy HH:mm')}"></td>
+                        <td th:text="${#temporals.format(project.modificationDate, 'dd-MM-yyyy HH:mm')}"></td>
                         <td th:if="${project.zadania != null}">
                             <a th:href="'/task?projectID=' + ${project.projektId}">Tasks</a>
                         </td>
@@ -76,7 +75,7 @@
             </div>
             <div th:if="${mode == 'projectEdit'}">
                 <form th:action="@{/updateProject}" th:object="${updateData}" method="POST">
-                    <input type="text" th:field="*{projektId}"/>
+                    <input type="hidden" th:field="*{projektId}"/>
                     <input type="text" th:field="*{nazwa}"/>
                     <input type="text" th:field="*{opis}"/>
                     <button type="submit">Update</button>

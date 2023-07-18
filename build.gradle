@@ -35,6 +35,8 @@ dependencies {
     implementation 'org.elasticsearch.client:elasticsearch-rest-client'
     implementation 'org.elasticsearch:elasticsearch'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+    implementation 'org.mapstruct:mapstruct:1.4.2.Final'
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.4.2.Final'
     testCompileOnly 'org.junit.jupiter:junit-jupiter-api'
     testCompileOnly 'org.junit.jupiter:junit-jupiter-engine'
     testCompileOnly 'org.junit.jupiter:junit-jupiter-params'
