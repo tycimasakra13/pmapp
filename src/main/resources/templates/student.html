@@ -14,7 +14,7 @@
                     <span><a th:href="@{/addStudent}">Add Student</a></span>
                     <div class="searchBox">
                         <form th:action="@{/student?pageNumber=1&pageSize=5}" th:object="${formData}" method="POST">
-                            <input type="text" th:field="*{nazwisko}" placeholder="Search by surname"/>
+                            <input type="text" th:field="*{nazwisko}" placeholder="Search..."/>
                             <button type="submit">Search</button>
                         </form>
                     </div>
@@ -73,7 +73,7 @@
                     <button type="submit">Save</button>
                 </form>
             </div>
-<!--            <div th:if="${mode == 'studentEdit'}">
+            <div th:if="${mode == 'studentEdit'}">
                 <form th:action="@{/updateStudent}" th:object="${updateData}" method="POST">
                     <input type="hidden" th:field="*{id}"/>
                     <label for="imie">Name</label>:
@@ -91,7 +91,7 @@
                     </select>
                     <button type="submit">Update</button>
                 </form>
-            </div>-->
+            </div>
             <div th:if="${msgError}" class="error">
                 <p th:text="${msg}"></p>
                 <a th:href="${formUrl}">Try again</a>

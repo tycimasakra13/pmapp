@@ -63,6 +63,7 @@ public class ProjektServiceImpl implements ProjektService {
             //projekt.setProjektId(lastProjektId + 1);
             //elasticsearchDao.save(projekt);
             projekt.setSynced(false);
+            projekt.setToBeDeleted(false);
             repository.save(projekt);
         //} catch (IOException e) {
             //logger.error("Problem with insert in PSI", e);

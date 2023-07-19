@@ -1,7 +1,9 @@
 package com.project.controllers;
 
 import com.project.model.Student;
+import com.project.services.ProjectSynchronizerES;
 import com.project.services.StudentService;
+import com.project.services.StudentSynchronizerES;
 import com.project.services.UserService;
 import jakarta.validation.Valid;
 import java.io.IOException;
@@ -28,6 +30,9 @@ public class StudentController {
     
     @Autowired
     private UserService userService;
+    
+    @Autowired
+    private StudentSynchronizerES studentSynchronizerES;
     
     private Integer setPageNumber(Integer pageNumber) {
         if(pageNumber == null || pageNumber == 0) {
@@ -95,13 +100,14 @@ public class StudentController {
    
         model.addAttribute("statusMsg", statusCode);
 
+        studentSynchronizerES.synchronizeData();
+        
         return "redirect:/student?pageNumber=1&pageSize=5";
     }
     
     @GetMapping("/editStudent")
     public String getEditStudentForm(@RequestParam(value="studentId") Integer studentId, Model model) {
         Student selectedStudent = studentService.getStudentById(studentId).get();
-
         String name = selectedStudent.getImie();
         String sName = selectedStudent.getNazwisko();
         String email = selectedStudent.getEmail();
@@ -149,6 +155,9 @@ public class StudentController {
         String statusCode = updateStud.getStatusCode().toString();
         
         model.addAttribute("statusMsg", statusCode);
+        
+        studentSynchronizerES.synchronizeData();
+        
         return "redirect:/student?pageNumber=1&pageSize=5";
     }
     
@@ -162,6 +171,9 @@ public class StudentController {
         
         String statusCode = deleteStud.getStatusCode().toString();
         model.addAttribute("statusMsg", statusCode);
+        
+        studentSynchronizerES.synchronizeData();
+        
         return "redirect:/student?pageNumber=1&pageSize=5";
     }
 

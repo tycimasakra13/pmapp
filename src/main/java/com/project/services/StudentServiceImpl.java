@@ -56,6 +56,8 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public Student insert(Student student) {
+        student.setSynced(false);
+        student.setToBeDeleted(false);
         return repository.save(student);
     }
 
@@ -64,13 +66,16 @@ public class StudentServiceImpl implements StudentService {
     public void updateStudent(Integer id, Student student, Boolean toBeDeleted) {
         Student studentFromDb = repository.findById(id).get();
         
-        studentFromDb.setToBeDeleted(toBeDeleted);
-        
-        studentFromDb.setEmail(student.getEmail());
-        studentFromDb.setImie(student.getImie());
-        studentFromDb.setNazwisko(student.getNazwisko());
-        studentFromDb.setNrIndeksu(student.getNrIndeksu());
-        studentFromDb.setStacjonarny(student.getStacjonarny());
+        if ( toBeDeleted ) {
+            studentFromDb.setToBeDeleted(toBeDeleted);
+        } else {
+            studentFromDb.setEmail(student.getEmail());
+            studentFromDb.setImie(student.getImie());
+            studentFromDb.setNazwisko(student.getNazwisko());
+            studentFromDb.setNrIndeksu(student.getNrIndeksu());
+            studentFromDb.setStacjonarny(student.getStacjonarny());
+            studentFromDb.setSynced(false);
+        }
 
         repository.save(studentFromDb);
     }
@@ -78,8 +83,10 @@ public class StudentServiceImpl implements StudentService {
     @Override
     @Transactional
     public void deleteStudent(Integer studentId, Pageable pageable) {
-        zadanieService.removeAssignStudent(studentId, pageable);
-        repository.deleteById(studentId);
+        if ( studentId != null ) {
+            zadanieService.removeAssignStudent(studentId, pageable);
+            repository.deleteById(studentId);
+        }
     }
     
     @Override

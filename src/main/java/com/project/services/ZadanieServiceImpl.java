@@ -61,6 +61,7 @@ public class ZadanieServiceImpl implements ZadanieService {
     public Zadanie insert(Zadanie zadanie) {
         logger.error("Last projekt id is: {}", zadanie.getZadanieId());
         zadanie.setSynced(false);
+        zadanie.setToBeDeleted(false);
         repository.save(zadanie);
         logger.debug("Saved projekt[{}]", zadanie.getZadanieId());
         

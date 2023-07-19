@@ -1,10 +1,12 @@
 package com.project.controllers;
 
 import com.project.model.Zadanie;
+import com.project.services.ProjectSynchronizerES;
 import com.project.services.ProjektService;
 import com.project.services.StudentService;
 import com.project.services.UserService;
 import com.project.services.ZadanieService;
+import com.project.services.ZadanieSynchronizerES;
 import jakarta.validation.Valid;
 import java.io.IOException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +41,9 @@ public class ZadanieController {
     
     @Autowired
     private StudentService studentService;
+    
+    @Autowired
+    private ZadanieSynchronizerES zadanieSynchronizerES;
     
     private Integer setPageNumber(Integer pageNumber) {
         if(pageNumber == null || pageNumber == 0) {
@@ -153,6 +158,7 @@ public class ZadanieController {
         
         try {
             createZadanie(saveData).getStatusCode().toString();
+            zadanieSynchronizerES.synchronizeData();
             returnValue = "redirect:/task?pageNumber=1&pageSize=5";
         } catch(Exception e) {
             model.addAttribute("formUrl","/addTask");
@@ -193,6 +199,7 @@ public class ZadanieController {
         try {
             statusCode = updateZadanie(updateData, taskId).getStatusCode();
             if(statusCode.is2xxSuccessful()){
+                zadanieSynchronizerES.synchronizeData();
                 returnValue = "redirect:/task?pageNumber=1&pageSize=5";
             } 
         } catch(Exception e) {
@@ -216,10 +223,14 @@ public class ZadanieController {
     
     @GetMapping("/deleteTask")
     public String deleteTask(@RequestParam(value="taskId") Integer taskId, Model model) {
-        String statusCode = deleteZadanie(taskId).getStatusCode().toString();
-       
-        model.addAttribute("statusMsg", statusCode);
-        return "redirect:/task?pageNumber=1&pageSize=5";
+        String returnValue = "task.html";
+        HttpStatusCode statusCode = deleteZadanie(taskId).getStatusCode();
+        if ( statusCode.is2xxSuccessful() ) {
+            model.addAttribute("statusMsg", statusCode.toString());
+            zadanieSynchronizerES.synchronizeData();
+            returnValue = "redirect:/task?pageNumber=1&pageSize=5";
+        }
+        return returnValue;
     }
 
     public ResponseEntity<Void> deleteZadanie(@PathVariable Integer zadanieId) {

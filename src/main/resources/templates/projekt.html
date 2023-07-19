@@ -19,7 +19,7 @@
                     <span><a th:href="@{/addProject}">Add Project</a></span>
                     <div class="searchBox">
                         <form th:action="@{/project?pageNumber=1&pageSize=5}" th:object="${formData}" method="POST">
-                            <input type="text" th:field="*{nazwa}" placeholder="Search by name"/>
+                            <input type="text" th:field="*{nazwa}" placeholder="Search..."/>
                             <button type="submit">Search</button>
                         </form>                  
                     </div>
@@ -44,10 +44,9 @@
                         <td th:text="${project.opis}"></td>
                         <td th:text="${#temporals.format(project.createDate, 'dd-MM-yyyy HH:mm')}"></td>
                         <td th:text="${#temporals.format(project.modificationDate, 'dd-MM-yyyy HH:mm')}"></td>
-                        <td th:if="${project.zadania != null}">
+                        <td>
                             <a th:href="'/task?projectID=' + ${project.projektId}">Tasks</a>
                         </td>
-                        <td th:if="${project.zadania == null}"></td>
                         <td>
                             <a th:href="@{'/files?serviceType=project&pageNumber=1&pageSize=5&id='+${project.projektId}}">Files</a>
                         </td>    

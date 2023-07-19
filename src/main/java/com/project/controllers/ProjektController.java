@@ -2,6 +2,7 @@ package com.project.controllers;
 
 import com.project.model.Projekt;
 import com.project.model.User;
+import com.project.services.ProjectSynchronizerES;
 import com.project.services.ProjektService;
 import com.project.services.UserService;
 import jakarta.validation.Valid;
@@ -30,6 +31,9 @@ public class ProjektController {
     
     @Autowired
     private UserService userService;
+    
+    @Autowired
+    private ProjectSynchronizerES projectSynchronizerES;
     
     
     private Integer setPageNumber(Integer pageNumber) {
@@ -114,6 +118,9 @@ public class ProjektController {
         String statusCode = createProjekt(saveData).getStatusCode().toString();
    
         model.addAttribute("statusMsg", statusCode);
+        
+        projectSynchronizerES.synchronizeData();
+        
         return "redirect:/project?pageNumber=1&pageSize=5";
     }
      
@@ -152,6 +159,9 @@ public class ProjektController {
     public String updateProject(@Valid @ModelAttribute Projekt updateData, Model model, Pageable pageable) {
         String statusCode = updateProjekt(updateData, updateData.getProjektId()).getStatusCode().toString();
         model.addAttribute("statusMsg", statusCode);
+        
+        projectSynchronizerES.synchronizeData();
+        
         return "redirect:/project?pageNumber=1&pageSize=5";
     }
    
@@ -172,6 +182,9 @@ public class ProjektController {
         String statusCode = deleteProjekt(projektId).getStatusCode().toString();
         
         model.addAttribute("statusMsg", statusCode);
+        
+        projectSynchronizerES.synchronizeData();
+        
         return "redirect:/project?pageNumber=1&pageSize=5";
     }
     

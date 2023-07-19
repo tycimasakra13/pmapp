@@ -17,7 +17,7 @@
                    
                     <div class="searchBox">
                         <form th:action="@{/task?pageNumber=1&pageSize=5}" th:object="${formData}" method="POST">
-                            <input type="text" th:field="*{nazwa}" placeholder="Search by name"/>
+                            <input type="text" th:field="*{nazwa}" placeholder="Search..."/>
                             <button type="submit">Search</button>
                         </form>                  
                     </div>
