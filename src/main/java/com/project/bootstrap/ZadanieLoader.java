@@ -3,7 +3,10 @@ package com.project.bootstrap;
 import com.project.model.Projekt;
 import com.project.model.Student;
 import com.project.model.Zadanie;
+import com.project.repositories.ProjectRepository;
 import com.project.repositories.ZadanieRepository;
+import com.project.services.ProjektService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
@@ -14,6 +17,9 @@ public class ZadanieLoader implements CommandLineRunner {
     public ZadanieLoader(ZadanieRepository zadanieRepository) {
         this.zadanieRepository = zadanieRepository;
     }
+    
+    @Autowired
+    ProjectRepository projectRepository;
 
     @Override
     public void run(String... args) throws Exception {
@@ -35,10 +41,11 @@ public class ZadanieLoader implements CommandLineRunner {
     
     private void insertNewStudents(int x) {
         Projekt projekt = new Projekt();
-        projekt.setProjektId(10);
+        projekt.setProjektId(projectRepository.findTopByOrderByProjektIdDesc().get().getProjektId());
+//
+//        Student student = new Student();
+//        student.setId(12);
 
-        Student student = new Student();
-        student.setId(12);
 
         Zadanie zadanie = new Zadanie();
         zadanie.setOpis("ABC" + x);
@@ -46,7 +53,7 @@ public class ZadanieLoader implements CommandLineRunner {
         zadanie.setSynced(false);
         zadanie.setToBeDeleted(false);
         zadanie.setProjekt(projekt);
-        zadanie.setStudent(student);
+//        zadanie.setStudent(student);
         zadanieRepository.save(zadanie);
         System.out.println("Sample Zadanies Loaded " + x);
     }

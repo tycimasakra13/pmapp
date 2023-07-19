@@ -48,19 +48,19 @@ public class StudentSynchronizerES {
        
         entitiesInsertedUpdated.forEach(student -> {
             try {
-                Page<Student> totalStudents = studentService.search(
-                        student.getImie(), 0, 5);
+                List<String> searchedDocId = studentService.getDocId(student.getId());
                 
-                if( totalStudents.getNumberOfElements() == 0 ) {
+                if( searchedDocId.isEmpty() ) {
                     toBeInserted = true;
-                    
                 }
+                
                 student.setSynced(true);
                 
                 if (toBeInserted) {
+                    toBeInserted = false;
                     studentDao.save(student);
                 } else {
-                    studentDao.update(student);
+                    studentDao.update(student, searchedDocId.get(0));
                 }
                 
                 studentRepository.save(student);

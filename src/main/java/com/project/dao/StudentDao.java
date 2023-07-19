@@ -62,9 +62,25 @@ public class StudentDao {
         esClient.deleteByQuery(deleteRequest, RequestOptions.DEFAULT);
     }
     
-    public void update(Student student) throws IOException {
+    public void update(Student student, String documentId) throws IOException {
         String json = mapper.writeValueAsString(student);
-        esClient.update(new UpdateRequest("student", "" + student.getId()).doc(json, XContentType.JSON), RequestOptions.DEFAULT);
+        esClient.update(new UpdateRequest("student", "" + documentId).doc(json, XContentType.JSON), RequestOptions.DEFAULT);
+    }
+    
+    public List<String> getDocId(QueryBuilder query) throws IOException {
+        SearchResponse response = esClient.search(new SearchRequest("student")
+            .source(new SearchSourceBuilder()
+                .query(query)
+                .trackTotalHits(true)
+            ), RequestOptions.DEFAULT);
+        
+        SearchHits searchHits = response.getHits();
+        
+        List<String> resultList = new ArrayList<>();
+        for(SearchHit hit : searchHits) {
+            resultList.add(hit.getId());
+        }
+        return resultList;
     }
 
     public Page<Student> search(QueryBuilder query, Integer from, Integer size, Pageable pageable) throws IOException {

@@ -27,5 +27,7 @@ public interface StudentService {
     
     List<Student> getStudentsList();
     
+    List<String> getDocId(Integer projektId) throws IOException;
+        
     Page<Student> search(String q, Integer from, Integer size) throws IOException;
 }

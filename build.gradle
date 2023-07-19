@@ -1,6 +1,6 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '3.0.0'
+    id 'org.springframework.boot' version '3.1.0'
     id 'io.spring.dependency-management' version '1.1.0'
 }
 
@@ -46,6 +46,7 @@ dependencies {
     testRuntimeOnly 'org.springframework.boot:spring-boot-starter-test'
 //    runtimeOnly 'org.postgresql:postgresql'
     //runtimeOnly 'com.h2database:h2'
+    developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
     runtimeOnly 'com.mysql:mysql-connector-j'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'

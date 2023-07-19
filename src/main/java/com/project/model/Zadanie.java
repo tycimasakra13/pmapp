@@ -46,12 +46,12 @@ public class Zadanie {
     
     @JsonIgnore
     @ManyToOne(cascade = CascadeType.REMOVE)
-    @JoinColumn(name = "projekt_id", nullable = false)
+    @JoinColumn(name = "projekt_id")
     private Projekt projekt;
     
     @JsonIgnore
     @ManyToOne()
-    @JoinColumn(name = "id", nullable = true)
+    @JoinColumn(name = "id")
     private Student student;
 
     public Student getStudent() {

@@ -88,6 +88,20 @@ public class StudentServiceImpl implements StudentService {
     }
     
     @Override
+    public List<String> getDocId(Integer studentId) throws IOException {
+        QueryBuilder query;
+       
+        query = QueryBuilders.matchQuery("id", studentId);
+
+//           query = QueryBuilders.multiMatchQuery(projektId)
+//                   .field("projektId");
+
+       List<String> returnedDocId = studentDao.getDocId(query);
+      
+       return returnedDocId;
+    }
+    
+    @Override
     public Page<Student> search(String q, Integer from, Integer size) throws IOException {
         QueryBuilder query;
         q = q.toLowerCase();
