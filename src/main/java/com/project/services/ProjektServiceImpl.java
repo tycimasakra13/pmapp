@@ -14,8 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.slf4j.LoggerFactory;
@@ -125,14 +123,12 @@ public class ProjektServiceImpl implements ProjektService {
     public List<String> getDocId(Integer projektId) throws IOException {
         QueryBuilder query;
        
-       System.out.println("projektId search: " + projektId);
        query = QueryBuilders.matchQuery("projektId", projektId);
 
 //           query = QueryBuilders.multiMatchQuery(projektId)
 //                   .field("projektId");
 
        List<String> returnedDocId = projectDao.getDocId(query);
-       System.out.println("returnedProjekt {}" + returnedDocId.toString());
       
        return returnedDocId;
     }
@@ -141,7 +137,6 @@ public class ProjektServiceImpl implements ProjektService {
     public Page<Projekt> search(String q, Integer from, Integer size) throws IOException {
        QueryBuilder query;
        
-       System.out.println("q: " + q);
        if(q.isEmpty()) {
            query = QueryBuilders.matchAllQuery();
        } else {
@@ -151,7 +146,6 @@ public class ProjektServiceImpl implements ProjektService {
        }
 
        Page<Projekt> returnedProjekt = projectDao.search(query, from, size, PageRequest.of(from, size));
-       System.out.println("returnedProjekt {}" + returnedProjekt.toString());
       
        return returnedProjekt;
     }

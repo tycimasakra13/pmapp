@@ -5,7 +5,6 @@ import com.project.model.Projekt;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -59,7 +58,7 @@ public class ProjectDao {
     public void delete(Integer projektId) throws IOException {
         DeleteByQueryRequest deleteRequest = new DeleteByQueryRequest("projekt");
         deleteRequest.setQuery(QueryBuilders.matchQuery("projektId", projektId));
-        System.out.println("dr: " + deleteRequest.getBatchSize());
+
         esClient.deleteByQuery(deleteRequest, RequestOptions.DEFAULT);
     }
     
@@ -75,13 +74,10 @@ public class ProjectDao {
                 .trackTotalHits(true)
             ), RequestOptions.DEFAULT);
         
-        System.out.println("hits: " + response.toString());
         SearchHits searchHits = response.getHits();
         
         List<String> resultList = new ArrayList<>();
         for(SearchHit hit : searchHits) {
-            System.out.println("doc index" + hit.getIndex());
-            System.out.println("doc getid" + hit.getId());
             resultList.add(hit.getId());
         }
         return resultList;
@@ -100,7 +96,6 @@ public class ProjectDao {
 
         List<Projekt> resultList = new ArrayList<>();
         for(SearchHit hit : searchHits) {
-            System.out.println(hit);
             Projekt projektEntity = mapper.readValue(hit.getSourceAsString(),Projekt.class);
             resultList.add(projektEntity);
         }

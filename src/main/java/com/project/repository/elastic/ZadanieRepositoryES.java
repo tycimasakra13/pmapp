@@ -1,14 +1,10 @@
 package com.project.repository.elastic;
 
-import co.elastic.clients.util.DateTime;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.mapper.ZadanieMapper;
-import com.project.model.Projekt;
 import com.project.model.Zadanie;
 import com.project.model.ZadanieES;
 import java.io.IOException;
-import java.sql.Timestamp;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.http.HttpHost;
@@ -16,11 +12,6 @@ import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.elasticsearch.action.bulk.BulkProcessor;
-import org.elasticsearch.action.bulk.BulkRequest;
-import org.elasticsearch.action.bulk.BulkResponse;
-import org.elasticsearch.action.delete.DeleteRequest;
-import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
@@ -28,8 +19,6 @@ import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.client.core.MainResponse;
-import org.elasticsearch.core.TimeValue;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.reindex.DeleteByQueryRequest;
@@ -75,7 +64,7 @@ public class ZadanieRepositoryES {
     public void delete(Integer zadanieId) throws IOException {
         DeleteByQueryRequest deleteRequest = new DeleteByQueryRequest("zadanie");
         deleteRequest.setQuery(QueryBuilders.matchQuery("zadanieId", zadanieId));
-        System.out.println("dr: " + deleteRequest.getBatchSize());
+
         esClient.deleteByQuery(deleteRequest, RequestOptions.DEFAULT);
     }
     
@@ -97,7 +86,6 @@ public class ZadanieRepositoryES {
 
         List<Zadanie> resultList = new ArrayList<>();
         for(SearchHit hit : searchHits) {
-            System.out.println(hit);
              ZadanieES zadanieEntity = mapper.readValue(hit.getSourceAsString(),ZadanieES.class);
             
             

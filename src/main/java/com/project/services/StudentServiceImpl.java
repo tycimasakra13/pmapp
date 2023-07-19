@@ -1,6 +1,5 @@
 package com.project.services;
 
-import static co.elastic.clients.elasticsearch._types.query_dsl.Query.Kind.MultiMatch;
 import com.project.dao.StudentDao;
 import com.project.model.Student;
 import com.project.repositories.StudentRepository;
@@ -12,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
-import org.elasticsearch.index.query.MultiMatchQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.springframework.data.domain.PageRequest;
@@ -93,13 +91,11 @@ public class StudentServiceImpl implements StudentService {
     public Page<Student> search(String q, Integer from, Integer size) throws IOException {
         QueryBuilder query;
         q = q.toLowerCase();
-        System.out.println("student q: " + q);
         
         if (q.isEmpty()) {
             query = QueryBuilders.matchAllQuery();
         } else {
 
-            System.out.println("search string " + q);
             query = QueryBuilders.multiMatchQuery(q)
                     //.field("id")
                     .field("imie")
@@ -110,7 +106,6 @@ public class StudentServiceImpl implements StudentService {
                 
         }
         
-        System.out.println("query " + query);
         Page<Student> returnedStudent = studentDao.search(query, from, size, PageRequest.of(from, size));
         
         return returnedStudent;

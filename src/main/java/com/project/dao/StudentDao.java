@@ -1,12 +1,8 @@
 package com.project.dao;
 
-import co.elastic.clients.util.DateTime;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.project.model.Projekt;
 import com.project.model.Student;
 import java.io.IOException;
-import java.sql.Timestamp;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.http.HttpHost;
@@ -14,11 +10,6 @@ import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.elasticsearch.action.bulk.BulkProcessor;
-import org.elasticsearch.action.bulk.BulkRequest;
-import org.elasticsearch.action.bulk.BulkResponse;
-import org.elasticsearch.action.delete.DeleteRequest;
-import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
@@ -26,8 +17,6 @@ import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.client.core.MainResponse;
-import org.elasticsearch.core.TimeValue;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.reindex.DeleteByQueryRequest;
@@ -69,7 +58,7 @@ public class StudentDao {
     public void delete(Integer id) throws IOException {
         DeleteByQueryRequest deleteRequest = new DeleteByQueryRequest("student");
         deleteRequest.setQuery(QueryBuilders.matchQuery("id", id));
-        System.out.println("dr: " + deleteRequest.getBatchSize());
+        
         esClient.deleteByQuery(deleteRequest, RequestOptions.DEFAULT);
     }
     
@@ -91,7 +80,6 @@ public class StudentDao {
 
         List<Student> resultList = new ArrayList<>();
         for(SearchHit hit : searchHits) {
-            System.out.println(hit);
             Student studentEntity = mapper.readValue(hit.getSourceAsString(),Student.class);
             resultList.add(studentEntity);
         }

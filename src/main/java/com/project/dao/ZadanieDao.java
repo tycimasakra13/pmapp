@@ -2,11 +2,8 @@ package com.project.dao;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.mapper.ZadanieMapper;
-import com.project.model.Projekt;
-import com.project.model.Student;
 import com.project.model.Zadanie;
 import com.project.model.ZadanieES;
-import com.project.services.ZadanieService;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -60,18 +57,15 @@ public class ZadanieDao {
     }
     
     public void save(Zadanie zadanie) throws IOException {
-        System.out.println("zadanie " + zadanie.getProjekt().getProjektId());
-        
         String json = mapper.writeValueAsString(zadanie);
         
-        System.out.println("json zadanie: " + json);
         esClient.index(new IndexRequest("zadanie").source(json, XContentType.JSON), RequestOptions.DEFAULT);
     }
 
     public void delete(Integer zadanieId) throws IOException {
         DeleteByQueryRequest deleteRequest = new DeleteByQueryRequest("zadanie");
         deleteRequest.setQuery(QueryBuilders.matchQuery("zadanieId", zadanieId));
-        System.out.println("dr: " + deleteRequest.getBatchSize());
+
         esClient.deleteByQuery(deleteRequest, RequestOptions.DEFAULT);
     }
     
@@ -87,13 +81,10 @@ public class ZadanieDao {
                     .trackTotalHits(true))
                 , RequestOptions.DEFAULT);
         
-        System.out.println("hits: " + response.toString());
         SearchHits searchHits = response.getHits();
         
         List<String> resultList = new ArrayList<>();
         for(SearchHit hit : searchHits) {
-            System.out.println("doc index" + hit.getIndex());
-            System.out.println("doc getid" + hit.getId());
             resultList.add(hit.getId());
         }
         return resultList;
@@ -112,7 +103,6 @@ public class ZadanieDao {
 
         List<Zadanie> resultList = new ArrayList<>();
         for(SearchHit hit : searchHits) {
-            System.out.println(hit);
             ZadanieES zadanieEntity = mapper.readValue(hit.getSourceAsString(),ZadanieES.class);
             
             

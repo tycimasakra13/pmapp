@@ -1,7 +1,5 @@
 package com.project.model.dto;
 
-import java.util.Date;
-
 public class ProjektDto {
     private Integer projektId;
     private String nazwa;

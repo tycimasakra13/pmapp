@@ -20,10 +20,16 @@ public class User implements UserDetails {
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name = "userId")
     private Integer userID;
-    @Column(nullable = false, length = 50)
+    
+    @Column(nullable = false, length = 50, unique = true)
     private String username;
+    
     @Column(nullable = true, length = 1000)
     private String password;
+    
+    @Column(nullable = true, length = 1000)
+    private String confirmPassword;
+    
     @Column(nullable = true, length = 1000)
     private String role;
 
@@ -100,4 +106,14 @@ public class User implements UserDetails {
    @Override public boolean isEnabled() { 
    return true; 
    } 
+
+    public String getConfirmPassword() {
+        return confirmPassword;
+    }
+
+    public void setConfirmPassword(String confirmPassword) {
+        this.confirmPassword = confirmPassword;
+    }
+   
+   
 }

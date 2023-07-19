@@ -1,9 +1,6 @@
 package com.project.model.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Date;
-import java.util.List;
-import java.util.Set;
 
 
 public class ZadanieAllDto {
