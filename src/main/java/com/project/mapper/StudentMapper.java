@@ -1,10 +1,6 @@
 package com.project.mapper;
 
-import com.project.model.Projekt;
-import com.project.model.ProjektES;
 import com.project.model.Student;
-import com.project.model.dto.ProjektAllDto;
-import com.project.model.dto.ProjektDto;
 import com.project.model.dto.StudentAllDto;
 import com.project.model.dto.StudentDto;
 import com.project.model.elastic.StudentES;

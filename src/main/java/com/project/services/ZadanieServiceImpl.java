@@ -1,6 +1,5 @@
 package com.project.services;
 
-import com.project.dao.ProjectDao;
 import com.project.dao.ZadanieDao;
 import com.project.model.Zadanie;
 import com.project.repositories.ZadanieRepository;
@@ -128,14 +127,12 @@ public class ZadanieServiceImpl implements ZadanieService {
     public List<String> getDocId(Integer zadanieId) throws IOException {
         QueryBuilder query;
        
-       System.out.println("zadanieId search: " + zadanieId);
        query = QueryBuilders.matchQuery("zadanieId", zadanieId);
 
 //           query = QueryBuilders.multiMatchQuery(projektId)
 //                   .field("projektId");
 
        List<String> returnedDocId = zadanieDao.getDocId(query);
-       System.out.println("returnedZadanie {}" + returnedDocId.toString());
       
        return returnedDocId;
     }
@@ -143,8 +140,6 @@ public class ZadanieServiceImpl implements ZadanieService {
     @Override
     public Page<Zadanie> search(String q, Integer from, Integer size) throws IOException {
         QueryBuilder query;
-        
-        System.out.println("q: " + q);
         
         if(q.isEmpty()) {
             query = QueryBuilders.matchAllQuery();
@@ -155,8 +150,7 @@ public class ZadanieServiceImpl implements ZadanieService {
         }
         
         Page<Zadanie> returnedZadanie = zadanieDao.search(query, from, size, PageRequest.of(0, 5));
-        System.out.println("returnedZadanie {}" + returnedZadanie.toString());
-        
+
         return returnedZadanie;
     }
 }

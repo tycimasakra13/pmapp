@@ -1,21 +1,14 @@
 package com.project.services;
 
-import com.project.dao.StudentDao;
 import com.project.dao.ZadanieDao;
-import com.project.mapper.StudentMapper;
 import com.project.mapper.ZadanieMapper;
-import com.project.model.Student;
 import com.project.model.Zadanie;
-import com.project.repositories.StudentRepository;
 import com.project.repositories.ZadanieRepository;
-import com.project.repositories.elastic.StudentRepositoryES;
 import com.project.repository.elastic.ZadanieRepositoryES;
 
 import java.io.IOException;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -53,26 +46,19 @@ public class ZadanieSynchronizerES {
        
         entitiesInsertedUpdated.forEach(zadanie -> {
             try {
-                System.out.println("zadanieID: " + zadanie.getZadanieId());
                 
                 List<String> searchedDocId = zadanieService.getDocId(zadanie.getZadanieId());
                 
-                System.out.println("searchedProject: " + searchedDocId.size());
-                System.out.println("tobeinserted " + toBeInserted);
-                
-                
-                if( searchedDocId.size() == 0 ) {
+                if( searchedDocId.isEmpty() ) {
                     toBeInserted = true;
                 }
                 
                 zadanie.setSynced(true);
                 
                 if (toBeInserted) {
-                    System.out.println("in save");
                     toBeInserted = false;
                     zadanieDao.save(zadanie);
                 } else {
-                    System.out.println("in update");
                     zadanieDao.update(zadanie, searchedDocId.get(0));
                 }
                 
@@ -85,14 +71,12 @@ public class ZadanieSynchronizerES {
         
         entitiesToBeDeleted.forEach(zadanie -> {
             try {
-                System.out.println("to be deleted zadanie: " + zadanie.getZadanieId());
                 Integer zadanieId = zadanie.getZadanieId();
                 Integer status = zadanieService.getZadanieById(zadanieId).map(s -> {
                     zadanieService.deleteZadanie(zadanieId);
                     return new ResponseEntity<Void>(HttpStatus.OK);
                 }).orElseGet(() -> ResponseEntity.notFound().build()).getStatusCode().value();
                 
-                System.out.println("status " + status);
                 zadanieDao.delete(zadanieId);
                 
   

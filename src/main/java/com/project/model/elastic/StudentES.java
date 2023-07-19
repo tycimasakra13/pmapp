@@ -1,16 +1,7 @@
 package com.project.model.elastic;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.project.model.Projekt;
-import com.project.model.Zadanie;
-import jakarta.persistence.*;
 import java.util.Date;
-import java.util.List;
-
-import java.util.Set;
 import org.springframework.data.elasticsearch.annotations.Document;
-import org.springframework.data.elasticsearch.annotations.Field;
-import org.springframework.data.elasticsearch.annotations.FieldType;
 
 @Document(indexName = "student")
 public class StudentES {

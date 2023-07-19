@@ -59,9 +59,8 @@ public class ProjektController {
         pageSize = setPageSize(pageSize);
         
         Page<Projekt> totalProjects = null;
-        System.out.println("przed if");
+
         if (projektID != null) {
-            System.out.println("W if 1");
             totalProjects = projektService.getProjektByIdPaginated(projektID, PageRequest.of(0, pageSize));
         } else {
             totalProjects = projektService.getPaginatedProjects(pageNumber, pageSize);
@@ -86,10 +85,10 @@ public class ProjektController {
         Integer pageNumber = 1;
         Integer pageSize = 5;
         //Page<Projekt> totalProjects = projektService.searchByNazwa(formData.getNazwa(), pageNumber, pageSize);
-        System.out.println(formData.getNazwa());
+
         Page<Projekt> totalProjects = projektService.search(formData.getNazwa().toString(), 0, pageSize);
         Integer totalPages = totalProjects.getTotalPages();
-        System.out.println(totalProjects.toList().toString());
+
         userRole = userService.getCurrentUserRole(authentication);
         model.addAttribute("formData", new Projekt());
         model.addAttribute("projects",totalProjects);

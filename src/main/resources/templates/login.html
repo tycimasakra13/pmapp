@@ -9,9 +9,9 @@
     <body>
         <div class="header" th:insert="fragments/header.html"></div>
         <div class="content">
-             <div class="menuNavigator"></div>
-            <div class="loginForm">
-                <h1>Insert credentials to login</h1>     
+            <div class="menuNavigator"></div>
+            <div th:if="${mode == 'login'}" class="loginForm">
+                <h1>Insert credentials</h1>     
                 <div th:if="${param.error}"> 
                     <p th:text="${session.error}" th:unless="${session == null}">[...]</p> 
                 </div> 
@@ -27,6 +27,34 @@
                        <input type="submit" value="Sign In" />
                     </div> 
                 </form> 
+                <div>
+                    <label>Don't have account?</label>
+                    <a href="/register">Register</a>
+                </div>
+            </div>
+            <div th:if="${mode == 'register'}" class="registerForm loginForm">
+                <h1>Register from</h1>     
+                <div th:if="${msgError}" class="error">
+                    <p th:text="${msg}"></p>
+                </div>
+                <form th:action="@{/register}" th:object="${saveData}" method="POST">
+                    <div>
+                        <label for="username">Username:</label>
+                        <input type="text" th:field="*{username}"/>
+                        <label for="password">Password:</label>
+                        <input type="password" th:field="*{password}"/>
+                        <label for="password">Confirm Password:</label>
+                        <input type="password" th:field="*{confirmPassword}"/>
+                        
+                    </div>
+                    <div> 
+                       <input type="submit" value="Register" />
+                    </div> 
+                </form>
+                <div>
+                    <label>Already registred?</label>
+                    <a href="/login">Login</a>
+                </div>
             </div>
         </div>
         <div class="footer" th:insert="fragments/footer.html"></div>

@@ -2,12 +2,7 @@ package com.project.config;
 
 import com.project.services.SecurityUserDetailsService;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.elasticsearch.client.ClientConfiguration;
-import org.springframework.data.elasticsearch.client.erhlc.AbstractElasticsearchConfiguration;
-import org.springframework.data.elasticsearch.client.erhlc.RestClients;
-import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -42,7 +37,7 @@ public class SecurityConfig {
         
         http
                 .authorizeRequests()
-                .requestMatchers("/h2/","/js/**", "/css/**", "/img/**").permitAll()
+                .requestMatchers("/register","/h2/","/js/**", "/css/**", "/img/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()

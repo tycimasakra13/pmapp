@@ -51,7 +51,6 @@ public class StudentSynchronizerES {
                 Page<Student> totalStudents = studentService.search(
                         student.getImie(), 0, 5);
                 
-                System.out.println("total studs: " + totalStudents.getNumberOfElements());
                 if( totalStudents.getNumberOfElements() == 0 ) {
                     toBeInserted = true;
                     
@@ -59,10 +58,8 @@ public class StudentSynchronizerES {
                 student.setSynced(true);
                 
                 if (toBeInserted) {
-                    System.out.println("in save");
                     studentDao.save(student);
                 } else {
-                    System.out.println("in update");
                     studentDao.update(student);
                 }
                 
@@ -75,14 +72,12 @@ public class StudentSynchronizerES {
         
         entitiesToBeDeleted.forEach(student -> {
             try {
-                System.out.println("to be deleted student: " + student.getId());
                 Integer studentId = student.getId();
                 Integer status = studentService.getStudentById(studentId).map(s -> {
                     studentService.deleteStudent(studentId, PageRequest.of(0, 5));
                     return new ResponseEntity<Void>(HttpStatus.OK);
                 }).orElseGet(() -> ResponseEntity.notFound().build()).getStatusCode().value();
                 
-                System.out.println("status " + status);
                 studentDao.delete(studentId);
                 
   

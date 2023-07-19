@@ -9,7 +9,6 @@ import com.project.repository.elastic.ProjectRepositoryES;
 import java.io.IOException;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -47,25 +46,19 @@ public class ProjectSynchronizerES {
        
         entitiesInsertedUpdated.forEach(projekt -> {
             try {
-                System.out.println("projektID: " + projekt.getProjektId());
-                
                 List<String> searchedDocId = projektService.getDocId(projekt.getProjektId());
                 
-                System.out.println("searchedProject: " + searchedDocId.size());
-                System.out.println("tobeinserted " + toBeInserted);
-                if( searchedDocId.size() == 0 ) {
+                if( searchedDocId.isEmpty() ) {
                     toBeInserted = true;
                 }
                 
                 projekt.setSynced(true);
                 
                 if (toBeInserted) {
-                    System.out.println("in save");
                     toBeInserted = false;
                     projectDao.save(projekt);
                     
                 } else {
-                    System.out.println("in update");
                     projectDao.update(projekt, searchedDocId.get(0));
                 }
                 
@@ -78,14 +71,12 @@ public class ProjectSynchronizerES {
         
         entitiesToBeDeleted.forEach(projekt -> {
             try {
-                System.out.println("to be deleted: " + projekt.getProjektId());
                 Integer projektId = projekt.getProjektId();
                 Integer status = projektService.getProjektById(projektId).map(p -> {
                     projektService.deleteProjekt(projektId);
                     return new ResponseEntity<Void>(HttpStatus.OK);
                 }).orElseGet(() -> ResponseEntity.notFound().build()).getStatusCode().value();
                 
-                System.out.println("status " + status);
                 projectDao.delete(projektId);
                 
   

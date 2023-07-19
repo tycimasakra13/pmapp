@@ -1,7 +1,6 @@
 package com.project.services;
 
 import com.project.model.Projekt;
-import com.project.model.dto.ProjektDto;
 import java.io.IOException;
 import java.util.List;
 import org.springframework.data.domain.Page;
